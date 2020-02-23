@@ -430,6 +430,7 @@ public class GameManager {
 				sp.setScoreboard(ScoreboardType.LOBBY);
 				for (SpleefPlayer spect : sp.getSpectators()) {
 					spect.setSpectate(null);
+					spect.getPlayer().teleport(Main.lobby);
 				}
 			}
 			
@@ -451,8 +452,8 @@ public class GameManager {
 			
 			arena.setPoints1(0);
 			arena.setPoints2(0);
-			winner.getPlayer().teleport(arena.getLobby());
-			loser.getPlayer().teleport(arena.getLobby());
+			winner.getPlayer().teleport(Main.lobby);
+			loser.getPlayer().teleport(Main.lobby);
 			DataManager.getManager().giveLobbyItems(winner);
 			DataManager.getManager().giveLobbyItems(loser);
 		}
@@ -464,7 +465,7 @@ public class GameManager {
 				arena.setPoints1(0);
 				arena.setPoints2(0);
 				 winner = arena.getPlayers().get(0);
-				 winner.getPlayer().teleport(arena.getLobby());
+				 winner.getPlayer().teleport(Main.lobby);
 				 DataManager.getManager().giveLobbyItems(winner);
 				 for (SpleefPlayer online : DataManager.getManager().getOnlinePlayers()) {
 						online.getPlayer().sendMessage("§b" +winner.getPlayer().getName() +" won the game!");

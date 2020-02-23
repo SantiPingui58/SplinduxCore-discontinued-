@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 
 
 public class AdminCommand implements CommandExecutor {
@@ -47,6 +48,8 @@ public class AdminCommand implements CommandExecutor {
 				} else if (args[0].equalsIgnoreCase("tp")) {
 					World world = Bukkit.getWorld(args[1]);
 					p.teleport(world.getSpawnLocation());
+				} else if (args[0].equalsIgnoreCase("test")) {
+					HologramManager.getManager().spawn(p.getLocation(),p);
 				} 
 			}
 			}

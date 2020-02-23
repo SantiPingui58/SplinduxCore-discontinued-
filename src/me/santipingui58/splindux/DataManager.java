@@ -1,6 +1,7 @@
 package me.santipingui58.splindux;
 
 import java.net.InetAddress;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -133,6 +134,15 @@ public class  DataManager {
 							 }
 						 
 						 
+						 String register = Main.data.getConfig().getString("players."+p+".registerdate");
+						 Date date = null;
+							   try {
+								date=new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse(register);
+							} catch (ParseException e) {
+								e.printStackTrace();
+							} 
+						
+						 
 						 SpleefPlayer sp = new SpleefPlayer(UUID.fromString(p));						
 						 sp.setELO(ELO);
 						 sp.set1vs1Wins(_1vs1wins);
@@ -140,7 +150,7 @@ public class  DataManager {
 						 sp.setFFAWins(FFAwins);
 						 sp.setFFAGames(FFAgames);
 						 sp.setFFAKills(FFAkills);
-						 
+						 sp.setRegisterDate(date);
 						 sp.setDailyWinLimit(dailylimit);
 						 
 						 sp.setWeeklyFFAWins(FFAWeeklyWins);

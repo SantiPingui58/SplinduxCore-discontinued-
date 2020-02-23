@@ -35,8 +35,9 @@ public class SpleefPlayer {
 
 	private int dailywinlimit;
 	private int onlinetime;
-	private Date lastlogin;
 	
+	private Date lastlogin;
+	private Date registerdate;
 	private int coins;
 	private ScoreboardType scoreboard;
 	private boolean isafk;
@@ -65,6 +66,14 @@ public class SpleefPlayer {
 		this.scoreboard = ScoreboardType.LOBBY;
 	}
 	
+	
+	public Date getRegisterDate() {
+		return this.registerdate;
+	}
+	
+	public void setRegisterDate(Date d) {
+		this.registerdate = d;
+	}
 	
 	public Date getLastLogin() {
 		return this.lastlogin;
@@ -360,37 +369,9 @@ public class SpleefPlayer {
 		return this.dailywinlimit;
 	}
 	public void addFFAWin() {
-		if (getPlayer().hasPermission("splindux.limit.5")) 	{
-			if (this.dailywinlimit>=150) {
-				return;
-			}
-		} else if (getPlayer().hasPermission("splindux.limit.4")) 	{
-			if (this.dailywinlimit>=140) {
-				return;
-			}
-		}else if (getPlayer().hasPermission("splindux.limit.3")) 	{
-			if (this.dailywinlimit>=130) {
-				return;
-			}
-		}else if (getPlayer().hasPermission("splindux.limit.2")) 	{
-			if (this.dailywinlimit>=120) {
-				return;
-			}
-		} else if (getPlayer().hasPermission("splindux.limit.1")) 	{
-			if (this.dailywinlimit>=110) {
-				return;
-			}
-		} else {
-			if (this.dailywinlimit>=100) {
-				return;
-			}
-		
-		this.dailywinlimit = this.dailywinlimit+1;
 		this.FFA_wins = this.FFA_wins+1;
 		this.monthly_FFA_wins = this.monthly_FFA_wins+1;
-		this.weekly_FFA_wins = this.weekly_FFA_wins+1;
-	}
-	
+		this.weekly_FFA_wins = this.weekly_FFA_wins+1;	
 	}
 	public void addFFAKill() {
 		this.FFA_kills = this.FFA_kills+1;
