@@ -26,9 +26,8 @@ public class SpawnCommand implements CommandExecutor {
 		if(cmd.getName().equalsIgnoreCase("spawn")){
 			Player p = (Player) sender;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-		if (GameManager.getManager().isInGame(sp)) {
-			GameManager.getManager().leaveQueue(sp, GameManager.getManager().getArenaByPlayer(sp));
-		}
+			GameManager.getManager().leave(sp);
+		
 		p.teleport(Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true));
 		}
 		}

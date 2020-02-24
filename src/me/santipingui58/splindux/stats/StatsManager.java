@@ -16,9 +16,20 @@ import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 public class StatsManager {
 
 	
-	private HashMap<String,Integer> ffawinsranking = new HashMap<String,Integer>();
-	private HashMap<String,Integer> ffakillsranking = new HashMap<String,Integer>();
-	
+	private HashMap<String,Integer> spleefffawinsranking = new HashMap<String,Integer>();
+	private HashMap<String,Integer> spleefffakillsranking = new HashMap<String,Integer>();
+	private HashMap<String,Integer> spleefffagamesranking = new HashMap<String,Integer>();
+	private HashMap<String,Double> spleefffawgranking = new HashMap<String,Double>();
+	private HashMap<String,Double> spleefffakgranking = new HashMap<String,Double>();
+	private HashMap<String,Integer> spleefffawinsranking_monthly = new HashMap<String,Integer>();
+	private HashMap<String,Integer> spleefffakillsranking_monthly = new HashMap<String,Integer>();
+	private HashMap<String,Integer> spleefffagamesranking_monthly = new HashMap<String,Integer>();
+	private HashMap<String,Integer> spleefffawinsranking_weekly = new HashMap<String,Integer>();
+	private HashMap<String,Integer> spleefffakillsranking_weekly = new HashMap<String,Integer>();
+	private HashMap<String,Integer> spleefffagamesranking_weekly = new HashMap<String,Integer>();
+	private HashMap<String,Integer> spleef1vs1winsranking = new HashMap<String,Integer>();
+	private HashMap<String,Integer> spleef1vs1gamesranking = new HashMap<String,Integer>();
+	private HashMap<String,Integer> spleef1vs1ELOranking = new HashMap<String,Integer>();
 	private static StatsManager manager;	
 	 public static StatsManager getManager() {
 	        if (manager == null)
@@ -58,17 +69,80 @@ public class StatsManager {
 	
 	public void updateRankings() {
 		for (SpleefPlayer sp : DataManager.getManager().getPlayers()) {
+			
 			if (sp.getFFAWins()>0) {
-			ffawinsranking.put(sp.getOfflinePlayer().getName(), sp.getFFAWins());
+			spleefffawinsranking.put(sp.getOfflinePlayer().getName(), sp.getFFAWins());
 		}
 			
 			if (sp.getFFAKills()>0) {
-				ffakillsranking.put(sp.getOfflinePlayer().getName(), sp.getFFAKills());
+				spleefffakillsranking.put(sp.getOfflinePlayer().getName(), sp.getFFAKills());
 			}
+			
+			if (sp.getFFAGames()>0) {
+				spleefffagamesranking.put(sp.getOfflinePlayer().getName(), sp.getFFAGames());
+			}
+			if (sp.getWinGameRatio()>0) {
+				spleefffawgranking.put(sp.getOfflinePlayer().getName(), sp.getWinGameRatio());
+			}
+			
+			if (sp.getKillGameRatio()>0) {
+				spleefffakgranking.put(sp.getOfflinePlayer().getName(), sp.getKillGameRatio());
+			}
+			
+			if (sp.getMonthlyFFAWins()>0) {
+				spleefffawinsranking_monthly.put(sp.getOfflinePlayer().getName(), sp.getMonthlyFFAWins());
+			}
+				
+				if (sp.getMonthlyFFAKills()>0) {
+					spleefffakillsranking_monthly.put(sp.getOfflinePlayer().getName(), sp.getMonthlyFFAKills());
+				}
+				
+				if (sp.getMonthlyFFAGames()>0) {
+					spleefffagamesranking_monthly.put(sp.getOfflinePlayer().getName(), sp.getMonthlyFFAGames());
+				}
+				
+				if (sp.getWeeklyFFAWins()>0) {
+					spleefffawinsranking_weekly.put(sp.getOfflinePlayer().getName(), sp.getMonthlyFFAWins());
+				}
+					
+					if (sp.getWeeklyFFAKills()>0) {
+						spleefffakillsranking_weekly.put(sp.getOfflinePlayer().getName(), sp.getMonthlyFFAKills());
+					}
+					
+					if (sp.getWeeklyFFAGames()>0) {
+						spleefffagamesranking_weekly.put(sp.getOfflinePlayer().getName(), sp.getMonthlyFFAGames());
+					}
+					
+					if (sp.get1vs1Wins()>0) {
+						spleef1vs1winsranking.put(sp.getOfflinePlayer().getName(), sp.get1vs1Wins());
+					}
+					if (sp.get1vs1Wins()>0) {
+						spleef1vs1gamesranking.put(sp.getOfflinePlayer().getName(), sp.get1vs1Games());
+					}
+					if (sp.getELO()>1000) {
+						spleef1vs1ELOranking.put(sp.getOfflinePlayer().getName(), sp.getELO());
+					}
 		}
 		
-		ffawinsranking = sortByValue(ffawinsranking);
-		ffakillsranking = sortByValue(ffakillsranking);
+		spleefffawinsranking = sortByValue(spleefffawinsranking);
+		spleefffakillsranking = sortByValue(spleefffakillsranking);
+		spleefffagamesranking = sortByValue(spleefffagamesranking);
+		
+		
+		spleefffawinsranking_monthly = sortByValue(spleefffawinsranking_monthly);
+		spleefffakillsranking_monthly = sortByValue(spleefffakillsranking_monthly);
+		spleefffagamesranking_monthly = sortByValue(spleefffagamesranking_monthly);
+		
+		spleefffawinsranking_weekly = sortByValue(spleefffawinsranking_weekly);
+		spleefffakillsranking_weekly = sortByValue(spleefffakillsranking_weekly);
+		spleefffagamesranking_weekly = sortByValue(spleefffagamesranking_weekly);
+		
+		spleefffawgranking = sortByValueDouble(spleefffawgranking);
+		spleefffakgranking = sortByValueDouble(spleefffakgranking);
+		
+		spleef1vs1winsranking = sortByValue(spleef1vs1winsranking);
+		spleef1vs1gamesranking = sortByValue(spleef1vs1gamesranking);
+		spleef1vs1ELOranking = sortByValue(spleef1vs1ELOranking);
 	}
 	
 	
@@ -76,10 +150,19 @@ public class StatsManager {
 	public HashMap<String,Integer> getRanking(RankingType type) {
 		HashMap<String,Integer> hashmap = new HashMap<String,Integer>();
 		if (type.equals(RankingType.SPLEEFFFA_WINS)) {
-			hashmap = ffawinsranking;
+			hashmap = spleefffawinsranking;
 		} else if (type.equals(RankingType.SPLEEFFFA_KILLS)) {
-			hashmap = ffakillsranking;
+			hashmap = spleefffakillsranking;
+		} else if (type.equals(RankingType.SPLEEFFFA_GAMES)) {
+			hashmap = spleefffagamesranking;
+		} else if (type.equals(RankingType.SPLEEF1VS1_ELO)) {
+			hashmap = spleef1vs1ELOranking;
+		} else if (type.equals(RankingType.SPLEEF1VS1_GAMES)) {
+			hashmap = spleef1vs1gamesranking;
+		} else if (type.equals(RankingType.SPLEEF1VS1_WINS)) {
+			
 		}
+		
 		if (hashmap.isEmpty()) {
 			updateRankings();
 		}
@@ -89,18 +172,27 @@ public class StatsManager {
 	
 	private HashMap<String,Integer> getHashMapByType(RankingType type) {
 		if (type.equals(RankingType.SPLEEFFFA_WINS)) {
-			return ffawinsranking;
+			return spleefffawinsranking;
 		} else if (type.equals(RankingType.SPLEEFFFA_KILLS)) {
-			return ffakillsranking;
+			return spleefffakillsranking;
 		}
 		return null;
 	}
 	
-	private String getAmountByType(RankingType type) {
+	public String getAmountByType(RankingType type) {
 		if (type.equals(RankingType.SPLEEFFFA_WINS)) {
 			return "Wins";
 		} else if (type.equals(RankingType.SPLEEFFFA_KILLS)) {
 			return "Kills";
+		}
+		return null;
+	}
+	
+	public String getTitleByType(RankingType type) {
+		if (type.equals(RankingType.SPLEEFFFA_WINS)) {
+			return "Spleef FFA Wins";
+		} else if (type.equals(RankingType.SPLEEFFFA_KILLS)) {
+			return "Spleef FFA Kills";
 		}
 		return null;
 	}
@@ -120,6 +212,27 @@ public class StatsManager {
 	
 	        HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>(); 
 	        for (Map.Entry<String, Integer> aa : list) { 
+	            temp.put(aa.getKey(), aa.getValue()); 
+	        } 
+	        return temp; 
+}
+	  
+	  public  HashMap<String, Double> sortByValueDouble(HashMap<String,Double> hm)     { 
+	        // Create a list from elements of HashMap 
+	        List<Map.Entry<String, Double> > list = 
+	               new LinkedList<Map.Entry<String, Double> >(hm.entrySet()); 
+	  
+	        // Sort the list 
+	        Collections.sort(list, new Comparator<Map.Entry<String, Double> >() { 
+	            public int compare(Map.Entry<String, Double> o2,  
+	                               Map.Entry<String, Double> o1) 
+	            { 
+	                return (o1.getValue()).compareTo(o2.getValue()); 
+	            } 
+	        }); 
+	
+	        HashMap<String, Double> temp = new LinkedHashMap<String, Double>(); 
+	        for (Map.Entry<String, Double> aa : list) { 
 	            temp.put(aa.getKey(), aa.getValue()); 
 	        } 
 	        return temp; 

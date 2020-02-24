@@ -88,6 +88,14 @@ public class Utils {
 		    return d;
 		}
 		
+		public String time(int s) {
+			
+			int minutes = s / 60;
+			int seconds = s % 60;
+
+			return String.format("%02d:%02d",  minutes, seconds);
+		  }
+		
 		public List<Location> getCircle(Location center, double radius, int amount) {
 		    List<Location> locations = new ArrayList<>();
 		    World world = center.getWorld();

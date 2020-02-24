@@ -2,6 +2,7 @@ package me.santipingui58.splindux.commands;
 
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -54,7 +55,6 @@ public class StatsCommand implements CommandExecutor {
 				sp2 = SpleefPlayer.getSpleefPlayer(pa);
 			} catch(Exception e) {}
 			if (sp2!=null && p.isOp()) {
-				
 				if (args.length==1) {
 				p.sendMessage(" ");
 				p.sendMessage(" ");
@@ -91,56 +91,16 @@ public class StatsCommand implements CommandExecutor {
 			if (args.length==3 || args.length==4) {
 			if (args[1].equalsIgnoreCase("ffaspleef")) {
 				if (args[2].equalsIgnoreCase("wins")) {
-					int page = 0;
-					if (args.length==4) {
-						try {
-							page = Integer.parseInt(args[3]);
-							if (page<=0) {
-								p.sendMessage("§a"+ args[3]+ " §cisnt a valid number.");
-								return false;
-							}
-							page=page-1;
-						} catch (Exception e) {
-							p.sendMessage("§a"+ args[3]+ " §cisnt a valid number.");
-							return false;
-						}
-					}
-					int pag = page+1;
-					int total = (StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_WINS).size()/10)+1;
-					
-					if (page<=total-1) {
-					p.sendMessage("§6-=-=-=-[§a§lSpleef FFA Wins Top ("+pag+"/"+total+")§6]-=-=-=-");
-					StatsManager.getManager().sendRanking(sp, page,RankingType.SPLEEFFFA_WINS);
-					p.sendMessage("§6-=-=-=-[§a§lSpleef FFA Wins Top ("+pag+"/"+total+"§6]-=-=-=-");
-				} else {
-					p.sendMessage("§cPage not found.");
-				} 
+					sendRanking(args,RankingType.SPLEEFFFA_WINS,sp);
 				} else if (args[2].equalsIgnoreCase("kills")) {
-					int page = 0;
-					if (args.length==4) {
-						try {
-							page = Integer.parseInt(args[3]);
-							if (page<=0) {
-								p.sendMessage("§a"+ args[3]+ " §cisnt a valid number.");
-								return false;
-							}
-							page=page-1;
-						} catch (Exception e) {
-							p.sendMessage("§a"+ args[3]+ " §cisnt a valid number.");
-							return false;
-						}
-					}
-					int pag = page+1;
-					int total = (StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_KILLS).size()/10)+1;
-					
-					if (page<=total-1) {
-					p.sendMessage("§6-=-=-=-[§a§lSpleef FFA Kills Top ("+pag+"/"+total+")§6]-=-=-=-");
-					StatsManager.getManager().sendRanking(sp, page,RankingType.SPLEEFFFA_KILLS);
-					p.sendMessage("§6-=-=-=-[§a§lSpleef FFA Kills Top ("+pag+"/"+total+"§6]-=-=-=-");
-				} else {
-					p.sendMessage("§cPage not found.");
+					sendRanking(args,RankingType.SPLEEFFFA_KILLS,sp);
+				} else if (args[2].equalsIgnoreCase("games")) {
+					sendRanking(args,RankingType.SPLEEFFFA_GAMES,sp);
+				} else if (args[2].equalsIgnoreCase("kg")) {
+					sendRanking(args,RankingType.SPLEEFFFA_KG,sp);
+				} else if (args[2].equalsIgnoreCase("wg")) {
+					sendRanking(args,RankingType.SPLEEFFFA_WG,sp);
 				} 
-				}
 			}
 			}
 		}
@@ -150,4 +110,34 @@ public class StatsCommand implements CommandExecutor {
 		return false;
 	}
 
+	
+	private boolean sendRanking(String[] args,RankingType type,SpleefPlayer sp) {
+		Player p = sp.getPlayer();
+		int page = 0;
+		if (args.length==4) {
+			try {
+				page = Integer.parseInt(args[3]);
+				if (page<=0) {
+					p.sendMessage("§a"+ args[3]+ " §cisnt a valid number.");
+					return false;
+				}
+				page=page-1;
+			} catch (Exception e) {
+				p.sendMessage("§a"+ args[3]+ " §cisnt a valid number.");
+				return false;
+			}
+		}
+		int pag = page+1;
+		HashMap<String,Integer> hashmap = StatsManager.getManager().getRanking(type);
+		String title = StatsManager.getManager().getTitleByType(type);
+		int total = (hashmap.size()/10)+1;		
+		if (page<=total-1) {
+		p.sendMessage("§6-=-=-=-[§a§l"+title +" Top ("+pag+"/"+total+")§6]-=-=-=-");
+		StatsManager.getManager().sendRanking(sp, page,type);
+		p.sendMessage("§6-=-=-=-[§a§l"+title +" Top ("+pag+"/"+total+")§6]-=-=-=-");
+	} else {
+		p.sendMessage("§cPage not found.");
+	}
+		return true; 
+	}
 }

@@ -16,6 +16,7 @@ import me.santipingui58.splindux.commands.DuelCommand;
 import me.santipingui58.splindux.commands.EndGameCommand;
 import me.santipingui58.splindux.commands.FlyCommand;
 import me.santipingui58.splindux.commands.HoverCommand;
+import me.santipingui58.splindux.commands.MatchesCommand;
 import me.santipingui58.splindux.commands.MsgCommand;
 import me.santipingui58.splindux.commands.PingCommand;
 import me.santipingui58.splindux.commands.RankCommand;
@@ -41,6 +42,21 @@ import me.santipingui58.splindux.task.ScoreboardTask;
 import me.santipingui58.splindux.task.TabTask;
 import me.santipingui58.splindux.utils.Configuration;
 import me.santipingui58.splindux.utils.Utils;
+
+
+//Stats
+//Hologramas
+//Añadir todas las renas
+//Ranked
+//Splegg y BowSpleef
+//Discord
+//NameMC
+//Votifier
+//Sistema de niveles
+//Friends
+//Anticheat
+//guilds
+//openaudiomc
 
 
 
@@ -131,6 +147,7 @@ public class Main extends JavaPlugin {
 		getCommand("splinduxregister").setExecutor(new SplinduxRegisterCommand());
 		getCommand("splinduxlogin").setExecutor(new SplinduxLoginCommand());
 		getCommand("stats").setExecutor(new StatsCommand());
+		getCommand("matches").setExecutor(new MatchesCommand());
 	}
 	
 	private void registerTasks() {

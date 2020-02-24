@@ -13,6 +13,7 @@ import org.bukkit.Sound;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.economy.EconomyManager;
 import me.santipingui58.splindux.game.death.DeathReason;
 import me.santipingui58.splindux.game.death.SpleefKill;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
@@ -61,6 +62,14 @@ public class GameManager {
 		 return null;
 	 }
 	 
+	 public void leave(SpleefPlayer sp) {
+		leaveSpectate(sp);
+		for (SpleefArena arena : DataManager.getManager().getArenas()) {
+			if (arena.getPlayers().contains(sp)) {
+				leaveQueue(sp,arena);
+			}
+		}
+	 }
 	 
 	 public void leaveSpectate(SpleefPlayer sp) {
 		 sp.setSpectate(null);
@@ -69,7 +78,7 @@ public class GameManager {
 	 }
 	 
 	 public void spectate(SpleefPlayer sp1, SpleefPlayer sp2) {
-		 GameManager.getManager().leaveSpectate(sp1);
+		 GameManager.getManager().leave(sp1);
 		 sp1.getPlayer().setGameMode(GameMode.SPECTATOR);
 		 sp1.getPlayer().teleport(sp2.getPlayer());		 
 		 sp1.setScoreboard(sp2.getScoreboard());		 
@@ -229,7 +238,9 @@ public class GameManager {
 				}
 			}
 			
-			
+			for (SpleefPlayer s : arena.getPlayers()) {
+				EconomyManager.getManager().addCoins(s, 1, true);
+			}
 			new ArenaStartingCountdownTask(arena);
 			
 		}
@@ -297,6 +308,7 @@ public class GameManager {
 			if (reason.equals(GameEndReason.WINNER)) {
 						
 				SpleefPlayer winner = arena.getPlayers().get(0);
+				EconomyManager.getManager().addCoins(winner, 10, true);
 				SpleefPlayer winstreaker = null;
 				int wins = 0;
 				boolean isover = false;
@@ -469,6 +481,7 @@ public class GameManager {
 				 for (SpleefPlayer online : DataManager.getManager().getOnlinePlayers()) {
 						online.getPlayer().sendMessage("§b" +winner.getPlayer().getName() +" won the game!");
 					}
+				 EconomyManager.getManager().addCoins(winner, 3, true);
 			}
 			arena.getPlayers().clear();
 			if (arena.getQueue().size()>=2) {
@@ -478,6 +491,10 @@ public class GameManager {
 				arena.setState(GameState.LOBBY);
 			}
 		}
+		
+		
+		
+		
 		public void fell(SpleefPlayer sp,SpleefPlayer killer,DeathReason reason) {
 			
 			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);

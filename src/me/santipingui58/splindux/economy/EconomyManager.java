@@ -37,7 +37,7 @@ public class EconomyManager extends GEconomyProvider {
 
 	
 	
-	  public static void addCoins(SpleefPlayer sp, Integer i,boolean multiplier) {
+	  public void addCoins(SpleefPlayer sp, Integer i,boolean multiplier) {
 	  
 		  int coins = sp.getCoins();
 			if (multiplier) {
@@ -61,7 +61,7 @@ public class EconomyManager extends GEconomyProvider {
 		
 	//}
 
-	  public static PlayerManager getPlayerManager(Player player) {
+	  public PlayerManager getPlayerManager(Player player) {
 		    PlayerManager playerManager = GadgetsMenuAPI.getPlayerManager(player);
 			return playerManager;
 		}

@@ -88,6 +88,7 @@ public class  DataManager {
 				SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			Main.data.getConfig().set("players."+p.getUniqueId()+".registerdate", format.format(now));
 			Main.data.getConfig().set("players."+p.getUniqueId()+".onlinetime",0);
+			Main.data.getConfig().set("players."+p.getUniqueId()+".coins",0);
 			 Main.data.saveConfig();
 			
 			 return nuevo;
@@ -115,7 +116,7 @@ public class  DataManager {
 						 int FFAMonthlyWins =0;
 						 int FFAMonthlyGames = 0;
 						 int FFAMonthlyKills = 0;
-						 
+						 int coins = 0;
 						 int dailylimit= 0;
 						 if (Main.data.getConfig().contains("players."+p+".dailywinlimit")) {
 							 dailylimit =  Main.data.getConfig().getInt("players."+p+".dailywinlimit");
@@ -133,6 +134,9 @@ public class  DataManager {
 							 FFAMonthlyKills = Main.data.getConfig().getInt("players."+p+".stats.monthly.FFA_kills");
 							 }
 						 
+						 if (Main.data.getConfig().contains("players."+p+".coins")) {
+							 coins = Main.data.getConfig().getInt("players."+p+".coins");
+						 }
 						 
 						 String register = Main.data.getConfig().getString("players."+p+".registerdate");
 						 Date date = null;
@@ -152,7 +156,7 @@ public class  DataManager {
 						 sp.setFFAKills(FFAkills);
 						 sp.setRegisterDate(date);
 						 sp.setDailyWinLimit(dailylimit);
-						 
+						 sp.setCoins(coins);
 						 sp.setWeeklyFFAWins(FFAWeeklyWins);
 						 sp.setWeeklyFFAGames(FFAWeeklyGames);
 						 sp.setWeeklyFFAKills(FFAWeeklyKills);
@@ -201,7 +205,7 @@ public class  DataManager {
 		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.monthly.FFA_wins",sp.getMonthlyFFAWins());
 		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.monthly.FFA_games",sp.getMonthlyFFAGames());
 		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.monthly.FFA_kills",sp.getMonthlyFFAKills());
-		 
+		 Main.data.getConfig().set("players."+p.getUniqueId()+".coins",sp.getCoins());
 		 Main.data.getConfig().set("players."+p.getUniqueId()+".dailywinlimit",sp.getDailyWinLimit());
 		 
 			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
