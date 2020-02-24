@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -542,7 +541,6 @@ public class GameManager {
 		
 		
 		public void arenaShrink(SpleefArena arena) {
-			Bukkit.getPlayer("SantiPingui58").sendMessage(""+arena.getSpawn1_1vs1());
 			if (arena.getResetRound()<12) {
 			arena.setResetRound(arena.getResetRound()+1);
 			Location a = null;
@@ -616,8 +614,6 @@ public class GameManager {
 		}
 			
 			resetArena(arena);
-			
-			Bukkit.getPlayer("SantiPingui58").sendMessage(""+arena.getSpawn1_1vs1());
 		}
 		
 		

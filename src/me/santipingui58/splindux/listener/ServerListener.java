@@ -134,7 +134,7 @@ public class ServerListener implements Listener {
 	    		snowball.setShooter(p);
 	    	} else if (p.getItemInHand().equals(DataManager.getManager().queueitems()[1])) {
 	    			GameManager.getManager().leaveQueue(sp, GameManager.getManager().getArenaByPlayer(sp));    		
-	    	} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[0])) {
+	    	} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[1])) {
 	    		GadgetsMenuAPI.goBackToMainMenu(p);
 	    	}
 	    }

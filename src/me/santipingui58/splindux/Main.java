@@ -26,6 +26,7 @@ import me.santipingui58.splindux.commands.SpawnCommand;
 import me.santipingui58.splindux.commands.SpectateCommand;
 import me.santipingui58.splindux.commands.SplinduxLoginCommand;
 import me.santipingui58.splindux.commands.SplinduxRegisterCommand;
+import me.santipingui58.splindux.commands.StatsCommand;
 import me.santipingui58.splindux.economy.EconomyManager;
 import me.santipingui58.splindux.listener.NPCListener;
 import me.santipingui58.splindux.listener.PlayerChat;
@@ -129,6 +130,7 @@ public class Main extends JavaPlugin {
 		getCommand("endgame").setExecutor(new EndGameCommand());
 		getCommand("splinduxregister").setExecutor(new SplinduxRegisterCommand());
 		getCommand("splinduxlogin").setExecutor(new SplinduxLoginCommand());
+		getCommand("stats").setExecutor(new StatsCommand());
 	}
 	
 	private void registerTasks() {
