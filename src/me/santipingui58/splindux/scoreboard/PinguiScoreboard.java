@@ -16,6 +16,7 @@ import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.stats.level.LevelManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 
@@ -39,6 +40,7 @@ public class PinguiScoreboard {
 					cache.add("§f§f§f");
 					cache.add("§fName: §6" + sp.getPlayer().getName());
 					cache.add("§fRank: " + prefix(sp));
+					cache.add("§fLevel: " + LevelManager.getManager().getRank(sp).getRankName());
 					cache.add("§fOnline players: §a" + Bukkit.getOnlinePlayers().size());
 					cache.add("§fCoins: §6" + sp.getCoins());
 					cache.add("§f");

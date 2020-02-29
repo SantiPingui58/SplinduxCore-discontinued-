@@ -1,15 +1,13 @@
 package me.santipingui58.splindux.commands;
 
-
-import java.util.UUID;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
-import me.santipingui58.splindux.scoreboard.hologram.Hologram;
+import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
+import me.santipingui58.splindux.scoreboard.hologram.HologramType;
 
 
 
@@ -28,18 +26,19 @@ public class HologramCommand implements CommandExecutor {
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 				if (p.isOp()) {
 					if (args.length==0) {
-					p.sendMessage("§aUse of command: /hologram create <type>");
+					p.sendMessage("§aUse of command: /hologram create");
 					p.sendMessage("§aUse of command: /hologram delete");
 					p.sendMessage("§aUse of command: /hologram list");
-				} else {
-					if (args[0].equalsIgnoreCase("create")) {
-						UUID uuid = UUID.randomUUID();
+				} else if (args[0].equalsIgnoreCase("create")) {
 						
-						Hologram hologram = new Hologram(uuid, null, null);
-						    hologram.getLocation();
-						    sp.get1vs1Games();
-					}
-				}
+						HologramManager.getManager().createHologram(sp,HologramType.SPLEEFRANKING); 
+						p.sendMessage("§aHologram created!");
+					
+				} else if (args[0].equalsIgnoreCase("delete")) {
+					HologramManager.getManager().deleteHologram(sp);
+					p.sendMessage("§cHologram deleted!");
+				} 
+					
 				}
 		}
 		}

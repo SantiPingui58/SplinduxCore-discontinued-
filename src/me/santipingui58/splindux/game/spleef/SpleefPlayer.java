@@ -61,11 +61,21 @@ public class SpleefPlayer {
 	private boolean adminlogin;
 	private boolean islogged;
 	private boolean register;
+	
+	private int level;
+	
 	public SpleefPlayer(UUID uuid) {
 		this.uuid = uuid;
 		this.scoreboard = ScoreboardType.LOBBY;
 	}
 	
+	public int getLevel() {
+		return this.level;
+	}
+	
+	public void setLevel(int i) {
+		this.level = i;
+	}
 	
 	public Date getRegisterDate() {
 		return this.registerdate;

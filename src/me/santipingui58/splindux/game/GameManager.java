@@ -20,6 +20,7 @@ import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
+import me.santipingui58.splindux.stats.level.LevelManager;
 import me.santipingui58.splindux.task.ArenaNewStartTask;
 import me.santipingui58.splindux.task.ArenaStartingCountdownTask;
 import me.santipingui58.splindux.utils.Utils;
@@ -44,6 +45,16 @@ public class GameManager {
 		 return false;
 	 }
 	 
+	 public boolean isInArena(SpleefPlayer sp) {
+		 if (isInGame(sp)) {
+			 return true;
+		 }
+		 if (isInQueue(sp)) {
+			 return true;
+		 }
+		 return false;
+	 }
+	 
 	 public boolean isInQueue(SpleefPlayer sp) {
 		 for (SpleefArena arena : DataManager.getManager().getArenas()) {
 			 if (arena.getQueue().contains(sp)) {
@@ -63,18 +74,17 @@ public class GameManager {
 	 }
 	 
 	 public void leave(SpleefPlayer sp) {
+		 sp.getPlayer().setGameMode(GameMode.ADVENTURE);
 		leaveSpectate(sp);
-		for (SpleefArena arena : DataManager.getManager().getArenas()) {
-			if (arena.getPlayers().contains(sp)) {
-				leaveQueue(sp,arena);
-			}
-		}
+		GameManager.getManager().leaveQueue(sp, GameManager.getManager().getArenaByPlayer(sp));    	
+		
 	 }
 	 
 	 public void leaveSpectate(SpleefPlayer sp) {
 		 sp.setSpectate(null);
 		 sp.setScoreboard(ScoreboardType.LOBBY);
 		 sp.getPlayer().teleport(Main.lobby);
+		 sp.getPlayer().setGameMode(GameMode.ADVENTURE);
 	 }
 	 
 	 public void spectate(SpleefPlayer sp1, SpleefPlayer sp2) {
@@ -86,6 +96,7 @@ public class GameManager {
 	 }
 	 
 	 public void addQueue(SpleefPlayer sp,SpleefArena arena) {
+		leave(sp);
 			arena.getQueue().add(sp);
 			if (arena.getType().equals(SpleefType.SPLEEFFFA)) {
 				
@@ -109,23 +120,6 @@ public class GameManager {
 			}
 			}
 			
-			} else if (arena.getType().equals(SpleefType.SPLEEF1VS1)) {
-				sp.setScoreboard(ScoreboardType._1VS1GAME);
-				if (arena.getState().equals(GameState.GAME) || arena.getState().equals(GameState.FINISHING) || arena.getState().equals(GameState.STARTING)) {
-					sp.getPlayer().sendMessage("§aYou have been added to the queue, you will play when this game is finished!");
-				} else {
-					if (arena.getQueue().size()>=2) {
-						new ArenaNewStartTask(arena);
-						for (SpleefPlayer p : DataManager.getManager().getOnlinePlayers()) {
-							String player1 = arena.getQueue().get(0).getPlayer().getName();
-							String player2 = arena.getQueue().get(1).getPlayer().getName();
-							p.getPlayer()
-							.sendMessage("§bA new 1vs1 game starting between §a"+player1+" §band §a"+ player2+"§b!");
-						}
-					} else {
-						sp.getPlayer().sendMessage("§aYou have been added to the queue.");
-					}
-				}
 			}
 			
 			DataManager.getManager().giveQueueItems(sp);
@@ -134,11 +128,9 @@ public class GameManager {
 		}
 	 
 	 
-	 
-		
 		public void leaveQueue(SpleefPlayer sp, SpleefArena arena) {
-			GameManager.getManager().leaveSpectate(sp);
 			DataManager.getManager().giveLobbyItems(sp);		
+			if (GameManager.getManager().isInArena(sp)) {
 			if (sp.getPlayer().isOnline()) {
 				if (Main.arenas.getConfig().contains("mainlobby")) {
 					sp.getPlayer().teleport(Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true));
@@ -160,10 +152,12 @@ public class GameManager {
 				arena.getQueue().remove(sp);
 				
 		}
+		}
 		
 		public void _1vs1(SpleefPlayer sp1, SpleefPlayer sp2,SpleefArena arena) {
 			sp2.getDueledPlayers().remove(sp1);
 			sp1.getDueledPlayers().remove(sp2);
+						
 			if (arena==null) {
 				
 				List<SpleefArena> arenas = DataManager.getManager().getArenas();
@@ -181,7 +175,9 @@ public class GameManager {
 				sp1.getPlayer().sendMessage("§cCouldn't find a map to play! Duel cancelled.");
 				sp2.getPlayer().sendMessage("§cCouldn't find a map to play! Duel cancelled.");
 				return;
-				} else {				 
+				} else {	
+					leave(sp1);
+					leave(sp2);
 				arena.getQueue().add(sp1);
 				arena.getQueue().add(sp2);
 				startGame(arena);
@@ -206,6 +202,7 @@ public class GameManager {
 			for (SpleefPlayer sp : arena.getQueue()) {
 				DataManager.getManager().giveGameItems(sp);
 				sp.addFFAGame();			
+				LevelManager.getManager().addLevel(sp, 1);
 				Location l = locations.get(i);		
 				sp.getPlayer().teleport(Utils.getUtils().lookAt(l, center_player));
 				sp.getPlayer().setGameMode(GameMode.SURVIVAL);
@@ -292,6 +289,9 @@ public class GameManager {
 			for (SpleefPlayer s : arena.getPlayers()) {					
 				
 			if (i==1) {
+				arena.setState(GameState.STARTING);
+					new ArenaStartingCountdownTask(arena);
+				
 				s.getPlayer().teleport(arena.getSpawn1_1vs1());					
 			} else {
 				s.getPlayer().teleport(arena.getSpawn2_1vs1());		
@@ -308,6 +308,7 @@ public class GameManager {
 			if (reason.equals(GameEndReason.WINNER)) {
 						
 				SpleefPlayer winner = arena.getPlayers().get(0);
+				LevelManager.getManager().addLevel(winner, 2);
 				EconomyManager.getManager().addCoins(winner, 10, true);
 				SpleefPlayer winstreaker = null;
 				int wins = 0;
@@ -440,14 +441,16 @@ public class GameManager {
 			for (SpleefPlayer sp : arena.getPlayers()) {
 				sp.setScoreboard(ScoreboardType.LOBBY);
 				for (SpleefPlayer spect : sp.getSpectators()) {
-					spect.setSpectate(null);
-					spect.getPlayer().teleport(Main.lobby);
+					leaveSpectate(spect);
 				}
+				sp.getSpectators().clear();
 			}
 			
 			
 			arena.resetTimer();
 			if (reason.equals(GameEndReason.WINNER)) {
+				LevelManager.getManager().addLevel(loser, 1);
+				LevelManager.getManager().addLevel(winner, 3);
 			arena.setState(GameState.FINISHING);
 			if (winner!=null) {
 			if (arena.getPlayers().get(0).equals(winner)) {
@@ -470,7 +473,7 @@ public class GameManager {
 		}
 			} else if (reason.equals(GameEndReason.TIME_OUT)) {
 				for (SpleefPlayer online : arena.getViewers()) {
-					online.getPlayer().sendMessage("§bThe 1vs1 between " + arena.getPlayers().get(0)+ " §band" + arena.getPlayers().get(1)  + "§bfinished in a draw!");
+					online.getPlayer().sendMessage("§bThe 1vs1 between " + arena.getPlayers().get(0).getOfflinePlayer().getName()+ " §band" + arena.getPlayers().get(1).getOfflinePlayer().getName()  + "§bfinished in a draw!");
 				}
 			} else if (reason.equals(GameEndReason.LOG_OFF)) {
 				arena.setPoints1(0);
@@ -535,23 +538,28 @@ public class GameManager {
 				arena.setArena1_1vs1(arena.getArena1());
 				arena.setArena2_1vs1(arena.getArena2());
 				arena.setSpawn1_1vs1(arena.getSpawn1());
-				arena.setSpawn2_1vs1(arena.getSpawn2());
-				GameManager.getManager().resetArena(arena);
-					arena.setState(GameState.STARTING);
+				arena.setSpawn2_1vs1(arena.getSpawn2());		
 					if (arena.getPlayers().get(0).equals(sp)) {
 						arena.setPoints2(arena.getPoints2()+1);
+						for (SpleefPlayer players : arena.getViewers()) { 
+						players.getPlayer().sendMessage("§6"+ sp.getPlayer().getName()+ "§b fell! §6" + arena.getPlayers().get(1).getPlayer().getName() + "§b gets a point." );
+						}
 						if (arena.getPoints2()>=7) {
 							endGame1vs1(arena,arena.getPlayers().get(1),arena.getPlayers().get(0),GameEndReason.WINNER);
 							return;
 						}
 					} else if (arena.getPlayers().get(1).equals(sp)) {
 						arena.setPoints1(arena.getPoints1()+1);
+						for (SpleefPlayer players : arena.getViewers()) { 
+							players.getPlayer().sendMessage("§6"+ sp.getPlayer().getName()+ "§b fell! §6" + arena.getPlayers().get(0).getPlayer().getName() + "§b gets a point." );
+							}
 						if (arena.getPoints1()>=7) {
 							endGame1vs1(arena,arena.getPlayers().get(0),arena.getPlayers().get(1),GameEndReason.WINNER);
 							return;
 						}
-					}						
-					new ArenaStartingCountdownTask(arena);
+					}	
+					
+					GameManager.getManager().resetArena(arena);
 				}
 			}
 		

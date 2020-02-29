@@ -23,7 +23,8 @@ public class ScoreboardTask {
 		    public void run() {
 		    	
 		    	for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {	   		    		
-		    		PinguiScoreboard.getScoreboard().scoreboard(sp);				
+		    		PinguiScoreboard.getScoreboard().scoreboard(sp);	
+		    		
 		    		}
 		    }
 		    }, 0, 10L);

@@ -37,11 +37,24 @@ public class StatsManager {
 	        return manager;
 	    }
 	
-	public int getRankingPosition(RankingType type) {
-		return 0;
+	public int getRankingPosition(RankingType type,SpleefPlayer sp) {
+		HashMap<String,Integer> ranking = getRanking(type);
+		  Iterator<Entry<String, Integer>> it = ranking.entrySet().iterator();
+		  int i = 1;
+		  while (it.hasNext()) {
+		        Map.Entry<String,Integer> pair = (Map.Entry<String,Integer>)it.next();
+		        String name = pair.getKey();
+		        if (name.equalsIgnoreCase(sp.getOfflinePlayer().getName())) {
+		        	return i;
+		        }
+		        i++;
+		        
+		  }
+		  return i;
 	}
 	
 	public void sendRanking(SpleefPlayer sp,int page,RankingType type) {
+		
 		HashMap<String,Integer> hashmap = getHashMapByType(type);
 		
 		if (hashmap.isEmpty()) {
@@ -58,6 +71,34 @@ public class StatsManager {
 		        if (i<=fin) {
 		        	if (i>=inicio) {
 		        sp.getPlayer().sendMessage("§6"+i +". §a"+name+"§7: §b" + wins + " " + getAmountByType(type));
+		        	}
+		        i++;
+		    }  else {
+		    	break;
+		    }
+		    }	
+		   
+	}
+	
+public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
+		
+		HashMap<String,Double> hashmap = getHashMapByTypeDouble(type);
+		
+		if (hashmap.isEmpty()) {
+			updateRankings();
+		}
+		  Iterator<Entry<String, Double>> it = hashmap.entrySet().iterator();
+		  int inicio = (page*10)+1;
+		  int fin = (page+1)*10;
+		  int i = 1;
+		    while (it.hasNext()) {
+		        Map.Entry<String,Double> pair = (Map.Entry<String,Double>)it.next();
+		        String name = pair.getKey();
+		        Double wins = pair.getValue();
+		        
+		        if (i<=fin) {
+		        	if (i>=inicio) {
+		        sp.getPlayer().sendMessage("§6"+i +". §a"+name+"§7: §b" + String.format("%.00f", wins) + " " + getAmountByType(type));
 		        	}
 		        i++;
 		    }  else {
@@ -143,6 +184,7 @@ public class StatsManager {
 		spleef1vs1winsranking = sortByValue(spleef1vs1winsranking);
 		spleef1vs1gamesranking = sortByValue(spleef1vs1gamesranking);
 		spleef1vs1ELOranking = sortByValue(spleef1vs1ELOranking);
+		
 	}
 	
 	
@@ -160,7 +202,22 @@ public class StatsManager {
 		} else if (type.equals(RankingType.SPLEEF1VS1_GAMES)) {
 			hashmap = spleef1vs1gamesranking;
 		} else if (type.equals(RankingType.SPLEEF1VS1_WINS)) {
-			
+			hashmap = spleef1vs1winsranking;
+		} 
+		
+		if (hashmap.isEmpty()) {
+			updateRankings();
+		}
+		
+		return hashmap;
+	}
+	
+	public HashMap<String,Double> getRankingDouble(RankingType type) {
+		HashMap<String,Double> hashmap = new HashMap<String,Double>();
+		if (type.equals(RankingType.SPLEEFFFA_KG)) {
+			hashmap = spleefffakgranking;
+		} else {
+			hashmap = spleefffawgranking;
 		}
 		
 		if (hashmap.isEmpty()) {
@@ -175,6 +232,17 @@ public class StatsManager {
 			return spleefffawinsranking;
 		} else if (type.equals(RankingType.SPLEEFFFA_KILLS)) {
 			return spleefffakillsranking;
+		} else if (type.equals(RankingType.SPLEEFFFA_GAMES)) {
+			return spleefffagamesranking;
+		} 
+		return null;
+	}
+	
+	private HashMap<String,Double> getHashMapByTypeDouble(RankingType type) {
+		if (type.equals(RankingType.SPLEEFFFA_KG)) {
+			return spleefffakgranking;
+		} else if (type.equals(RankingType.SPLEEFFFA_WG)) {
+			return spleefffawgranking;
 		}
 		return null;
 	}
@@ -184,6 +252,12 @@ public class StatsManager {
 			return "Wins";
 		} else if (type.equals(RankingType.SPLEEFFFA_KILLS)) {
 			return "Kills";
+		} else if (type.equals(RankingType.SPLEEFFFA_GAMES)) {
+			return "Games";
+		}else if (type.equals(RankingType.SPLEEFFFA_WG)) {
+			return "W/G";
+		}else if (type.equals(RankingType.SPLEEFFFA_KG)) {
+			return "K/G";
 		}
 		return null;
 	}
@@ -193,10 +267,12 @@ public class StatsManager {
 			return "Spleef FFA Wins";
 		} else if (type.equals(RankingType.SPLEEFFFA_KILLS)) {
 			return "Spleef FFA Kills";
+		} else if (type.equals(RankingType.SPLEEFFFA_GAMES)) {
+			return "Spleef FFA Games";
 		}
 		return null;
 	}
-	  public  HashMap<String, Integer> sortByValue(HashMap<String,Integer> hm)     { 
+	  public  HashMap<String, Integer> sortByValue(HashMap<String,Integer> hm) { 
 	        // Create a list from elements of HashMap 
 	        List<Map.Entry<String, Integer> > list = 
 	               new LinkedList<Map.Entry<String, Integer> >(hm.entrySet()); 

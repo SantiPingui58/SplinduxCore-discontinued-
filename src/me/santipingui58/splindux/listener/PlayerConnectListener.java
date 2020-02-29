@@ -16,9 +16,11 @@ import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.security.SecurityManager;
+import me.santipingui58.splindux.stats.level.LevelManager;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
+import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import me.santipingui58.splindux.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -40,10 +42,11 @@ public class PlayerConnectListener implements Listener {
 			sp = DataManager.getManager().createSpleefPlayer(p);
 			
 		}
-			
+		HologramManager.getManager().sendHolograms(sp);
 		DataManager.getManager().saveIP(e.getPlayer());
 		SecurityManager.getManager().adminLogin(sp);
 		sp.setScoreboard(ScoreboardType.LOBBY);
+		LevelManager.getManager().setExp(sp);
 		DataManager.getManager().giveLobbyItems(sp);
 		if (e.getPlayer().hasPermission("splindux.join")) {
 			for (Player o : Bukkit.getOnlinePlayers()) {	

@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.SpleefType;
 
 
 
@@ -33,7 +34,11 @@ public class SpectateCommand implements CommandExecutor {
 				if (Bukkit.getOnlinePlayers().contains(spect)) {
 					SpleefPlayer sp2 = SpleefPlayer.getSpleefPlayer(spect);
 					if (GameManager.getManager().isInGame(sp2)) {
+						if (GameManager.getManager().getArenaByPlayer(sp2).getType().equals(SpleefType.SPLEEF1VS1)) {
 						GameManager.getManager().spectate(sp,sp2);
+						} else {
+							sender.sendMessage("§cThe player §b" + args[0] + "§c is not in a 1vs1 game.");
+						}
 					} else {
 						sender.sendMessage("§cThe player §b" + args[0] + "§c is not in game.");
 					}

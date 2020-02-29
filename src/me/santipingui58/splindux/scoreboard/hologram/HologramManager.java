@@ -3,16 +3,14 @@ package me.santipingui58.splindux.scoreboard.hologram;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
-import org.bukkit.entity.Player;
 
+import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
-import net.minecraft.server.v1_12_R1.EntityArmorStand;
-import net.minecraft.server.v1_12_R1.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_12_R1.WorldServer;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.utils.Utils;
 
 public class HologramManager {
 
@@ -29,21 +27,94 @@ public class HologramManager {
 		 return this.holograms;
 	 }
 	 
+	 public void deleteHologram(SpleefPlayer sp) {
+		 Hologram hologram = null;
+		 for (Hologram h : this.holograms) {
+			 if (h.getLocation().getWorld().equals(sp.getPlayer().getLocation().getWorld())) {
+				 if (h.getLocation().distance(sp.getPlayer().getLocation())<=10) {
+					 hologram = h;
+					 break;
+				 }
+			 }
+		 }
+		 
+		 if (hologram!=null) {
+			 for (SpleefPlayer spl : DataManager.getManager().getOnlinePlayers()) {
+			 hologram.delete(spl);
+			 Main.arenas.getConfig().set("holograms."+hologram.getUUID().toString(), null);
+			 }		 
+			 this.holograms.remove(hologram);
+			 
+		 } else {
+			 sp.getPlayer().sendMessage("§cCouldnt find an hologram in 10 blocks.");
+		 }
+	 }
+	 
+	 public void createHologram(SpleefPlayer sp,HologramType type) {
+		 Hologram hologram = new Hologram(UUID.randomUUID(), sp.getPlayer().getLocation(), type);
+		 this.holograms.add(hologram);
+		saveHolograms();	
+		
+		updateHolograms();
+	 }
+	 
 	 public void loadHolograms() {
 		 if (Main.arenas.getConfig().contains("holograms")) {
 		 Set<String> holograms = Main.arenas.getConfig().getConfigurationSection("holograms").getKeys(false);
+		for (String h : holograms) {
+			UUID uuid = UUID.fromString(h);
+			Location location = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("holograms."+h+".location"));
+			HologramType type = HologramType.valueOf(Main.arenas.getConfig().getString("holograms."+h+".type"));
+			Hologram hologram = new Hologram(uuid, location, type);
+			this.holograms.add(hologram);
+		}
 	 }
 		 }
 	 
-	public void spawn(Location loc, Player p) {
-        WorldServer s = ((CraftWorld)loc.getWorld()).getHandle();
-        EntityArmorStand stand = new EntityArmorStand(s);
-        stand.setLocation(loc.getX(), loc.getY(), loc.getZ(), 0, 0);
-        stand.setCustomName("I'm a Armorstand!");
-        stand.setCustomNameVisible(true);
-        stand.setNoGravity(true);
-       
-        PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(stand);
-        ((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
-    }
+	 public void saveHolograms() {
+		 for (Hologram h : holograms) {
+			 Main.arenas.getConfig().set("holograms."+h.getUUID().toString()+".location", Utils.getUtils().setLoc(h.getLocation(), false));
+			 Main.arenas.getConfig().set("holograms."+h.getUUID().toString()+".type", h.getType().toString());
+		 }
+		 Main.arenas.saveConfig();
+	 }
+	 
+	 
+	 public void updateHolograms() {
+		 for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {			 
+			 sendHolograms(sp);
+		 }
+	 }
+	 public void sendHolograms(SpleefPlayer sp) {
+		 for (Hologram h : this.holograms) {
+			 h.spawn(sp);
+		 }
+	 }
+	 
+	 public void changeChangeType(SpleefPlayer sp,int id) {
+		 Hologram hologram = getHologramByID(id,sp);
+		 
+		 if (hologram.getChangeType().get(sp).equals(SpleefRankingType.WINS)) {
+			 hologram.getChangeType().put(sp, SpleefRankingType.KILLS);
+			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA KILLS All Time Ranking");
+		 } else  if (hologram.getChangeType().get(sp).equals(SpleefRankingType.KILLS)) {
+			 hologram.getChangeType().put(sp, SpleefRankingType.GAMES);
+			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA GAMES All Time Ranking");
+		 } else  if (hologram.getChangeType().get(sp).equals(SpleefRankingType.GAMES)) {
+			 hologram.getChangeType().put(sp, SpleefRankingType.WINS);
+			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA WINS All Time Ranking");
+		 } 
+		 sendHolograms(sp);
+	 }
+	 
+	 public Hologram getHologramByID(int id,SpleefPlayer sp) {
+		 for (Hologram h : this.holograms) {
+			 for (int i : h.getIDList().get(sp)) {
+				 if (i==id) {
+					 return h;
+				 }
+			 }
+		 }
+		 return null;
+	 }
 }

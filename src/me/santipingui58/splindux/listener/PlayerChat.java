@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.stats.level.LevelManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 
@@ -46,6 +47,13 @@ public class PlayerChat implements Listener {
 		}
 		
 		String prefix = ChatColor.translateAlternateColorCodes('&', PermissionsEx.getUser(p).getPrefix());
+		String level = LevelManager.getManager().getRank(sp).getRankName();
+		ChatColor c = ChatColor.WHITE;
+		
+		if (p.hasPermission("splindux.vip")) {
+			c = ChatColor.YELLOW;
+		}
+		prefix = prefix + "§7["+ level+"§7] "+c;
 		String msg = e.getMessage();
 		 msg = e.getMessage().replaceAll("%", "%%");
 		if (p.hasPermission("splindux.staff")) {

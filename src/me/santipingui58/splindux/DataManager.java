@@ -118,10 +118,14 @@ public class  DataManager {
 						 int FFAMonthlyKills = 0;
 						 int coins = 0;
 						 int dailylimit= 0;
+						 int level = 0;
 						 if (Main.data.getConfig().contains("players."+p+".dailywinlimit")) {
 							 dailylimit =  Main.data.getConfig().getInt("players."+p+".dailywinlimit");
 						 }
-						 
+
+						 if (Main.data.getConfig().contains("players."+p+".level")) {
+							 level =  Main.data.getConfig().getInt("players."+p+".level");
+						 }
 						 if (Main.data.getConfig().contains("players."+p+".stats.weekly")) {
 							 FFAWeeklyWins = Main.data.getConfig().getInt("players."+p+".stats.weekly.FFA_wins");
 							 FFAWeeklyGames = Main.data.getConfig().getInt("players."+p+".stats.weekly.FFA_games");
@@ -160,7 +164,7 @@ public class  DataManager {
 						 sp.setWeeklyFFAWins(FFAWeeklyWins);
 						 sp.setWeeklyFFAGames(FFAWeeklyGames);
 						 sp.setWeeklyFFAKills(FFAWeeklyKills);
-						 
+						 sp.setLevel(level);
 						 sp.setMonthlyFFAWins(FFAMonthlyWins);
 						 sp.setMonthlyFFAGames(FFAMonthlyGames);
 						 sp.setMonthlyFFAKills(FFAMonthlyKills);
@@ -193,10 +197,10 @@ public class  DataManager {
 		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.FFA_wins",sp.getFFAWins());
 		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.FFA_games",sp.getFFAGames());
 		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.FFA_kills",sp.getFFAKills());
-		 
-	int online = Main.data.getConfig().getInt("players."+p.getUniqueId()+".onlinetime");
-	int total = sp.getOnlineTime()+online;
-	Main.data.getConfig().set("players."+p.getUniqueId()+".onlinetime", total);
+		 Main.data.getConfig().set("players."+p.getUniqueId()+".level",sp.getLevel());
+		 int online = Main.data.getConfig().getInt("players."+p.getUniqueId()+".onlinetime");
+		int total = sp.getOnlineTime()+online;
+		Main.data.getConfig().set("players."+p.getUniqueId()+".onlinetime", total);
 		
 		 
 		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.weekly.FFA_wins",sp.getWeeklyFFAWins());

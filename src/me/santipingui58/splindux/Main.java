@@ -15,7 +15,9 @@ import me.santipingui58.splindux.commands.AdminCommand;
 import me.santipingui58.splindux.commands.DuelCommand;
 import me.santipingui58.splindux.commands.EndGameCommand;
 import me.santipingui58.splindux.commands.FlyCommand;
+import me.santipingui58.splindux.commands.HologramCommand;
 import me.santipingui58.splindux.commands.HoverCommand;
+import me.santipingui58.splindux.commands.LevelCommand;
 import me.santipingui58.splindux.commands.MatchesCommand;
 import me.santipingui58.splindux.commands.MsgCommand;
 import me.santipingui58.splindux.commands.PingCommand;
@@ -29,24 +31,24 @@ import me.santipingui58.splindux.commands.SplinduxLoginCommand;
 import me.santipingui58.splindux.commands.SplinduxRegisterCommand;
 import me.santipingui58.splindux.commands.StatsCommand;
 import me.santipingui58.splindux.economy.EconomyManager;
+import me.santipingui58.splindux.listener.CustomPacketListener;
 import me.santipingui58.splindux.listener.NPCListener;
 import me.santipingui58.splindux.listener.PlayerChat;
 import me.santipingui58.splindux.listener.PlayerConnectListener;
 import me.santipingui58.splindux.listener.PlayerListener;
 import me.santipingui58.splindux.listener.ServerListener;
+import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import me.santipingui58.splindux.task.ArenaTimeTask;
 import me.santipingui58.splindux.task.OnMoveTask;
 import me.santipingui58.splindux.task.OnlineTimeTask;
 import me.santipingui58.splindux.task.ParkourTimerTask;
 import me.santipingui58.splindux.task.ScoreboardTask;
+import me.santipingui58.splindux.task.SortRankingTask;
 import me.santipingui58.splindux.task.TabTask;
 import me.santipingui58.splindux.utils.Configuration;
 import me.santipingui58.splindux.utils.Utils;
 
-
-//Stats
-//Hologramas
-//Añadir todas las renas
+//Añadir todas las arenas
 //Ranked
 //Splegg y BowSpleef
 //Discord
@@ -56,8 +58,10 @@ import me.santipingui58.splindux.utils.Utils;
 //Friends
 //Anticheat
 //guilds
-//openaudiomc
-
+//Powerups
+//Rangos
+//Spleef Mobs
+//Spleef KotH
 
 
 public class Main extends JavaPlugin {
@@ -79,12 +83,13 @@ public class Main extends JavaPlugin {
 			p.kickPlayer("§cSplinduxCore restarting, please rejoin");
 		}
 		
+		
 		GEconomyProvider.setMysteryDustStorage(new EconomyManager(this, "Splindux"));	
 		config = new Configuration("config.yml",this);
 		data = new Configuration("data.yml",this);
 		arenas = new Configuration("arenas.yml",this);	
 		DataManager.getManager().loadPlayers();
-		
+		HologramManager.getManager().loadHolograms();
 		lobby = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true);
 		
 		registerTasks();
@@ -110,14 +115,20 @@ public class Main extends JavaPlugin {
 	}.runTaskLater(this, 20L);
 	
 		
-
+	new BukkitRunnable() {
+		public void run() {
+			HologramManager.getManager().updateHolograms();
+		}
+		
+	}.runTaskLater(this, 60L);
 		 
 	
 	}
 		
 	@Override
 	public void onDisable() {	
-		DataManager.getManager().savePlayers();		
+		DataManager.getManager().savePlayers();	
+		HologramManager.getManager().saveHolograms();
 	}
 	
 	private void registerEvents() {
@@ -126,6 +137,9 @@ public class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new ServerListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerChat(), this);
 		getServer().getPluginManager().registerEvents(new NPCListener(), this);
+		
+		new CustomPacketListener();
+		
 	}
 	
 	private void registerCommands() {
@@ -148,7 +162,10 @@ public class Main extends JavaPlugin {
 		getCommand("splinduxlogin").setExecutor(new SplinduxLoginCommand());
 		getCommand("stats").setExecutor(new StatsCommand());
 		getCommand("matches").setExecutor(new MatchesCommand());
+		getCommand("hologram").setExecutor(new HologramCommand());
+		getCommand("level").setExecutor(new LevelCommand());
 	}
+	
 	
 	private void registerTasks() {
 		new OnMoveTask();
@@ -157,6 +174,8 @@ public class Main extends JavaPlugin {
 		new TabTask();
 		new OnlineTimeTask();
 		new ParkourTimerTask();
+		new SortRankingTask();
+		
 	}
 	
 
