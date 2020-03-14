@@ -30,8 +30,12 @@ public class HologramCommand implements CommandExecutor {
 					p.sendMessage("§aUse of command: /hologram delete");
 					p.sendMessage("§aUse of command: /hologram list");
 				} else if (args[0].equalsIgnoreCase("create")) {
-						
+						if (args[1].equalsIgnoreCase("spleefranking")) {
 						HologramManager.getManager().createHologram(sp,HologramType.SPLEEFRANKING); 
+						} else if (args[1].equalsIgnoreCase("onlinetime")) {
+							HologramManager.getManager().createHologram(sp,HologramType.ONLINETIME); 
+						}
+						
 						p.sendMessage("§aHologram created!");
 					
 				} else if (args[0].equalsIgnoreCase("delete")) {

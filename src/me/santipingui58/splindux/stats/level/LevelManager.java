@@ -1,9 +1,11 @@
 package me.santipingui58.splindux.stats.level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
@@ -33,47 +35,60 @@ public class LevelManager {
 	 }
 	 
 	 
-	 public void checkLevel(SpleefPlayer sp) {
-		 if (getRank(sp).getNextRank()!=null) {
-		 if (sp.getLevel()>=getRank(sp).getNextRank().getRequiredLevel()) {
+	 public void checkLevel(SpleefPlayer sp, SpleefRank rank ) {
+		 if (rank.getNextRank()!=null) {
+		 if (sp.getLevel()>=rank.getNextRank().getRequiredLevel()) {
 			 levelUp(sp);
+			 DataManager.getManager().saveData(sp);
 		 }
 		 }
 	 }
 	 
 	 
 	 public void addLevel(SpleefPlayer sp,int level) {
-		 int oldlevel = sp.getLevel();
-		 sp.setLevel(oldlevel+level);	
-		 checkLevel(sp);
+		 int oldlevel = sp.getLevel();	 
+		 SpleefRank oldrank = getRank(sp);
+		 sp.setLevel(oldlevel+level);		
+		 checkLevel(sp,oldrank);
+		 if (sp.getOfflinePlayer().isOnline()) {
 		 setExp(sp);
+		 }
+		 
+		 DataManager.getManager().saveData(sp);
 	 }
+	 
 	 
 	 public void setLevel(SpleefPlayer sp,int level) {
 		 sp.setLevel(level);
+		 if (sp.getOfflinePlayer().isOnline()) {
 		 setExp(sp);
+		 }
+		 
+		 DataManager.getManager().saveData(sp);
 	 }
 	 
 	 public void levelUp(SpleefPlayer sp) {
-		 Player p = sp.getPlayer();
+		 OfflinePlayer p = sp.getOfflinePlayer();
 		 if (getRank(sp).getMainRank().equals(getRank(sp))) {
 			 for (Player pa : Bukkit.getOnlinePlayers()) {
 						 pa.sendMessage("§e§lSplin§b§ldux  §aCongratulations to §b"+ p.getName() +"§a for level up to " +getRank(sp).getRankName()+ "§a!");
 					 
 		 } 
-			 
+		 }
 			 
 			 new BukkitRunnable() {
 					@Override
 					public void run() {
-			 	p.sendMessage("§d§m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-			    p.sendMessage("");
-			    p.sendMessage("    §aCongratulations! You have leved up to " + getRank(sp).getRankName() +"§a!");
-			    p.sendMessage("");
-				p.sendMessage("§d§m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+						if (p.isOnline()) {
+			 	p.getPlayer().sendMessage("§d§m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+			    p.getPlayer().sendMessage("");
+			    p.getPlayer().sendMessage("    §aCongratulations! You have leved up to " + getRank(sp).getRankName() +"§a!");
+			    p.getPlayer().sendMessage("");
+				p.getPlayer().sendMessage("§d§m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+					}
 					}
 				}.runTaskLater(Main.get(), 5L);	
-	 }
+	 
 	 }
 	 
 	 
@@ -94,7 +109,7 @@ public class LevelManager {
 		  if (srank.getPrevRank()==null) {
 			  prev_level = 0; 
 		  } else {
-			  prev_level = srank.getPrevRank().getRequiredLevel(); 
+			  prev_level = srank.getRequiredLevel(); 
 		  }
 		  
 		  

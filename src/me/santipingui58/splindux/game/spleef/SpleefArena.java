@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameState;
@@ -34,13 +35,17 @@ public class SpleefArena {
 	private Location spawn1_1vs1;
 	private Location spawn2_1vs1;
 	
-	
+	private Material item;
 	private int resetround;
 	private int points1;
 	private int points2;
-	
+	private int playto;
 	private List<SpleefPlayer> resetrequest = new ArrayList<SpleefPlayer>();
 	private List<SpleefPlayer> endgamerequest = new ArrayList<SpleefPlayer>();
+	
+	private HashMap<SpleefPlayer, Integer> playtorequest = new HashMap<SpleefPlayer,Integer>();
+	private HashMap<SpleefPlayer, Integer> crumblerequest = new HashMap<SpleefPlayer,Integer>();
+	
 	
 	public SpleefArena(String name,Location mainspawn,Location lobby,Location arena1, Location arena2,SpleefType type) {
 		this.name = name;
@@ -52,9 +57,10 @@ public class SpleefArena {
 		this.state = GameState.LOBBY;
 		this.time = 150;
 		
+		
 	}
 
-	public SpleefArena(String name,Location spawn1,Location spawn2,Location lobby,Location arena1, Location arena2,SpleefType type) {
+	public SpleefArena(String name,Location spawn1,Location spawn2,Location lobby,Location arena1, Location arena2,SpleefType type,Material item) {
 		this.name = name;
 		this.spawn1 = spawn1;
 		this.spawn2 = spawn2;
@@ -69,7 +75,19 @@ public class SpleefArena {
 		this.arena2_1vs1 = this.arena2;
 		this.spawn1_1vs1 = this.spawn1;
 		this.spawn2_1vs1 = this.spawn2;
-		
+		this.playto = 7;
+		this.item= item;	
+	}
+	
+	
+	public Material getItem() {
+		return this.item;
+	}
+	public HashMap<SpleefPlayer,Integer> getPlayToRequest() {
+		return this.playtorequest;
+	}
+	public HashMap<SpleefPlayer,Integer> getCrumbleRequest() {
+		return this.crumblerequest;
 	}
 	
 	public List<SpleefPlayer> getResetRequest() {
@@ -80,6 +98,18 @@ public class SpleefArena {
 		return this.endgamerequest;
 	}
 	
+	
+	public int getPlayTo() {
+		return this.playto;
+	}
+	
+	public void setPlayTo(int i) {
+		this.playto = i;
+	}
+	
+	public void resetPlayTo() {
+		this.playto = 7;
+	}
 	
 	public int getResetRound() {
 		return this.resetround;

@@ -26,7 +26,7 @@ public class FlyCommand implements CommandExecutor {
 			Player p = (Player) sender;
 			if (p.hasPermission("splindux.fly")) {
 				 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-				 if (GameManager.getManager().isInGame(sp)) {
+				 if (!GameManager.getManager().isInGame(sp)) {
 				if (sp.isFlying()) {
 					sp.stopfly();
 					p.sendMessage("§cFly is now disabled!");

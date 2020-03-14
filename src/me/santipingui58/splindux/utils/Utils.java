@@ -1,14 +1,23 @@
 package me.santipingui58.splindux.utils;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 
 
 public class Utils {
@@ -74,6 +83,32 @@ public class Utils {
 		    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
 		}
 	  
+	  
+	  public boolean containsIgnoreCase(List<String> list, String b) {
+		  
+		  for (String o : list) {
+			  if (containsIgnoreCase(o,b)) {
+				  return true;
+			  }
+		  }
+		return false;
+		  
+	  }
+	  
+	  
+	  public  boolean containsIgnoreCase(String fullStr, String searchStr)   {
+		    if(fullStr == null || searchStr == null) return false;
+
+		    final int length = searchStr.length();
+		    if (length == 0)
+		        return true;
+
+		    for (int i = fullStr.length() - length; i >= 0; i--) {
+		        if (fullStr.regionMatches(true, i, searchStr, 0, length))
+		            return true;
+		    }
+		    return false;
+		}
 	  
 	  public Location getCenter(Location loc) {
 		    return new Location(loc.getWorld(),
@@ -143,6 +178,69 @@ public class Utils {
 
 	        return loc;
 	    }
+		
+		public ItemStack getSkull(String url) {
+	        ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
+	        if(url.isEmpty())return head;
+	       
+	       
+	        SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+	        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+	        byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
+	        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
+	        Field profileField = null;
+	        try {
+	            profileField = headMeta.getClass().getDeclaredField("profile");
+	            profileField.setAccessible(true);
+	            profileField.set(headMeta, profile);
+	        } catch (NoSuchFieldException e1) {
+	            e1.printStackTrace();
+	        } catch (IllegalArgumentException e1) {}
+	        catch (IllegalAccessException e1) {}
+	        head.setItemMeta(headMeta);
+	        return head;
+	    }
+		
+		
+		 public String secondsToDate(int i) {	 
+			 int days = (i % 604800) / 86400;
+			 int hours = ((i % 604800) % 86400) / 3600;
+			 int minutes = (((i % 604800) % 86400) % 3600) / 60;
+			 int seconds = i % 60;
+			if (days > 0) {
+				return String.format("%01d %01dh %01dm %01ds", days, hours, minutes, seconds);
+			} else if (hours > 0) {
+				return String.format("%01dh %01dm %01ds", hours, minutes, seconds);
+			} else if (minutes > 0) {
+				return String.format("%01dm %01ds", minutes, seconds);
+			} else {
+				return String.format("%01ds", seconds);
+			}
+		 }
+		 
+		public String minutesToDate(int i) {
+			int years =  i / 525600;
+			int months = (i % 525600) / 43800;
+			int weeks = ((i % 525600) % 43800) / 10080;
+			int days = (((i % 525600) % 43800) % 10080) / 1140;
+			int hours = ((((i % 525600) % 43800) % 10080) % 1140) / 60;
+			 if (years > 0) {
+				 return String.format("%01dyears %01dmonths %01dweeks %01ddays %01dhours", years, months, weeks, days, hours);
+			 } else if (months > 0) {
+				 return String.format("%01dmonths %01dweeks %01ddays %01dhours", months, weeks, days,hours);
+			 } else if (weeks > 0) {
+				 return String.format("%01dweeks %01ddays %01dhours",weeks, days,hours);
+			 } else if (days > 0) {
+				 return String.format("%01ddays %01dhours",days,hours);
+			 } else if (hours > 0) {
+				 return String.format("%01dhours",hours);
+			 } else {
+				 return "Less than an hour.";
+			 }
+			
+				  
+		 }
+		
 		
 	  
 }

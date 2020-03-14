@@ -51,7 +51,7 @@ public class PinguiScoreboard {
 					cache.add("§f§f");
 					cache.add("   §7mc.splindux.com");
 					
-				} else if (sp.getScoreboard().equals(ScoreboardType.FFAGAME)) {
+				} else if (sp.getScoreboard().equals(ScoreboardType.FFAGAME_LOBBY) || sp.getScoreboard().equals(ScoreboardType.FFAGAME_GAME)) {
 					SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
 					cache.add(displayname);
 					cache.add("§f");
@@ -64,14 +64,17 @@ public class PinguiScoreboard {
 						cache.add("§2Game starting...");
 						cache.add("§f§f");
 					} 			
+					
 					cache.add("§2FFA Wins: §e" +sp.getFFAWins());
 					cache.add("§2FFA Games: §e" + sp.getFFAGames());
 					cache.add("§2FFA Kills: §e" + sp.getFFAKills());
+					if (sp.getScoreboard().equals(ScoreboardType.FFAGAME_LOBBY)) {
 					cache.add("§2M/W Wins: §e" +sp.getMonthlyFFAWins() +"/" + sp.getWeeklyFFAWins());
 					cache.add("§2M/W Games: §e" + sp.getMonthlyFFAGames()+"/" + sp.getWeeklyFFAGames());
 					cache.add("§2M/W Kills: §e" + sp.getMonthlyFFAKills()+"/"+sp.getWeeklyFFAKills());
 					cache.add("§2W/G: §e" + df.format(sp.getWinGameRatio()));
 					cache.add("§2K/G: §e" + df.format(sp.getKillGameRatio()));
+					}
 					cache.add("§f§f§f");
 					cache.add("   §7mc.splindux.com");
 				} else if (sp.getScoreboard().equals(ScoreboardType._1VS1GAME)) {
@@ -128,10 +131,10 @@ public class PinguiScoreboard {
 		
 		for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
 		Player p = sp.getPlayer();
-		if (sp.isAfk()) {	
+		if (sp.isAfk() && sp.getPlayer().hasPermission("splindux.afk")) {	
 			NametagEdit.getApi().setPrefix(p, "§7§oAFK ");
 		} else {
-			if (p.hasPermission("jhspleef.donator")) {
+			if (p.hasPermission("splindux.donator")) {
 			NametagEdit.getApi().setPrefix(p, PermissionsEx.getUser(p).getPrefix());
 			} else {
 				NametagEdit.getApi().setPrefix(p, "§7");

@@ -9,6 +9,7 @@ import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.security.SecurityManager;
 
+
 public class SplinduxLoginCommand implements CommandExecutor {
 
 	
@@ -40,7 +41,6 @@ public class SplinduxLoginCommand implements CommandExecutor {
 			}
 			}
 			
-
 }
 		
 		

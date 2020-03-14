@@ -51,7 +51,7 @@ public class PlayerChat implements Listener {
 		ChatColor c = ChatColor.WHITE;
 		
 		if (p.hasPermission("splindux.vip")) {
-			c = ChatColor.YELLOW;
+			c = ChatColor.DARK_AQUA;
 		}
 		prefix = prefix + "§7["+ level+"§7] "+c;
 		String msg = e.getMessage();

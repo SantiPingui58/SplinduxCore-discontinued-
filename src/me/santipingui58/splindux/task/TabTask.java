@@ -25,6 +25,7 @@ public class TabTask {
             	   
             	   PinguiScoreboard.getScoreboard().setTags();
             	   
+            	   
                }
 		 }, 10, 60L);
 		

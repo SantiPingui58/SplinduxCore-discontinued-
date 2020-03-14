@@ -35,6 +35,9 @@ public class ResetCommand implements CommandExecutor {
 								players.getPlayer().sendMessage("§6The arena has been reset.");						
 						}
 						GameManager.getManager().arenaShrink(arena);
+						arena.getPlayToRequest().clear();
+						arena.getEndGameRequest().clear();
+						arena.getCrumbleRequest().clear();
 						arena.getResetRequest().clear();
 					} else {
 						sendRequest(arena,sp);

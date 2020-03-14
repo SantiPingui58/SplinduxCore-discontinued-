@@ -30,6 +30,9 @@ public class StatsManager {
 	private HashMap<String,Integer> spleef1vs1winsranking = new HashMap<String,Integer>();
 	private HashMap<String,Integer> spleef1vs1gamesranking = new HashMap<String,Integer>();
 	private HashMap<String,Integer> spleef1vs1ELOranking = new HashMap<String,Integer>();
+	
+	private HashMap<String,Integer> totalonlinetime = new HashMap<String,Integer>();
+	
 	private static StatsManager manager;	
 	 public static StatsManager getManager() {
 	        if (manager == null)
@@ -163,6 +166,10 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 					if (sp.getELO()>1000) {
 						spleef1vs1ELOranking.put(sp.getOfflinePlayer().getName(), sp.getELO());
 					}
+					
+					if (sp.getTotalOnlineTime()>0) {
+						totalonlinetime.put(sp.getOfflinePlayer().getName(), sp.getTotalOnlineTime());
+					}
 		}
 		
 		spleefffawinsranking = sortByValue(spleefffawinsranking);
@@ -184,6 +191,7 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 		spleef1vs1winsranking = sortByValue(spleef1vs1winsranking);
 		spleef1vs1gamesranking = sortByValue(spleef1vs1gamesranking);
 		spleef1vs1ELOranking = sortByValue(spleef1vs1ELOranking);
+		totalonlinetime = sortByValue(totalonlinetime);
 		
 	}
 	
@@ -203,6 +211,8 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 			hashmap = spleef1vs1gamesranking;
 		} else if (type.equals(RankingType.SPLEEF1VS1_WINS)) {
 			hashmap = spleef1vs1winsranking;
+		} else if (type.equals(RankingType.TOTALONLINETIME)) {
+			hashmap = totalonlinetime;
 		} 
 		
 		if (hashmap.isEmpty()) {
@@ -234,6 +244,8 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 			return spleefffakillsranking;
 		} else if (type.equals(RankingType.SPLEEFFFA_GAMES)) {
 			return spleefffagamesranking;
+		} else if (type.equals(RankingType.TOTALONLINETIME)) {
+			return totalonlinetime;
 		} 
 		return null;
 	}
@@ -269,9 +281,12 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 			return "Spleef FFA Kills";
 		} else if (type.equals(RankingType.SPLEEFFFA_GAMES)) {
 			return "Spleef FFA Games";
+		}else if (type.equals(RankingType.TOTALONLINETIME)) {
+			return "Total Online Time";
 		}
 		return null;
 	}
+	
 	  public  HashMap<String, Integer> sortByValue(HashMap<String,Integer> hm) { 
 	        // Create a list from elements of HashMap 
 	        List<Map.Entry<String, Integer> > list = 

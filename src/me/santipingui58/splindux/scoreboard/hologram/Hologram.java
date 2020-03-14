@@ -17,6 +17,7 @@ import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.stats.RankingType;
 import me.santipingui58.splindux.stats.StatsManager;
+import me.santipingui58.splindux.utils.Utils;
 import net.minecraft.server.v1_12_R1.EntityArmorStand;
 import net.minecraft.server.v1_12_R1.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_12_R1.PacketPlayOutSpawnEntityLiving;
@@ -82,8 +83,9 @@ public class Hologram {
 		new BukkitRunnable() {
 			public void run() {
 		List<Integer> id =  new ArrayList<Integer>();
-		if (type.equals(HologramType.SPLEEFRANKING)) {
-			Location l = new Location(location.getWorld(),location.getX(),location.getY(),location.getZ());
+		Location l = new Location(location.getWorld(),location.getX(),location.getY(),location.getZ());
+		int i = 1;
+		if (type.equals(HologramType.SPLEEFRANKING)) {	
 			 if (!getChangeType().containsKey(sp)) {
 				getChangeType().put(sp, SpleefRankingType.WINS);
 			 } 
@@ -93,7 +95,7 @@ public class Hologram {
 			l.add(0, -0.25, 0);
 			id.add(line(l,sp,"§aAll time - " + StatsManager.getManager().getAmountByType(fromSpleefRankingType(changeType.get(sp)))));
 			l.add(0, -0.25, 0);
-			int i = 1;
+			
 			l.add(0, -0.25, 0);			
 			HashMap<String,Integer> hashmap = new HashMap<String,Integer>();
 			if (changeType.get(sp).equals(SpleefRankingType.WINS)) {
@@ -139,6 +141,7 @@ public class Hologram {
 			    id.add(line(l,sp,"§6§l"+rank+". §b§l"+sp.getOfflinePlayer().getName()+" §7§l- §e§l" + getAmount(sp) + " " + amount));
 			    } else {
 			    	 id.add(line(l,sp,"§f"));
+
 			    }
 			    l.add(0, -0.25, 0);
 			    l.add(0, -0.25, 0);
@@ -157,12 +160,45 @@ public class Hologram {
 					}	 
 			   
 			 
+		} else if (type.equals(HologramType.ONLINETIME)) {
+			id.add(line(l,sp,"§b§lTotal Online Time"));
+		    l.add(0, -0.25, 0);
+			HashMap<String,Integer> hashmap = new HashMap<String,Integer>();
+			hashmap = StatsManager.getManager().getRanking(RankingType.TOTALONLINETIME);
+			 boolean ranking = false;
+			Iterator<Entry<String, Integer>> it = hashmap.entrySet().iterator();
+			    while (it.hasNext()) {
+			    	Map.Entry<String,Integer> pair = (Map.Entry<String,Integer>)it.next();
+			        String name = pair.getKey();
+			        Integer wins = pair.getValue();
+				
+			        if (name.equalsIgnoreCase(sp.getOfflinePlayer().getName())) {
+				    	   ranking = true;			
+				       }
+			        if (i<=10) {
+			        	id.add(line(l,sp, "§6"+i+". §b"+name+" §7- §e" + Utils.getUtils().minutesToDate(wins)));			        	
+			        	l.add(0, -0.25, 0);
+			        	i++;
+			        } else {
+			        	break;
+			        }
+			    }
+			    
+			    l.add(0, -0.25, 0);
+			    int rank = StatsManager.getManager().getRankingPosition(RankingType.TOTALONLINETIME, sp);
+			    if (!ranking) {
+			    id.add(line(l,sp,"§6§l"+rank+". §b§l"+sp.getOfflinePlayer().getName()+" §7§l- §e§l" + " " + Utils.getUtils().minutesToDate(sp.getOnlineTime())));
+			    } else {
+			    	 id.add(line(l,sp,"§f"));
+
+			    }
+			    l.add(0, -0.25, 0);
 		}
 
 	
 	ids.put(sp, id);
 		}
-	}.runTaskLater(Main.get(), 1L);
+	}.runTaskLater(Main.get(), 3L);
 	}	
 	
 	

@@ -33,10 +33,10 @@ public class HoverCommand implements CommandExecutor {
 				Player p2 = Bukkit.getPlayer(args[1]);
 				if (Bukkit.getOnlinePlayers().contains(p2)) {
 					 SpleefPlayer sp2 = SpleefPlayer.getSpleefPlayer(p2);
-					if (sp2.getDueledPlayers().contains(sp1)) {
+					if (sp2.isDueled(sp1)) {
 						if (!GameManager.getManager().isInGame(sp1)) {
 							if (!GameManager.getManager().isInGame(sp2)) {
-								GameManager.getManager()._1vs1(sp1, sp2, null);
+								GameManager.getManager()._1vs1(sp2, sp1, sp2.getDuelByPlayer(sp1).getArena(),sp2.getDuelByPlayer(sp1).getType());
 							} else {
 								p.sendMessage("§cThis player is already in game!");	
 							}
@@ -53,9 +53,10 @@ public class HoverCommand implements CommandExecutor {
 				Player p2 = Bukkit.getPlayer(args[1]);
 				if (Bukkit.getOnlinePlayers().contains(p2)) {
 					 SpleefPlayer sp2 = SpleefPlayer.getSpleefPlayer(p2);
-					if (sp2.getDueledPlayers().contains(sp1)) {
+					if (sp2.isDueled(sp1)) {
 						sp1.getPlayer().sendMessage("§cYou have denied the duel request from §b" + sp2.getPlayer().getName() + "§c!");
 						sp2.getPlayer().sendMessage("§cThe player §b" + sp1.getPlayer().getName() + "§c has denied your duel request.");
+						sp2.getDueledPlayers().remove(sp2.getDuelByPlayer(sp1));
 					} else {
 						p.sendMessage("§cThis duel request has expired or the player didn't send you a duel request!");
 					}

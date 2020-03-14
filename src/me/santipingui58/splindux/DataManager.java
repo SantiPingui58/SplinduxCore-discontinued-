@@ -64,7 +64,7 @@ public class  DataManager {
 		 return this.playershashmap;
 	 }
 	 
-		public SpleefPlayer createSpleefPlayer(Player p) {
+		public void createSpleefPlayer(Player p) {
 			SpleefPlayer nuevo = new SpleefPlayer(p.getUniqueId());
 			this.players.add(nuevo);			
 			Main.data.getConfig().set("players."+p.getUniqueId()+".stats.ELO",1000);
@@ -91,7 +91,7 @@ public class  DataManager {
 			Main.data.getConfig().set("players."+p.getUniqueId()+".coins",0);
 			 Main.data.saveConfig();
 			
-			 return nuevo;
+	
 		}
 	
 	 public void loadPlayers() {
@@ -119,6 +119,7 @@ public class  DataManager {
 						 int coins = 0;
 						 int dailylimit= 0;
 						 int level = 0;
+						 int totalonlinetime =  Main.data.getConfig().getInt("players."+p+".onlinetime");
 						 if (Main.data.getConfig().contains("players."+p+".dailywinlimit")) {
 							 dailylimit =  Main.data.getConfig().getInt("players."+p+".dailywinlimit");
 						 }
@@ -151,7 +152,8 @@ public class  DataManager {
 							} 
 						
 						 
-						 SpleefPlayer sp = new SpleefPlayer(UUID.fromString(p));						
+						 SpleefPlayer sp = new SpleefPlayer(UUID.fromString(p));	
+						 sp.setTotalOnlineTIme(totalonlinetime);
 						 sp.setELO(ELO);
 						 sp.set1vs1Wins(_1vs1wins);
 						 sp.set1vs1Games(_1vs1games);
@@ -183,37 +185,37 @@ public class  DataManager {
 	 
 	 
 	 public void savePlayers() {
-		 for (Player p : Bukkit.getOnlinePlayers()) {
-			 saveData(p);
+		 for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
+			 saveData(sp);
 		 }
 	 }
 	 
-	 public void saveData(Player p) {
-		 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.totalgames",sp.getTotalGames());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.ELO",sp.getELO());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.1vs1_wins",sp.get1vs1Wins());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.1vs1_games",sp.get1vs1Games());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.FFA_wins",sp.getFFAWins());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.FFA_games",sp.getFFAGames());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.FFA_kills",sp.getFFAKills());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".level",sp.getLevel());
-		 int online = Main.data.getConfig().getInt("players."+p.getUniqueId()+".onlinetime");
-		int total = sp.getOnlineTime()+online;
-		Main.data.getConfig().set("players."+p.getUniqueId()+".onlinetime", total);
+	 public void saveData(SpleefPlayer sp) {
+		 
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.totalgames",sp.getTotalGames());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.ELO",sp.getELO());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.1vs1_wins",sp.get1vs1Wins());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.1vs1_games",sp.get1vs1Games());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.FFA_wins",sp.getFFAWins());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.FFA_games",sp.getFFAGames());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.FFA_kills",sp.getFFAKills());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".level",sp.getLevel());
+		Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".onlinetime", sp.getTotalOnlineTime());
 		
 		 
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.weekly.FFA_wins",sp.getWeeklyFFAWins());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.weekly.FFA_games",sp.getWeeklyFFAGames());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.weekly.FFA_kills",sp.getWeeklyFFAKills());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.monthly.FFA_wins",sp.getMonthlyFFAWins());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.monthly.FFA_games",sp.getMonthlyFFAGames());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.monthly.FFA_kills",sp.getMonthlyFFAKills());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".coins",sp.getCoins());
-		 Main.data.getConfig().set("players."+p.getUniqueId()+".dailywinlimit",sp.getDailyWinLimit());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.weekly.FFA_wins",sp.getWeeklyFFAWins());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.weekly.FFA_games",sp.getWeeklyFFAGames());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.weekly.FFA_kills",sp.getWeeklyFFAKills());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.monthly.FFA_wins",sp.getMonthlyFFAWins());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.monthly.FFA_games",sp.getMonthlyFFAGames());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.monthly.FFA_kills",sp.getMonthlyFFAKills());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".coins",sp.getCoins());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".dailywinlimit",sp.getDailyWinLimit());
 		 
 			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		Main.data.getConfig().set("players."+p.getUniqueId()+".lastlogin", format.format(sp.getLastLogin()));
+			if (sp.getOfflinePlayer().isOnline()) {
+		Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".lastlogin", format.format(sp.getLastLogin()));
+			}
 		
 		 Main.data.saveConfig();
 		 
@@ -230,12 +232,12 @@ public class  DataManager {
 		 }
 		   
 	 }
-	 public SpleefArena loadArena(String name, Location mainspawn,Location spawn1,Location spawn2,Location lobby,Location arena1,Location arena2,SpleefType type) {  
+	 public SpleefArena loadArena(String name, Location mainspawn,Location spawn1,Location spawn2,Location lobby,Location arena1,Location arena2,SpleefType type,Material item) {  
 		 SpleefArena a = null;
 		 if (type.equals(SpleefType.SPLEEFFFA)) {
 		  a = new SpleefArena(name,mainspawn,lobby,arena1,arena2,type);
 		 } else if (type.equals(SpleefType.SPLEEF1VS1)) {
-			 a = new SpleefArena(name,spawn1,spawn2,lobby,arena1,arena2,type);
+			 a = new SpleefArena(name,spawn1,spawn2,lobby,arena1,arena2,type,item);
 		 }
         this.arenas.add(a);      
         GameManager.getManager().resetArena(a);
@@ -257,13 +259,19 @@ public class  DataManager {
     				String type = Main.arenas.getConfig().getString("arenas."+b+".type");
     				type = type.toUpperCase();		
     				SpleefType spleeftype = SpleefType.valueOf(type);
+    			
+    				
     				if (spleeftype.equals(SpleefType.SPLEEFFFA)) {
     			Location mainspawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".mainspawn"), false);
-				DataManager.getManager().loadArena(b,mainspawn,null,null,lobby,arena1,arena2,spleeftype);
+				DataManager.getManager().loadArena(b,mainspawn,null,null,lobby,arena1,arena2,spleeftype,null);
     				} else if (spleeftype.equals(SpleefType.SPLEEF1VS1)) {
     					Location spawn1 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".spawn1"), true);
             			Location spawn2 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".spawn2"), true);
-            			DataManager.getManager().loadArena(b,null,spawn1,spawn2,lobby,arena1,arena2,spleeftype);
+            			String it = null;
+            			 it = Main.arenas.getConfig().getString("arenas."+b+".item");
+         				it = it.toUpperCase();
+         				Material item = Material.valueOf(it);
+            			DataManager.getManager().loadArena(b,null,spawn1,spawn2,lobby,arena1,arena2,spleeftype, item);
     				}
 				arenasint++;
     			} catch (Exception e) {

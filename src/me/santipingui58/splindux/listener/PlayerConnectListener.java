@@ -36,12 +36,11 @@ public class PlayerConnectListener implements Listener {
 		Player p = e.getPlayer();
 		
 		SpleefPlayer sp = null;
-		if (Main.data.getConfig().contains("players."+p.getUniqueId().toString())) {
-			sp = SpleefPlayer.getSpleefPlayer(p);
-		} else {
-			sp = DataManager.getManager().createSpleefPlayer(p);
-			
-		}
+		if (!Main.data.getConfig().contains("players."+p.getUniqueId().toString())) {
+		 DataManager.getManager().createSpleefPlayer(p);
+		} 
+		
+		sp = SpleefPlayer.getSpleefPlayer(p);
 		HologramManager.getManager().sendHolograms(sp);
 		DataManager.getManager().saveIP(e.getPlayer());
 		SecurityManager.getManager().adminLogin(sp);
@@ -81,7 +80,7 @@ public class PlayerConnectListener implements Listener {
 			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
 			GameManager.getManager().leaveQueue(sp, arena);
 		}
-		DataManager.getManager().saveData(e.getPlayer());
+		DataManager.getManager().saveData(sp);
 		}
 	
 	

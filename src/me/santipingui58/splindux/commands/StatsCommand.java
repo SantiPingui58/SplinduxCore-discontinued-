@@ -15,6 +15,7 @@ import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.stats.RankingType;
 import me.santipingui58.splindux.stats.StatsManager;
 import me.santipingui58.splindux.stats.level.LevelManager;
+import me.santipingui58.splindux.utils.Utils;
 
 
 
@@ -37,6 +38,8 @@ public class StatsCommand implements CommandExecutor {
 			p.sendMessage("§6-=-=-=-[§a§lStats§6]-=-=-=-");
 			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			p.sendMessage("§aRegister date: §b" + format.format(sp.getRegisterDate()));
+			p.sendMessage("§aTotal Online Time: §b" + Utils.getUtils().minutesToDate(sp.getTotalOnlineTime()));
+			p.sendMessage("§aCurrent Online Time: §b" + Utils.getUtils().secondsToDate(sp.getOnlineTime()));
 			p.sendMessage("§aSpleef Rank: §b" + LevelManager.getManager().getRank(sp).getRankName() + " §7(" + sp.getLevel() + " EXP)");
 			p.sendMessage(" ");
 			p.sendMessage("§6-=FFA SPLEEF=-");
@@ -52,11 +55,12 @@ public class StatsCommand implements CommandExecutor {
 			p.sendMessage("§6-=-=-=-[§a§lStats§6]-=-=-=-");
 			
 		} else {
-			OfflinePlayer pa = Bukkit.getPlayer(args[0]);
+			@SuppressWarnings("deprecation")
+			OfflinePlayer pa = Bukkit.getOfflinePlayer(args[0]);
 			SpleefPlayer sp2 = null;
-			try {
-				sp2 = SpleefPlayer.getSpleefPlayer(pa);
-			} catch(Exception e) {}
+
+			sp2 = SpleefPlayer.getSpleefPlayer(pa);
+			 
 			if (sp2!=null && p.isOp()) {
 				if (args.length==1) {
 				p.sendMessage(" ");
@@ -64,7 +68,9 @@ public class StatsCommand implements CommandExecutor {
 				p.sendMessage("§6-=-=-=-[§a§lStats§6]-=-=-=-");
 				SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 				p.sendMessage("§aRegister date: §b" + format.format(sp2.getRegisterDate()));
-				p.sendMessage("§aSpleef Rank: §b" + LevelManager.getManager().getRank(sp2).getRankName() + " §7(" + sp.getLevel() + " EXP)");
+				p.sendMessage("§aTotal Online Time: §b" + Utils.getUtils().minutesToDate(sp2.getTotalOnlineTime()));
+				p.sendMessage("§aCurrent Online Time: §b" + Utils.getUtils().secondsToDate(sp2.getOnlineTime()));
+				p.sendMessage("§aSpleef Rank: §b" + LevelManager.getManager().getRank(sp2).getRankName() + " §7(" + sp2.getLevel() + " EXP)");
 				p.sendMessage(" ");
 				p.sendMessage("§6-=FFA SPLEEF=-");
 				p.sendMessage("§aFFA Wins: §b"+sp2.getFFAWins() + " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEFFFA_WINS, sp2) + "° Pos.)");
@@ -80,7 +86,7 @@ public class StatsCommand implements CommandExecutor {
 				} else if (args[1].equalsIgnoreCase("monthly")) {
 					
 				} 
-			} else if (args[0].equalsIgnoreCase("help")) {
+			}  else if (args[0].equalsIgnoreCase("help")) {
 			p.sendMessage("§aUse of command: /stats ");
 			p.sendMessage("§aUse of command: /stats monthly");
 			p.sendMessage("§aUse of command: /stats weekly");
@@ -107,6 +113,8 @@ public class StatsCommand implements CommandExecutor {
 				} 
 			
 			}
+		} else {
+			p.sendMessage("§cPlayer not found.");
 		}
 		}
 		}

@@ -1,15 +1,15 @@
 package me.santipingui58.splindux.commands;
 
 
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
@@ -50,10 +50,11 @@ public class AdminCommand implements CommandExecutor {
 					World world = Bukkit.getWorld(args[1]);
 					p.teleport(world.getSpawnLocation());
 				} else if (args[0].equalsIgnoreCase("test")) {
-					Location location = new Location(p.getLocation().getWorld(),p.getLocation().getX()+2,p.getLocation().getY()+3,p.getLocation().getZ()-1);
-					int speed = 2;
-					Vector dir = location.toVector().subtract(p.getLocation().toVector()).normalize();
-					p.setVelocity(dir.multiply(speed));
+					 Set<String> players = Main.data.getConfig().getConfigurationSection("players").getKeys(false);
+					 for (String s : players) {
+						 Main.data.getConfig().set("players."+s+".onlinetime", 0);
+					 }
+					 Main.data.saveConfig();
 				}
 			}
 			}

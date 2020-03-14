@@ -35,7 +35,7 @@ public class OnMoveTask {
 		    			}
 		    		}
 		    		
-		    		
+		    	
 		    		
 		    		if (sp.getLocation()==null) {
 		    			if (sp.getPlayer().isOnline()) {
@@ -53,12 +53,14 @@ public class OnMoveTask {
 		    			
 		    		}
 		    		
-		    		if (sp.getPlayer().hasPermission("splindux.afk")) {
+		    		
 		    		if (sp.isAfk()) {
 		    			if (!sp.getLocation().equals(sp.getPlayer().getLocation())) {
 		    			sp.back();
 		    			sp.setAFKTimer(0);
+		    			if (sp.getPlayer().hasPermission("splindux.afk")) {
 		    			sp.getPlayer().sendMessage("§7You are not longer AFK");	
+		    			}
 		    			}
 		    			
 		    		} else {
@@ -66,12 +68,14 @@ public class OnMoveTask {
 		    			sp.setAFKTimer(sp.getAFKTimer()+1);
 		    			if (sp.getAFKTimer()>=350) {
 		    				sp.afk();
+		    				if (sp.getPlayer().hasPermission("splindux.afk")) {
 		    				sp.getPlayer().sendMessage("§7You are now AFK");	
+		    				}
 		    			}
 		    			} else {
 		    				sp.setAFKTimer(0);
 		    			}
-		    		}
+		    		
 		    		
 		    		}
 		    		
@@ -98,14 +102,23 @@ public class OnMoveTask {
 		    		if (GameManager.getManager().isInGame(sp)) {
 		    			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
 		    			
-		    			if (arena.getState().equals(GameState.GAME)) {
-		    			if (sp.getPlayer().getLocation().getBlockY()<arena.getArena1().getBlockY()) {	    				
+		    			
+		    			if (sp.getPlayer().getLocation().getBlockY()<arena.getArena1().getBlockY()) {	 
+		    				if (arena.getState().equals(GameState.GAME)) {
 		    				Location death_block = GameManager.getManager().getNearest(sp.getPlayer().getLocation(), arena.getKills());
 		    			SpleefPlayer killer = GameManager.getManager().getKillerByLocation(arena, death_block);
 		    				GameManager.getManager().fell(sp,killer,GameManager.getManager().getReasonByKiller(arena, killer));
 		    				
+		    			}else  {
+		    				if (arena.getType().equals(SpleefType.SPLEEF1VS1)) {
+		    					if (arena.getPlayers().get(0).equals(sp)) {
+		    						sp.getPlayer().teleport(arena.getSpawn1_1vs1());
+		    					} else {
+		    						sp.getPlayer().teleport(arena.getSpawn2_1vs1());
+		    					}
+		    				}
 		    			}
-		    			}
+		    			} 
 		    		}
 		    	}
 		    }

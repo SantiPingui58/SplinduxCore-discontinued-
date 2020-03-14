@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.economy.EconomyManager;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 
@@ -20,14 +21,12 @@ public class OnlineTimeTask {
 			
 		    @SuppressWarnings("deprecation")
 			public void run() {	   
-		    	DataManager.getManager().savePlayers();
 		    	for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
 		    		sp.addOnlineTime();    		
 		    	}
-		    	
+		    	EconomyManager.getManager().checkSplinboxes();
 		    	Date date = new Date();
                 if (date.getHours() == 0 && date.getMinutes() == 0) {
-               	 DataManager.getManager().resetDailyWinsLimit();
                 	if (date.getDay()==0) {
                 		DataManager.getManager().resetWeeklyStats();
                 		}
@@ -40,6 +39,6 @@ public class OnlineTimeTask {
 	               
 		    	
 		    }
-		    }, 0, 20*60L);
+		    }, 0, 20L);
 	}
 }

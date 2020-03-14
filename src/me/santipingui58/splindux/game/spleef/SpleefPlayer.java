@@ -11,6 +11,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.DataManager;
+import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.utils.GetCountry;
 
@@ -34,7 +35,10 @@ public class SpleefPlayer {
 	private int weekly_FFA_kills;
 
 	private int dailywinlimit;
+	
 	private int onlinetime;
+	private int totalonlinetime;
+	private int splinboxpoints;
 	
 	private Date lastlogin;
 	private Date registerdate;
@@ -55,7 +59,7 @@ public class SpleefPlayer {
 	private int parkourtimer;
 	private boolean parkour;
 	private SpleefPlayer spectate;
-	private List<SpleefPlayer> dueled = new ArrayList<SpleefPlayer>();
+	private List<SpleefDuel> dueled = new ArrayList<SpleefDuel>();
 	
 	
 	private boolean adminlogin;
@@ -64,9 +68,19 @@ public class SpleefPlayer {
 	
 	private int level;
 	
+	private int duelpage;
+	
 	public SpleefPlayer(UUID uuid) {
 		this.uuid = uuid;
 		this.scoreboard = ScoreboardType.LOBBY;
+	}
+	
+	public int getDuelPage() {
+		return this.duelpage;
+	}
+	
+	public void setDuelPage(int i) {
+		this.duelpage = i;
 	}
 	
 	public int getLevel() {
@@ -105,10 +119,15 @@ public class SpleefPlayer {
 	}
 	
 	public static SpleefPlayer getSpleefPlayer(OfflinePlayer p) {
+
+		if (!p.hasPlayedBefore() && !(p.getPlayer()==null)) {
+			return null;
+		}
 		if (DataManager.getManager().getPlayersCache().containsKey(p)) {
 			return DataManager.getManager().getPlayersCache().get(p);
 		} else {
 		for (SpleefPlayer rp : DataManager.getManager().getPlayers()) {
+	
 			if (rp.getOfflinePlayer().getUniqueId().equals(p.getUniqueId())) {		
 				DataManager.getManager().getPlayersCache().put(p, rp);
 				return rp;
@@ -171,8 +190,26 @@ public class SpleefPlayer {
 		} 
 		return true;
 	}
-	public List<SpleefPlayer> getDueledPlayers() {
+	public List<SpleefDuel> getDueledPlayers() {
 		return this.dueled;
+	}
+	
+	public boolean isDueled(SpleefPlayer sp) {
+		for (SpleefDuel sd : this.dueled) {
+			if (sd.getPlayer2().equals(sp)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public SpleefDuel getDuelByPlayer(SpleefPlayer sp) {
+		for (SpleefDuel sd : this.dueled) {
+			if (sd.getPlayer2().equals(sp)) {
+				return sd;
+			}
+		}
+		return null;
 	}
 	
 	public int getParkourTimer() {
@@ -271,12 +308,48 @@ public class SpleefPlayer {
 	public void setWeeklyFFAKills(int i) {
 		this.weekly_FFA_kills = i;
 	}
+	
+	public int getTotalOnlineTime() {
+		return this.totalonlinetime;
+	}
+	
+	public void setTotalOnlineTIme(int i) {
+		this.totalonlinetime = i;
+	}
+	
 	public int getOnlineTime() {
 		return this.onlinetime;
 	}
 	
+	public int getSplinboxPoints() {
+		return this.splinboxpoints;
+	}
+	
+	public void addSplinboxPoints(int i) {
+		this.splinboxpoints = this.splinboxpoints+i;
+	}
+	
+	
+	public void resetSplinboxPoints() {
+		this.splinboxpoints = 0;
+	}
+	
+	public void splinboxPoints() {
+		if (this.isafk) {
+			return;
+		} else if (GameManager.getManager().isInGame(this)) {
+			this.splinboxpoints = this.splinboxpoints+15;
+		} else {
+			this.splinboxpoints = this.splinboxpoints+10;
+		}
+	}
+	
 	public void addOnlineTime() {
-		this.onlinetime = this.onlinetime + 1;
+		splinboxPoints();
+		this.onlinetime++;
+		if (this.onlinetime%60==0) {
+		this.totalonlinetime++;
+		}
 	}
 	public Location getLocation() {
 		return this.location;
@@ -424,12 +497,19 @@ public class SpleefPlayer {
 		this._1vs1_games = i;
 	}
 	
+	public void add1vs1Games() {
+		this._1vs1_games++;
+	}
 	public int get1vs1Wins() {
 		return this._1vs1_wins;
 	}
 	
 	public void set1vs1Wins(int i) {
 		this._1vs1_wins = i;
+	}
+	
+	public void add1vs1Wins() {
+		this._1vs1_wins++;
 	}
 	
 	public int getTotalGames() {

@@ -22,19 +22,22 @@ public class RankCommand implements CommandExecutor {
 			//rank SantiPingui58 donator
 			if(cmd.getName().equalsIgnoreCase("rank")) {
 			if(!(sender instanceof Player)) {
-			String name = args[0];
-			String rank = args[1];
+				if (args[0].equalsIgnoreCase("add")) {
+			String name = args[1];
+			String rank = args[2];
 				for (Player p : Bukkit.getOnlinePlayers()) {
-					p.sendMessage("§3§lJ§c§lH§d§lSpleef §eCongratulations to §b§l" + name + " §efor bought " + 	getRank(rank) + " §erank!");
+					p.sendMessage("§e§lSplin§b§ldux §eCongratulations to §b§l" + name + " §efor bought " + 	getRank(rank) + " §erank!");
 				}
 			
-			if (!PermissionsEx.getUser(name).has("jhspleef.staff")) {
-				if (rank.equalsIgnoreCase("hero")) {
-					rank = rank+"_";
-				}
+			if (!PermissionsEx.getUser(name).has("splindux.staff")) {
 				PermissionsEx.getUser(name).addGroup(rank);
 			}
 			
+				} else if (args[0].equalsIgnoreCase("remove")) {
+					String name = args[1];
+					String rank = args[2];
+					PermissionsEx.getUser(name).removeGroup(rank);
+				} 
 			} else {
 				sender.sendMessage("§cYou are not allowed to execute this command.");
 			}
@@ -47,23 +50,13 @@ public class RankCommand implements CommandExecutor {
 		
 		
 		private String getRank(String rank) {
-			if (rank.equalsIgnoreCase("donator")) {
-				return "§6[Donator]";
-			} else if (rank.equalsIgnoreCase("vip")) {
-				return "§a[VIP]";
-			} else if (rank.equalsIgnoreCase("premium")) {
-				return "§b[Premium]";
+		 if (rank.equalsIgnoreCase("vip")) {
+				return "§a§l[VIP]";
+			} else if (rank.equalsIgnoreCase("epic")) {
+				return "§2§l[Epic]";
 			} else if (rank.equalsIgnoreCase("legend")) {
-				return "§d[Legend]";
-			} else if (rank.equalsIgnoreCase("hero")) {
-				return "§c[Hero]";
-			} else if (rank.equalsIgnoreCase("veteran")) {
-				return "§4[Veteran]";
-			} else if (rank.equalsIgnoreCase("herobrine")) {
-				return "§f§l[Hero§c§lBrine]";
-			} else if (rank.equalsIgnoreCase("god")) {
-				return "§f§l[God]";
-			} 
+				return "§5§l[Extreme]";
+			}
 			return null;
 		}
 }

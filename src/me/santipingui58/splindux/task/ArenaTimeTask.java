@@ -29,6 +29,10 @@ public class ArenaTimeTask {
 		    			
 		    			arena.time();
 		    		}
+
+		    		
+		    		
+		    		
 		    		
 		    		if (arena.getTime()==0) {
 		    			if (arena.getType().equals(SpleefType.SPLEEFFFA)) {

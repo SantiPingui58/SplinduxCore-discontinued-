@@ -12,6 +12,7 @@ import com.yapzhenyie.GadgetsMenu.economy.GEconomyProvider;
 
 import me.santipingui58.splindux.commands.AFKCommand;
 import me.santipingui58.splindux.commands.AdminCommand;
+import me.santipingui58.splindux.commands.CrumbleCommand;
 import me.santipingui58.splindux.commands.DuelCommand;
 import me.santipingui58.splindux.commands.EndGameCommand;
 import me.santipingui58.splindux.commands.FlyCommand;
@@ -21,7 +22,9 @@ import me.santipingui58.splindux.commands.LevelCommand;
 import me.santipingui58.splindux.commands.MatchesCommand;
 import me.santipingui58.splindux.commands.MsgCommand;
 import me.santipingui58.splindux.commands.PingCommand;
+import me.santipingui58.splindux.commands.PlaytoCommand;
 import me.santipingui58.splindux.commands.RankCommand;
+import me.santipingui58.splindux.commands.ReinoCommand;
 import me.santipingui58.splindux.commands.ResetCommand;
 import me.santipingui58.splindux.commands.RideCommand;
 import me.santipingui58.splindux.commands.SetupCommand;
@@ -37,6 +40,7 @@ import me.santipingui58.splindux.listener.PlayerChat;
 import me.santipingui58.splindux.listener.PlayerConnectListener;
 import me.santipingui58.splindux.listener.PlayerListener;
 import me.santipingui58.splindux.listener.ServerListener;
+import me.santipingui58.splindux.reino.ReinoManager;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import me.santipingui58.splindux.task.ArenaTimeTask;
 import me.santipingui58.splindux.task.OnMoveTask;
@@ -49,19 +53,29 @@ import me.santipingui58.splindux.utils.Configuration;
 import me.santipingui58.splindux.utils.Utils;
 
 //Añadir todas las arenas
+//Kills
+//Parkour
+//Replay
+//Powerups
+//FFA Event
+//Splegg
+//Spleef KotH
+//Spleef Mobs
 //Ranked
-//Splegg y BowSpleef
-//Discord
-//NameMC
+//Votar NameMC
+//Join Discord
 //Votifier
-//Sistema de niveles
 //Friends
 //Anticheat
+//BowSpleef
 //guilds
-//Powerups
-//Rangos
-//Spleef Mobs
-//Spleef KotH
+
+
+
+
+
+
+
 
 
 public class Main extends JavaPlugin {
@@ -137,7 +151,7 @@ public class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new ServerListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerChat(), this);
 		getServer().getPluginManager().registerEvents(new NPCListener(), this);
-		
+		getServer().getPluginManager().registerEvents(new ReinoManager(), this);
 		new CustomPacketListener();
 		
 	}
@@ -164,6 +178,9 @@ public class Main extends JavaPlugin {
 		getCommand("matches").setExecutor(new MatchesCommand());
 		getCommand("hologram").setExecutor(new HologramCommand());
 		getCommand("level").setExecutor(new LevelCommand());
+		getCommand("reino").setExecutor(new ReinoCommand());
+		getCommand("playto").setExecutor(new PlaytoCommand());
+		getCommand("crumble").setExecutor(new CrumbleCommand());
 	}
 	
 	
