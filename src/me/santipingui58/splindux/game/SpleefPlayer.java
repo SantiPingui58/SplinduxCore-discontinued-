@@ -1,4 +1,4 @@
-package me.santipingui58.splindux.game.spleef;
+package me.santipingui58.splindux.game;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +11,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.DataManager;
-import me.santipingui58.splindux.game.GameManager;
+import me.santipingui58.splindux.game.spleef.SpleefDuel;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.utils.GetCountry;
 
@@ -70,10 +70,24 @@ public class SpleefPlayer {
 	
 	private int duelpage;
 	
+	private PlayerOptions options;
+	
 	public SpleefPlayer(UUID uuid) {
 		this.uuid = uuid;
 		this.scoreboard = ScoreboardType.LOBBY;
+		options = new PlayerOptions();
+		
 	}
+	
+	
+	public PlayerOptions getOptions() {
+		return this.options;
+	}
+	
+	public void setOptions(PlayerOptions l) {
+		this.options = l;
+	}
+	 
 	
 	public int getDuelPage() {
 		return this.duelpage;

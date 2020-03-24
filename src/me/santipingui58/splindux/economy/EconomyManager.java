@@ -14,7 +14,7 @@ import com.yapzhenyie.GadgetsMenu.player.PlayerManager;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.utils.WeightedRandomList;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -66,7 +66,7 @@ public class EconomyManager extends GEconomyProvider {
 				  }else {
 					  if (r<60) {
 						  luck =true;
-					  }
+					  } 
 				  }
 				  
 				  if(luck) {
@@ -90,7 +90,7 @@ public class EconomyManager extends GEconomyProvider {
 					  x++;
 				  }
 				  
-				  Bukkit.broadcastMessage("§fThe player &b" + sp.getOfflinePlayer().getName() + "§f has found a §bSplinBox §e" + stars + "§f!");
+				  Bukkit.broadcastMessage("§fThe player §b" + sp.getOfflinePlayer().getName() + "§f has found a §bSplinBox §e" + stars + "§f!");
 				  
 				  
 				  }

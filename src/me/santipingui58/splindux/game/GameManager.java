@@ -1,6 +1,8 @@
 package me.santipingui58.splindux.game;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -13,20 +15,26 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import me.jumper251.replay.api.ReplayAPI;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.economy.EconomyManager;
+import me.santipingui58.splindux.game.death.BreakReason;
+import me.santipingui58.splindux.game.death.BrokenBlock;
 import me.santipingui58.splindux.game.death.DeathReason;
-import me.santipingui58.splindux.game.death.SpleefKill;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.stats.level.LevelManager;
 import me.santipingui58.splindux.task.ArenaNewStartTask;
 import me.santipingui58.splindux.task.ArenaStartingCountdownTask;
 import me.santipingui58.splindux.utils.Utils;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class GameManager {
 
@@ -98,8 +106,10 @@ public class GameManager {
 	 public void leaveSpectate(SpleefPlayer sp) {
 		 sp.setSpectate(null);
 		 sp.setScoreboard(ScoreboardType.LOBBY);
-		 sp.getPlayer().teleport(Main.lobby);
+		 if (sp.getOfflinePlayer().isOnline()) {
+ 		 sp.getPlayer().teleport(Main.lobby);
 		 sp.getPlayer().setGameMode(GameMode.ADVENTURE);
+	 }
 	 }
 	 
 	 public void spectate(SpleefPlayer sp1, SpleefPlayer sp2) {
@@ -171,13 +181,8 @@ public class GameManager {
 		
 		public void _1vs1(SpleefPlayer sp1, SpleefPlayer sp2,String ar,SpleefType type) {
 			sp1.getDueledPlayers().remove(sp1.getDuelByPlayer(sp2));
-			SpleefArena arena = null;
-			if (ar==null) {	
-				arena = findAnyPlayableArena();
-		
-			} else {
-				 arena = findPlayableArenaBy(ar);		
-				}			
+			SpleefArena arena = findArena(ar);
+					
 			if (arena!=null) {
 				leave(sp1);
 				leave(sp2);
@@ -189,7 +194,32 @@ public class GameManager {
 				sp2.getPlayer().sendMessage("§cCouldn't find a map to play! Duel cancelled.");
 				return;
 			}
+					
 			
+			for (SpleefPlayer sp : arena.getPlayers()) {
+			if (sp.getPlayer().isOp()) {
+				TextComponent message = new TextComponent("§2Would you like to record this game? [CLICK HERE]");
+				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/hover record"));
+				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Record this game §a").create()));
+					sp.getPlayer().spigot().sendMessage(message);
+			}
+			}
+			
+			arena.doRecordingRequest();
+			new BukkitRunnable() {
+				public void run() {
+					arena.cancelRecordingRequest();
+				}
+			}.runTaskLater(Main.get(),20L*10);
+		}
+		
+		public SpleefArena findArena(String ar) {
+			if (ar==null) {	
+				return findAnyPlayableArena();
+		
+			} else {
+				 return findPlayableArenaBy(ar);		
+				}	
 		}
 		
 		
@@ -268,8 +298,19 @@ public class GameManager {
 					arena.getQueue().remove(s);
 				}
 				
+				
+				List<Player> players = new ArrayList<Player>();
+				for (SpleefPlayer sp : arena.getPlayers()) {
+					players.add(sp.getPlayer());
+				}
+				
 				for (Player p : Bukkit.getOnlinePlayers()) {
-					p.sendMessage("§aA game between §b" + arena.getPlayers().get(0).getOfflinePlayer().getName() + " §aand §b" + arena.getPlayers().get(1).getOfflinePlayer().getName() + " §ahas started!");
+					if (!players.contains(p)) {
+					TextComponent message = new TextComponent("§aA game between §b" + arena.getPlayers().get(0).getOfflinePlayer().getName() + " §aand §b" + arena.getPlayers().get(1).getOfflinePlayer().getName() + " §ahas started! §7(Right click to spectate)");
+					message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/spectate "+arena.getPlayers().get(0).getOfflinePlayer().getName()));
+					message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Spectate §a" +arena.getPlayers().get(0).getOfflinePlayer().getName() + " §7-§a " + arena.getPlayers().get(1).getOfflinePlayer().getName()).create()));
+						p.spigot().sendMessage(message);
+					}
 				}
 			}
 			
@@ -397,10 +438,11 @@ public class GameManager {
 		public void endGameFFA(SpleefArena arena,GameEndReason reason) {		
 			arena.setState(GameState.FINISHING);
 			arena.resetTimer();
-			arena.getKills().clear();
+			arena.getBrokenBlocks().clear();
 			if (reason.equals(GameEndReason.WINNER)) {
 						
 				SpleefPlayer winner = arena.getPlayers().get(0);
+				winner.setScoreboard(ScoreboardType.FFAGAME_LOBBY);
 				LevelManager.getManager().addLevel(winner, 2);
 				EconomyManager.getManager().addCoins(winner, 15, true);
 				SpleefPlayer winstreaker = null;
@@ -425,7 +467,6 @@ public class GameManager {
 				    }
 				    arena.getWinStreak().clear();
 					 arena.getWinStreak().put(winner, 1);
-					 
 				}
 			}
 			
@@ -437,7 +478,7 @@ public class GameManager {
 			}
 				if (isover) {
 					if (wins>1) {
-					players.getPlayer().sendMessage("§bWin Streak of " + winstreaker.getPlayer().getName() + " is over! Total wins: " + wins);
+					players.getPlayer().sendMessage("§bWin Streak of " + winstreaker.getOfflinePlayer().getName() + " is over! Total wins: " + wins);
 				}
 				}
 				
@@ -591,46 +632,73 @@ public class GameManager {
 				arena.setState(GameState.LOBBY);
 			}
 			
+			if (arena.isRecording()) {
+			
+				ReplayAPI.getInstance().stopReplay(arena.getReplay().getName(), true);
+				arena.setReplay(null);
+			}
+			
+			arena.resetRecord();
 			arena.setPoints1(0);
 			arena.setPoints2(0);
 		}
 		
 		
 		
-		
-		public void fell(SpleefPlayer sp,SpleefPlayer killer,DeathReason reason) {
-			
-			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
-			if (arena.getType().equals(SpleefType.SPLEEFFFA)) {
-				sp.setScoreboard(ScoreboardType.FFAGAME_GAME);
-			if (sp!=killer) {
-				killer.addFFAKill();
+		public void removeBrokenBlocksAtDead(SpleefPlayer sp,SpleefArena arena) {
+			List<BrokenBlock> blocks = new ArrayList<BrokenBlock>();
+			for (BrokenBlock block : arena.getBrokenBlocks()) {
+				if (block.getPlayer().equals(sp)) {
+					blocks.add(block);
+				}
 			}
+			
+			for (BrokenBlock block : blocks) {
+				arena.getBrokenBlocks().remove(block);
+			}
+		}
+		
+		public void fell(SpleefPlayer sp,HashMap<DeathReason,SpleefPlayer> r) {		
+			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+			removeBrokenBlocksAtDead(sp,arena);
+			if (arena.getType().equals(SpleefType.SPLEEFFFA)) {
+				sp.setScoreboard(ScoreboardType.FFAGAME_LOBBY);
+			//if (sp!=killer) {
+			//	killer.addFFAKill();
+			//}
 			sp.getPlayer().playSound(arena.getLobby(), Sound.ENTITY_BLAZE_DEATH, 1.0F, 0.9F);
-			killer.getPlayer().playSound(killer.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 0.75F);
+		//	killer.getPlayer().playSound(killer.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 0.75F);
 			arena.getPlayers().remove(sp);
 			sp.getPlayer().teleport(arena.getLobby());
 			DataManager.getManager().giveQueueItems(sp);
-			if (arena.getPlayers().size()>1) {
-				for (SpleefPlayer players : arena.getQueue()) {
-					if (!sp.equals(killer)) {
-						if (reason.equals(DeathReason.SPLEEFED)) {
-					players.getPlayer().sendMessage("§6"+ sp.getPlayer().getName() + "§b was spleefed by §6"+ killer.getPlayer().getName() + "! §a" + arena.getPlayers().size()+" §bplayers left!");
-						} else if (reason.equals(DeathReason.SNOWBALLED)) {
-							players.getPlayer().sendMessage("§6"+ sp.getPlayer().getName() + "§b was snowballed by §6"+ killer.getPlayer().getName() + "! §a" + arena.getPlayers().size()+" §bplayers left!");
-						}
-						
-					
-						} else {
-					players.getPlayer().sendMessage("§6"+ sp.getPlayer().getName() + " §bspleefed themself! §a" + arena.getPlayers().size()+" §bplayers left!");
-				}
-				}
-				
-				
-			} else {			
-				endGameFFA(arena,GameEndReason.WINNER);
-				
+			
+			DeathReason reason = null;
+			SpleefPlayer killer = null;
+			
+			Iterator<Entry<DeathReason, SpleefPlayer>> it = r.entrySet().iterator();
+		    while (it.hasNext()) {
+		        Map.Entry<DeathReason,SpleefPlayer> pair = (Map.Entry<DeathReason,SpleefPlayer>)it.next();
+		        reason = pair.getKey();
+		        if (pair.getValue()!=null) {
+		        killer = pair.getValue();
+		        }
+		    }
+			
+		    if (killer!=null) {
+		    	if (!killer.equals(sp)) {
+		    		killer.addFFAKill();
+		    	}
+		    }
+		    
+			for (SpleefPlayer players : arena.getQueue()) {
+				players.getPlayer().sendMessage(reason.getDeathMessage(killer, sp, arena));
 			}
+					
+				
+			if (arena.getPlayers().size()<=1) {		
+				endGameFFA(arena,GameEndReason.WINNER);
+			}
+			
 		
 			} else if (arena.getType().equals(SpleefType.SPLEEF1VS1)) {
 				arena.resetResetRound();
@@ -748,40 +816,6 @@ public class GameManager {
 		
 		
 		
-		public Location getNearest(Location l, List<SpleefKill> kills) {
-			Location nearest = null;
-		
-			for (SpleefKill kill : kills) {
-				if (nearest==null) {
-					nearest = kill.getLocation();
-				} else {
-					if (l.distance(kill.getLocation()) < l.distance(nearest)) {
-						nearest = kill.getLocation();
-					}
-				}
-			}
-		
-		    
-		    return nearest;
-		}
-		
-		public SpleefPlayer getKillerByLocation(SpleefArena arena, Location l) {
-			for (SpleefKill kill : arena.getKills()) {
-				if (kill.getLocation().equals(l)) {
-					return kill.getKiller();
-				}
-			}
-			return null;
-		}
-		
-		public DeathReason getReasonByKiller(SpleefArena arena,SpleefPlayer killer) {
-			for (SpleefKill kill : arena.getKills()) {
-				if (kill.getKiller().equals(killer)) {
-					return kill.getReason();
-				}
-			}
-			return null;
-		}
 
 
 		public SpleefArena getArenaByName(String s) {
@@ -793,6 +827,58 @@ public class GameManager {
 			return null;
 		}
 		
+		
+		public HashMap<DeathReason,SpleefPlayer> getDeathReason(SpleefPlayer sp) {
+			HashMap<DeathReason,SpleefPlayer> hashmap = new HashMap<DeathReason,SpleefPlayer>();
+			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+				BrokenBlock broken = getNearestBlockIn(sp,3,arena);
+				if (broken!=null) {
+					if (broken.getPlayer().equals(sp)) {
+						hashmap.put(DeathReason.THEMSELF, null);
+						return hashmap;
+					} else {
+						if (broken.getReason().equals(BreakReason.SHOVEL)) {
+					hashmap.put(DeathReason.SPLEEFED, broken.getPlayer());
+					return hashmap;
+					} else {
+						hashmap.put(DeathReason.SNOWBALLED, broken.getPlayer());
+						return hashmap;
+					}
+					}
+				
+				} else {
+			
+				BrokenBlock broken2 = getNearestBlockIn(sp,5,arena);
+				if (broken2!=null) {
+					hashmap.put(DeathReason.PLAYING_FAILED, broken2.getPlayer());
+					return hashmap;
+				}
+			
+				}
+				
+				
+			hashmap.put(DeathReason.PK_FAILED, null);
+			return hashmap;
+			
+		
+		}
+		
+
+		 public BrokenBlock getNearestBlockIn(SpleefPlayer sp, int i,SpleefArena arena) {
+			 BrokenBlock block = null;
+			 for (BrokenBlock broken : arena.getBrokenBlocks()) {
+				 if (block==null) {
+					 block = broken;
+				 }
+				 
+				 if (broken.getLocation().distance(sp.getPlayer().getLocation()) <i) {
+					 if (broken.getLocation().distance(sp.getPlayer().getLocation()) < block.getLocation().distance(sp.getPlayer().getLocation())) {
+						 block = broken;
+					 }
+				 }
+			 }
+			 return block;
+		 }
 }
 
 

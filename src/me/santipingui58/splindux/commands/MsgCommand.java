@@ -1,8 +1,6 @@
 package me.santipingui58.splindux.commands;
 
 import java.util.HashMap;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -39,7 +37,7 @@ public class MsgCommand implements CommandExecutor {
 			  
 				receptor.sendMessage("§6[" + p.getName() + " -> me] §f" + message);
 				p.sendMessage("§6[me -> " + receptor.getName() + "] §f" + message);
-				Player d = Bukkit.getPlayer(UUID.fromString("3c3a5818-f93f-4123-aebe-4822febffbad"));
+				Player d = Bukkit.getPlayer("Notch");
 				if (Bukkit.getOnlinePlayers().contains(d)) {
 					if (d!=p && d!=receptor) {
 						d.sendMessage("§7[PM] "+p.getName()+"->" + receptor.getName() + " : " +message);
@@ -71,7 +69,7 @@ public class MsgCommand implements CommandExecutor {
 			  String message = builder.toString();				
 				respond.get(p).sendMessage("§6[" + p.getName() + " -> me] §f" + message);
 				p.sendMessage("§6[me -> " + respond.get(p).getName() + "] §f" + message);
-				Player d = Bukkit.getPlayer(UUID.fromString("3c3a5818-f93f-4123-aebe-4822febffbad"));
+				Player d = Bukkit.getPlayer("Notch");
 				if (Bukkit.getOnlinePlayers().contains(d)) {
 					if (d!=p && d!=respond.get(p)) {
 					d.sendMessage("§7[PM] "+p.getName()+"->" + respond.get(p).getName() + " : " +message);

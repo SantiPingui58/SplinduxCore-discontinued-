@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.scoreboard.PinguiScoreboard;
 
 

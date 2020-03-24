@@ -22,11 +22,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import me.santipingui58.splindux.game.GameManager;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
+import me.santipingui58.splindux.replay.BrokenBlock;
+import me.santipingui58.splindux.replay.GameReplay;
 import me.santipingui58.splindux.utils.ItemBuilder;
 import me.santipingui58.splindux.utils.Utils;
+import me.santipingui58.translate.Language;
 
 
 
@@ -40,10 +43,15 @@ public class  DataManager {
 	 
 	 private List<SpleefArena> arenas = new ArrayList<SpleefArena>();
 	 private List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
+	 private List<GameReplay> recordings = new ArrayList<GameReplay>();
 	 private HashMap<OfflinePlayer,SpleefPlayer> playershashmap = new HashMap<OfflinePlayer,SpleefPlayer>();
 	 
 	 public List<SpleefArena> getArenas() {
 		 return this.arenas;
+	 }
+	 
+	 public List<GameReplay> getReplays() {
+		 return this.recordings;
 	 }
 	 
 	 public List<SpleefPlayer> getPlayers() {
@@ -65,8 +73,6 @@ public class  DataManager {
 	 }
 	 
 		public void createSpleefPlayer(Player p) {
-			SpleefPlayer nuevo = new SpleefPlayer(p.getUniqueId());
-			this.players.add(nuevo);			
 			Main.data.getConfig().set("players."+p.getUniqueId()+".stats.ELO",1000);
 			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.1vs1_wins",0);
 			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.1vs1_games",0);
@@ -82,100 +88,153 @@ public class  DataManager {
 			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.weekly.FFA_games",0);
 			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.weekly.FFA_kills",0);
 			 Main.data.getConfig().set("players."+p.getUniqueId()+".dailywinlimit",0);
-			 saveIP(p);
+			
 			 
 			 Date now = new Date();
-				SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			Main.data.getConfig().set("players."+p.getUniqueId()+".registerdate", format.format(now));
 			Main.data.getConfig().set("players."+p.getUniqueId()+".onlinetime",0);
-			Main.data.getConfig().set("players."+p.getUniqueId()+".coins",0);
-			 Main.data.saveConfig();
+			Main.data.getConfig().set("players."+p.getUniqueId()+".coins",0);			
+			Main.data.saveConfig();
 			
-	
+			loadPlayer(p.getUniqueId().toString());
+			
+			p.kickPlayer("§cPlayerData created, please join again!");
+			
+			
+			
 		}
 	
+		
+		public void loadReplays() {
+			if (Main.recordings.getConfig().contains("replays")) {
+				 Set<String> replays = Main.data.getConfig().getConfigurationSection("replays").getKeys(false);
+				 for (String r : replays) {
+					 r.split("");
+				 }
+			}
+		}
+		
+		
+		public void loadPlayer(String p) {
+			 if (Main.data.getConfig().contains("players."+p)) {
+				 int ELO = Main.data.getConfig().getInt("players."+p+".stats.ELO");
+				 int _1vs1wins = Main.data.getConfig().getInt("players."+p+".stats.1vs1_wins");
+				 int _1vs1games = Main.data.getConfig().getInt("players."+p+".stats.1vs1_games");
+				 int FFAwins = Main.data.getConfig().getInt("players."+p+".stats.FFA_wins");
+				 int FFAgames = Main.data.getConfig().getInt("players."+p+".stats.FFA_games");
+				 int FFAkills = 0;
+				 if (Main.data.getConfig().contains("players."+p+".stats.FFA_kills")) {
+				  FFAkills = Main.data.getConfig().getInt("players."+p+".stats.FFA_kills");
+				 }
+				 
+				 int FFAWeeklyWins = 0;
+				 int FFAWeeklyGames = 0;
+				 int FFAWeeklyKills = 0;
+				 int FFAMonthlyWins =0;
+				 int FFAMonthlyGames = 0;
+				 int FFAMonthlyKills = 0;
+				 int coins = 0;
+				 int dailylimit= 0;
+				 int level = 0;
+				 String ip = "";
+				 
+				 boolean translate = false;
+				 boolean nightVision = false;
+				 Language language = null;
+				 int totalonlinetime =  Main.data.getConfig().getInt("players."+p+".onlinetime");
+				 if (Main.data.getConfig().contains("players."+p+".dailywinlimit")) {
+					 dailylimit =  Main.data.getConfig().getInt("players."+p+".dailywinlimit");
+				 }
+
+				 if (Main.data.getConfig().contains("players."+p+".level")) {
+					 level =  Main.data.getConfig().getInt("players."+p+".level");
+				 }
+				 if (Main.data.getConfig().contains("players."+p+".stats.weekly")) {
+					 FFAWeeklyWins = Main.data.getConfig().getInt("players."+p+".stats.weekly.FFA_wins");
+					 FFAWeeklyGames = Main.data.getConfig().getInt("players."+p+".stats.weekly.FFA_games");
+					 FFAWeeklyKills = Main.data.getConfig().getInt("players."+p+".stats.weekly.FFA_kills");
+					 }
+				 
+				 if (Main.data.getConfig().contains("players."+p+".stats.monthly")) {
+					 FFAMonthlyWins = Main.data.getConfig().getInt("players."+p+".stats.monthly.FFA_wins");
+					 FFAMonthlyGames = Main.data.getConfig().getInt("players."+p+".stats.monthly.FFA_games");
+					 FFAMonthlyKills = Main.data.getConfig().getInt("players."+p+".stats.monthly.FFA_kills");
+					 }
+				 
+				 if (Main.data.getConfig().contains("players."+p+".coins")) {
+					 coins = Main.data.getConfig().getInt("players."+p+".coins");
+				 }
+				 
+				 if (Main.data.getConfig().contains("players."+p+".IP")) {
+					 ip = Main.data.getConfig().getString("players."+p+".IP");
+				 }
+				 
+				 
+				 if (Main.data.getConfig().contains("players."+p+".options.translate")) {
+					 translate = Main.data.getConfig().getBoolean("players."+p+".options.translate");
+				 }
+				 
+				 if (Main.data.getConfig().contains("players."+p+".options.nightvision")) {
+					 nightVision = Main.data.getConfig().getBoolean("players."+p+".options.nightvision");
+				 }
+				 
+				 if (Main.data.getConfig().contains("players."+p+".options.language")) {
+					 language = Language.valueOf(Main.data.getConfig().getString("players."+p+".options.language"));
+				 }
+				 
+				 if (Main.data.getConfig().contains("players."+p+".IP")) {
+					 ip = Main.data.getConfig().getString("players."+p+".IP");
+				 }
+				 
+				 String register = Main.data.getConfig().getString("players."+p+".registerdate");
+				 Date date = null;
+					   try {
+						date=new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse(register);
+					} catch (ParseException e) {
+						e.printStackTrace();
+					} 
+				
+				 
+				 SpleefPlayer sp = new SpleefPlayer(UUID.fromString(p));	
+				 sp.setTotalOnlineTIme(totalonlinetime);
+				 sp.setELO(ELO);
+				 sp.set1vs1Wins(_1vs1wins);
+				 sp.set1vs1Games(_1vs1games);
+				 sp.setFFAWins(FFAwins);
+				 sp.setFFAGames(FFAgames);
+				 sp.setFFAKills(FFAkills);
+				 sp.setRegisterDate(date);
+				 sp.setDailyWinLimit(dailylimit);
+				 sp.setCoins(coins);
+				 sp.setWeeklyFFAWins(FFAWeeklyWins);
+				 sp.setWeeklyFFAGames(FFAWeeklyGames);
+				 sp.setWeeklyFFAKills(FFAWeeklyKills);
+				 sp.setLevel(level);
+				 sp.setMonthlyFFAWins(FFAMonthlyWins);
+				 sp.setMonthlyFFAGames(FFAMonthlyGames);
+				 sp.setMonthlyFFAKills(FFAMonthlyKills);
+				 sp.setIP(ip);
+				 
+				 sp.getOptions().setLanguage(language);
+				 sp.getOptions().translate(translate);
+				 sp.getOptions().nightVision(nightVision);
+				 
+				 this.players.add(sp);
+				 if (sp.getOfflinePlayer().isOnline()) {
+					 DataManager.getManager().giveLobbyItems(sp);
+				 }
+				 
+			 }
+			 
+			 
+		}
+		
 	 public void loadPlayers() {
 			 if (Main.data.getConfig().contains("players")) {
 				 Set<String> players = Main.data.getConfig().getConfigurationSection("players").getKeys(false);
 				 for (String p : players) {
-					 if (Main.data.getConfig().contains("players."+p)) {
-						 int ELO = Main.data.getConfig().getInt("players."+p+".stats.ELO");
-						 int _1vs1wins = Main.data.getConfig().getInt("players."+p+".stats.1vs1_wins");
-						 int _1vs1games = Main.data.getConfig().getInt("players."+p+".stats.1vs1_games");
-						 int FFAwins = Main.data.getConfig().getInt("players."+p+".stats.FFA_wins");
-						 int FFAgames = Main.data.getConfig().getInt("players."+p+".stats.FFA_games");
-						 int FFAkills = 0;
-						 if (Main.data.getConfig().contains("players."+p+".stats.FFA_kills")) {
-						  FFAkills = Main.data.getConfig().getInt("players."+p+".stats.FFA_kills");
-						 }
-						 
-						 int FFAWeeklyWins = 0;
-						 int FFAWeeklyGames = 0;
-						 int FFAWeeklyKills = 0;
-						 
-						 int FFAMonthlyWins =0;
-						 int FFAMonthlyGames = 0;
-						 int FFAMonthlyKills = 0;
-						 int coins = 0;
-						 int dailylimit= 0;
-						 int level = 0;
-						 int totalonlinetime =  Main.data.getConfig().getInt("players."+p+".onlinetime");
-						 if (Main.data.getConfig().contains("players."+p+".dailywinlimit")) {
-							 dailylimit =  Main.data.getConfig().getInt("players."+p+".dailywinlimit");
-						 }
-
-						 if (Main.data.getConfig().contains("players."+p+".level")) {
-							 level =  Main.data.getConfig().getInt("players."+p+".level");
-						 }
-						 if (Main.data.getConfig().contains("players."+p+".stats.weekly")) {
-							 FFAWeeklyWins = Main.data.getConfig().getInt("players."+p+".stats.weekly.FFA_wins");
-							 FFAWeeklyGames = Main.data.getConfig().getInt("players."+p+".stats.weekly.FFA_games");
-							 FFAWeeklyKills = Main.data.getConfig().getInt("players."+p+".stats.weekly.FFA_kills");
-							 }
-						 
-						 if (Main.data.getConfig().contains("players."+p+".stats.monthly")) {
-							 FFAMonthlyWins = Main.data.getConfig().getInt("players."+p+".stats.monthly.FFA_wins");
-							 FFAMonthlyGames = Main.data.getConfig().getInt("players."+p+".stats.monthly.FFA_games");
-							 FFAMonthlyKills = Main.data.getConfig().getInt("players."+p+".stats.monthly.FFA_kills");
-							 }
-						 
-						 if (Main.data.getConfig().contains("players."+p+".coins")) {
-							 coins = Main.data.getConfig().getInt("players."+p+".coins");
-						 }
-						 
-						 String register = Main.data.getConfig().getString("players."+p+".registerdate");
-						 Date date = null;
-							   try {
-								date=new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse(register);
-							} catch (ParseException e) {
-								e.printStackTrace();
-							} 
-						
-						 
-						 SpleefPlayer sp = new SpleefPlayer(UUID.fromString(p));	
-						 sp.setTotalOnlineTIme(totalonlinetime);
-						 sp.setELO(ELO);
-						 sp.set1vs1Wins(_1vs1wins);
-						 sp.set1vs1Games(_1vs1games);
-						 sp.setFFAWins(FFAwins);
-						 sp.setFFAGames(FFAgames);
-						 sp.setFFAKills(FFAkills);
-						 sp.setRegisterDate(date);
-						 sp.setDailyWinLimit(dailylimit);
-						 sp.setCoins(coins);
-						 sp.setWeeklyFFAWins(FFAWeeklyWins);
-						 sp.setWeeklyFFAGames(FFAWeeklyGames);
-						 sp.setWeeklyFFAKills(FFAWeeklyKills);
-						 sp.setLevel(level);
-						 sp.setMonthlyFFAWins(FFAMonthlyWins);
-						 sp.setMonthlyFFAGames(FFAMonthlyGames);
-						 sp.setMonthlyFFAKills(FFAMonthlyKills);
-						 this.players.add(sp);
-						 if (sp.getOfflinePlayer().isOnline()) {
-							 DataManager.getManager().giveLobbyItems(sp);
-						 }
-						 
-					 }
+					 loadPlayer(p);
 			 }
 				
 			 }
@@ -190,8 +249,20 @@ public class  DataManager {
 		 }
 	 }
 	 
-	 public void saveData(SpleefPlayer sp) {
+	 public void saveReplays() {
+		 for (GameReplay replay : DataManager.getManager().getReplays()) {
+			 for (BrokenBlock broken : replay.getBrokenBlocks()) {
+			 Main.recordings.getConfig().set("replays."+replay.getName()+".brokenblocks."+broken.getUUID().toString()+".time",broken.getTime());
+			 Main.recordings.getConfig().set("replays."+replay.getName()+".brokenblocks."+broken.getUUID().toString()+".location",Utils.getUtils().setLoc(broken.getLocation(), false));
+		 }
+		 }
 		 
+		 Main.recordings.saveConfig();
+	 }
+	 
+	 
+	 public void saveData(SpleefPlayer sp) {
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".name",sp.getOfflinePlayer().getName());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.totalgames",sp.getTotalGames());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.ELO",sp.getELO());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.1vs1_wins",sp.get1vs1Wins());
@@ -200,7 +271,7 @@ public class  DataManager {
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.FFA_games",sp.getFFAGames());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.FFA_kills",sp.getFFAKills());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".level",sp.getLevel());
-		Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".onlinetime", sp.getTotalOnlineTime());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".onlinetime", sp.getTotalOnlineTime());
 		
 		 
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.weekly.FFA_wins",sp.getWeeklyFFAWins());
@@ -211,7 +282,14 @@ public class  DataManager {
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.monthly.FFA_kills",sp.getMonthlyFFAKills());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".coins",sp.getCoins());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".dailywinlimit",sp.getDailyWinLimit());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".country",sp.getCountry());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.translate",sp.getOptions().hasTranslate());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.nightvision",sp.getOptions().hasNightVision());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.language",sp.getOptions().getLanguage().toString());
 		 
+		 if (sp.getPlayer()!=null) {
+		 saveIP(sp.getPlayer());
+		 }
 			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			if (sp.getOfflinePlayer().isOnline()) {
 		Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".lastlogin", format.format(sp.getLastLogin()));
@@ -229,6 +307,17 @@ public class  DataManager {
 		   Main.data.getConfig().set("players." + p.getUniqueId() + ".IP", ip.toString());
 		   Main.data.saveConfig();
 			 }
+			 
+			
+		 }
+		 
+		 if (!Main.data.getConfig().contains("players."+p.getUniqueId()+".country")) {
+			 if (!ip.toString().equalsIgnoreCase(Main.data.getConfig().getString("players."+p.getUniqueId()+".IP"))) {
+		   Main.data.getConfig().set("players." + p.getUniqueId() + ".IP", ip.toString());
+		   Main.data.saveConfig();
+			 }
+			 
+			
 		 }
 		   
 	 }
@@ -286,9 +375,9 @@ public class  DataManager {
     
     public void resetMonthlyStats() {
     	for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
-    		Main.data.getConfig().set("players"+s+".stats.monthly.FFA_kills", 0);
-    		Main.data.getConfig().set("players"+s+".stats.monthly.FFA_games", 0);
-    		Main.data.getConfig().set("players"+s+".stats.monthly.FFA_games", 0);
+    		Main.data.getConfig().set("players."+s+".stats.monthly.FFA_kills", 0);
+    		Main.data.getConfig().set("players."+s+".stats.monthly.FFA_games", 0);
+    		Main.data.getConfig().set("players."+s+".stats.monthly.FFA_games", 0);
     	}
     	
     	Main.data.saveConfig();
@@ -310,9 +399,9 @@ public class  DataManager {
     
     public void resetWeeklyStats() {
     	for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
-    		Main.data.getConfig().set("players"+s+".stats.weekly.FFA_kills", 0);
-    		Main.data.getConfig().set("players"+s+".stats.weekly.FFA_games", 0);
-    		Main.data.getConfig().set("players"+s+".stats.weekly.FFA_games", 0);
+    		Main.data.getConfig().set("players."+s+".stats.weekly.FFA_kills", 0);
+    		Main.data.getConfig().set("players."+s+".stats.weekly.FFA_games", 0);
+    		Main.data.getConfig().set("players."+s+".stats.weekly.FFA_games", 0);
     	}
     	
     	Main.data.saveConfig();
@@ -408,38 +497,27 @@ public class  DataManager {
 	
 	
 	
-
-	/*
-	private void giveLeaderboardHelmets(SpleefPlayer sp) {
-		Leaderboard leaderboard = LeaderboardManager.getManager().getLeaderboardByType(LeaderboardType.ALL_TIME_FFA_WINS);
-		if (leaderboard.getTop20().contains(sp.getPlayer().getName())) {
-		if (leaderboard.getTop20().get(0).equalsIgnoreCase(sp.getPlayer().getName())) {
-			sp.getPlayer().getInventory().setHelmet(new ItemStack(Material.DIAMOND_HELMET));
-		} else if (leaderboard.getTop20().get(1).equalsIgnoreCase(sp.getPlayer().getName())) {
-			sp.getPlayer().getInventory().setHelmet(new ItemStack(Material.GOLD_HELMET));
-		} else if (leaderboard.getTop20().get(2).equalsIgnoreCase(sp.getPlayer().getName())) {
-			sp.getPlayer().getInventory().setHelmet(new ItemStack(Material.IRON_HELMET));
+	public Language languageFromCountry(String s) {
+		if (s.equalsIgnoreCase("AR") 
+			|| s.equalsIgnoreCase("ES")
+			|| s.equalsIgnoreCase("BO")
+			|| s.equalsIgnoreCase("BR")
+			|| s.equalsIgnoreCase("CL")
+			|| s.equalsIgnoreCase("UY")
+			|| s.equalsIgnoreCase("PY")
+			|| s.equalsIgnoreCase("CO")
+			|| s.equalsIgnoreCase("PE")
+			|| s.equalsIgnoreCase("VE")
+			|| s.equalsIgnoreCase("MX")
+			|| s.equalsIgnoreCase("CU")
+			|| s.equalsIgnoreCase("EC")
+			|| s.equalsIgnoreCase("GT")
+			|| s.equalsIgnoreCase("HN")) {
+			return Language.SPANISH;
 		} else {
-			List<String> list = new ArrayList<String>();
-			int y = 0;
-			for (String s : leaderboard.getTop20()) {
-				list.add(s);
-				y++;
-				
-				if(y>=10) {
-					break;
-				}
-			}
-			
-			if (list.contains(sp.getPlayer().getName())) {
-				sp.getPlayer().getInventory().setHelmet(new ItemStack(Material.CHAINMAIL_HELMET));
-			}  else {
-				sp.getPlayer().getInventory().setHelmet(new ItemStack(Material.LEATHER_HELMET));
-			}
+			return Language.ENGLISH;
 		}
 	}
-	}
-	*/
-	
+
 	
 	}

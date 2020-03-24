@@ -7,10 +7,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import org.json.simple.JSONObject;
 
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import com.google.gson.Gson;
+
+import me.santipingui58.splindux.game.SpleefPlayer;
 
 
 public class GetCountry {
@@ -20,7 +21,10 @@ public class GetCountry {
 		 String jsonS = "";
 	        URL url = null;
 			try {
-				url = new URL("http://ip-api.com/json/"+sp.getIP());
+
+				String ip = sp.getIP().replace("/", "");
+				
+				url = new URL("http://ip-api.com/json/" + ip+ "?fields=message,countryCode");
 			} catch (MalformedURLException e1) {
 				e1.printStackTrace();
 			}
@@ -50,16 +54,16 @@ public class GetCountry {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-	        Gson gson = new Gson();
-	        JsonObject jsonObject= gson.fromJson(jsonS, JsonObject.class);
-	        String countrycode = jsonObject.get("countryCode").getAsString();
+	    	
+			 JSONObject json = new Gson().fromJson(jsonS, JSONObject.class);
+			 sp.setCountry(json.get("countryCode").toString());
 
+	        
 	        try {
 				in.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			sp.setCountry(countrycode);
 	}
 
 	

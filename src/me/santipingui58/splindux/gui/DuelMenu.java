@@ -20,9 +20,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameManager;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefDuel;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.utils.ItemBuilder;
 import me.santipingui58.splindux.utils.Utils;
@@ -157,9 +157,7 @@ public class DuelMenu extends MenuBuilder {
 		TextComponent msg1 = new TextComponent("[ACCEPT]");
 		msg1.setColor(net.md_5.bungee.api.ChatColor.GREEN );
 		msg1.setBold( true );
-		msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover accept " + dueler.getPlayer().getName()));
-		
-		
+		msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover accept " + dueler.getPlayer().getName()));		
 		TextComponent msg2 = new TextComponent("[DENY]");
 		msg2.setColor( net.md_5.bungee.api.ChatColor.RED );
 		msg2.setBold( true );

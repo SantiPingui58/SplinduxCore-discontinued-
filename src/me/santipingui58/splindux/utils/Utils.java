@@ -19,6 +19,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
+import me.santipingui58.splindux.DataManager;
+import me.santipingui58.splindux.game.SpleefPlayer;
+
 
 public class Utils {
 	
@@ -30,6 +33,29 @@ public class Utils {
 	    }
 	
 	
+	 
+	 public SpleefPlayer getNearestPlayer(SpleefPlayer sp) {
+		 SpleefPlayer nearest = null;
+		 for (SpleefPlayer online : DataManager.getManager().getOnlinePlayers()) {
+			 if (online.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(sp.getPlayer().getWorld().getName())) {
+				 if (nearest==null) {
+					 nearest = online;
+				 } else {
+					 if (online.getPlayer().getLocation().distance(sp.getPlayer().getLocation()) >
+					 nearest.getPlayer().getLocation().distance(sp.getPlayer().getLocation())) {
+						 nearest = online;
+					 }
+						 
+				 }
+			 }
+		 }
+		 
+		 return nearest;
+	 }
+	 
+	 
+	
+	 
 	  public  String setLoc(Location loc, boolean pitch)
 	  {
 	    if (pitch) {

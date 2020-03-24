@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.economy.EconomyManager;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
 
 
 public class OnlineTimeTask {
@@ -30,13 +30,13 @@ public class OnlineTimeTask {
                 	if (date.getDay()==0) {
                 		DataManager.getManager().resetWeeklyStats();
                 		}
-                	}
+                	
                 	
 	                if (date.getDate()==1){
 	                	DataManager.getManager().resetMonthlyStats();
 	                }
 	                
-	               
+                }
 		    	
 		    }
 		    }, 0, 20L);

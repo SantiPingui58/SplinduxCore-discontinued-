@@ -23,16 +23,18 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 import com.yapzhenyie.GadgetsMenu.api.GadgetsMenuAPI;
 
 import me.santipingui58.splindux.DataManager;
+import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
-import me.santipingui58.splindux.game.death.DeathReason;
-import me.santipingui58.splindux.game.death.SpleefKill;
+import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.death.BreakReason;
+import me.santipingui58.splindux.game.death.BrokenBlock;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import net.apcat.simplesit.SimpleSitPlayer;
 import net.apcat.simplesit.events.PlayerSitEvent;
@@ -181,8 +183,15 @@ public class ServerListener implements Listener {
 	      p.playSound(hitblock.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5F, 2.0F);
 	      hitblock.setType(Material.AIR);
 	      SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
-	  
-	      arena.getKills().add(new SpleefKill(hitblock.getLocation(),sp,DeathReason.SNOWBALLED));
+	      BrokenBlock kill = new BrokenBlock(sp,hitblock.getLocation(),BreakReason.SHOVEL);
+			arena.getBrokenBlocks().add(kill);
+			
+			new BukkitRunnable() {
+		    	 public void run() {
+		    		 arena.getBrokenBlocks().remove(kill);
+		    	 }
+		     }.runTaskLaterAsynchronously(Main.get(), 20L*10);
+	      
 	    }
 	    
 	    	}
@@ -265,6 +274,7 @@ public class ServerListener implements Listener {
 	  public void onTeleport(PlayerTeleportEvent e) {
 		  Player p = e.getPlayer();
 		  SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+		  if (sp==null) return;
 		  if (sp.isSpectating()) {
 		 if( e.getCause().equals(TeleportCause.SPECTATE)) {
 			 e.setCancelled(true);

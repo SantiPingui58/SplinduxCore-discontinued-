@@ -14,7 +14,7 @@ import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.stats.RankingType;
 import me.santipingui58.splindux.stats.StatsManager;
 import me.santipingui58.splindux.utils.Utils;
@@ -30,7 +30,8 @@ public class Hologram {
 	private UUID uuid;
 	private HashMap<SpleefPlayer,List<Integer>> ids = new HashMap<SpleefPlayer,List<Integer>>();
 	private HashMap<SpleefPlayer,SpleefRankingType> changeType = new HashMap<SpleefPlayer,SpleefRankingType>();
-	private HashMap<SpleefPlayer,Integer> packets = new HashMap<SpleefPlayer,Integer>();
+	private HashMap<SpleefPlayer,SpleefRankingPeriod> changePeriod = new HashMap<SpleefPlayer,SpleefRankingPeriod>();
+	private HashMap<SpleefPlayer,HashMap<PacketType,Integer>> packets = new HashMap<SpleefPlayer,HashMap<PacketType,Integer>>();
 	public Hologram(UUID uuid,Location l,HologramType type) {
 		this.uuid = uuid;
 		this.type = type;
@@ -56,7 +57,11 @@ public class Hologram {
 	 return this.changeType;
  }
  
- public HashMap<SpleefPlayer,Integer> getPacketList() {
+ public HashMap<SpleefPlayer, SpleefRankingPeriod> getChangePeriod() {
+	 return this.changePeriod;
+ }
+ 
+ public HashMap<SpleefPlayer,HashMap<PacketType,Integer>> getPacketList() {
 	 return this.packets;
  }
  
@@ -90,21 +95,23 @@ public class Hologram {
 				getChangeType().put(sp, SpleefRankingType.WINS);
 			 } 
 			 
-			  String amount = StatsManager.getManager().getAmountByType(fromSpleefRankingType(changeType.get(sp)));
+			 if (!getChangePeriod().containsKey(sp)) {
+					getChangePeriod().put(sp, SpleefRankingPeriod.ALL_TIME);
+				 } 
+			 
+			 if (!getPacketList().containsKey(sp)) {
+				 getPacketList().put(sp, new HashMap<PacketType,Integer>());
+				 } 
+			  String amount = StatsManager.getManager().getAmountByType(fromSpleefRankingType(changeType.get(sp),changePeriod.get(sp)));
 			id.add(line(l,sp,"§b§lSpleef FFA Ranking"));
 			l.add(0, -0.25, 0);
-			id.add(line(l,sp,"§aAll time - " + StatsManager.getManager().getAmountByType(fromSpleefRankingType(changeType.get(sp)))));
+			id.add(line(l,sp,"§a" +  StatsManager.getManager().getAmountByPeriod(changePeriod.get(sp))+" - " + StatsManager.getManager().getAmountByType(fromSpleefRankingType(changeType.get(sp),changePeriod.get(sp)))));
 			l.add(0, -0.25, 0);
 			
 			l.add(0, -0.25, 0);			
-			HashMap<String,Integer> hashmap = new HashMap<String,Integer>();
-			if (changeType.get(sp).equals(SpleefRankingType.WINS)) {
-			hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_WINS);
-			} else if (changeType.get(sp).equals(SpleefRankingType.GAMES)) {
-				hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_GAMES);
-			}else if (changeType.get(sp).equals(SpleefRankingType.KILLS)) {
-				hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_KILLS);
-			}
+			HashMap<String,Integer> hashmap = getHashMap(sp);
+
+		
 			 Iterator<Entry<String, Integer>> it = hashmap.entrySet().iterator();
 			 boolean ranking = false;
 			 boolean ranking_b = false;
@@ -126,8 +133,16 @@ public class Hologram {
 			        	iD = line(l,sp, "§6"+i+". §b"+name+" §7- §e" + wins + " " + amount);
 			        	}
 			        	id.add(iD);
-			        	if (i==7) {
-			        		packets.put(sp, iD);
+			        	if (i==7 || i==5) {
+			        		HashMap<PacketType,Integer> packet = new HashMap<PacketType,Integer>();
+			        		if (packets.containsKey(sp)) {
+			        			packet = packets.get(sp);
+			        		}
+			        		if (i==7) {
+			        		packet.put(PacketType.TYPE, iD);
+			        		} else {
+			        			packet.put(PacketType.PERIOD, iD);
+			        		}
 			        	}
 			        	l.add(0, -0.25, 0);
 			        	i++;
@@ -136,7 +151,7 @@ public class Hologram {
 			        }
 			    }
 			    l.add(0, -0.25, 0);
-			    int rank = StatsManager.getManager().getRankingPosition(fromSpleefRankingType(changeType.get(sp)),sp);
+			    int rank = StatsManager.getManager().getRankingPosition(fromSpleefRankingType(changeType.get(sp),changePeriod.get(sp)),sp);
 			    if (!ranking) {
 			    id.add(line(l,sp,"§6§l"+rank+". §b§l"+sp.getOfflinePlayer().getName()+" §7§l- §e§l" + getAmount(sp) + " " + amount));
 			    } else {
@@ -147,16 +162,22 @@ public class Hologram {
 			    l.add(0, -0.25, 0);
 			    id.add(line(l,sp,"§6§lChange Period (CLICK HERE)"));
 			    l.add(0, -0.25, 0);
-			    id.add(line(l,sp,"§aAll time §7- Monthly - Weekly"));
+			    if (changePeriod.get(sp).equals(SpleefRankingPeriod.ALL_TIME)) {
+			    	id.add(line(l,sp,"§aAll time §7- Monthly - Weekly"));
+					} else if (changePeriod.get(sp).equals(SpleefRankingPeriod.MONTHLY)) {
+						id.add(line(l,sp,"§7All time - §aMonthly §7- Weekly"));
+					}	  else if (changePeriod.get(sp).equals(SpleefRankingPeriod.WEEKLY)) {
+						id.add(line(l,sp,"§7All time - Monthly - §aWeekly"));
+					}			    
 			    l.add(0, -0.25, 0);
 			    id.add(line(l,sp,"§6§lChange Type (CLICK HERE)"));
 			    l.add(0, -0.25, 0);
 			    if (changeType.get(sp).equals(SpleefRankingType.WINS)) {
-			    	id.add(line(l,sp,"§a§oWins §7- Kills - Games - K/G - W/G"));
+			    	id.add(line(l,sp,"§a§oWins §7- Kills - Games"));
 					} else if (changeType.get(sp).equals(SpleefRankingType.GAMES)) {
-						id.add(line(l,sp,"§7Wins - Kills - §a§oGames §7- K/G - W/G"));
+						id.add(line(l,sp,"§7Wins - Kills - §a§oGames"));
 					}	  else if (changeType.get(sp).equals(SpleefRankingType.KILLS)) {
-						id.add(line(l,sp,"§7Wins - §a§oKills §7- Games - K/G - W/G"));
+						id.add(line(l,sp,"§7Wins - §a§oKills §7- Games"));
 					}	 
 			   
 			 
@@ -175,7 +196,7 @@ public class Hologram {
 			        if (name.equalsIgnoreCase(sp.getOfflinePlayer().getName())) {
 				    	   ranking = true;			
 				       }
-			        if (i<=10) {
+			        if (i<=20) {
 			        	id.add(line(l,sp, "§6"+i+". §b"+name+" §7- §e" + Utils.getUtils().minutesToDate(wins)));			        	
 			        	l.add(0, -0.25, 0);
 			        	i++;
@@ -202,6 +223,38 @@ public class Hologram {
 	}	
 	
 	
+	private HashMap<String,Integer> getHashMap(SpleefPlayer sp) {
+		HashMap<String,Integer> hashmap = new HashMap<String,Integer>();
+		if (changeType.get(sp).equals(SpleefRankingType.WINS)) {
+			if (changePeriod.get(sp).equals(SpleefRankingPeriod.ALL_TIME)) {
+			hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_WINS); 
+			} else if (changePeriod.get(sp).equals(SpleefRankingPeriod.MONTHLY)) {
+				hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_WINS_MONTHLY); 
+			} else if (changePeriod.get(sp).equals(SpleefRankingPeriod.WEEKLY)) {
+				hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_WINS_WEEKLY); 
+			}
+			} else if (changeType.get(sp).equals(SpleefRankingType.GAMES)) {
+				if (changePeriod.get(sp).equals(SpleefRankingPeriod.ALL_TIME)) {
+					hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_GAMES); 
+					} else if (changePeriod.get(sp).equals(SpleefRankingPeriod.MONTHLY)) {
+						hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_GAMES_MONTHLY); 
+					} else if (changePeriod.get(sp).equals(SpleefRankingPeriod.WEEKLY)) {
+						hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_GAMES_WEEKLY); 
+					}
+			}else if (changeType.get(sp).equals(SpleefRankingType.KILLS)) {
+				if (changePeriod.get(sp).equals(SpleefRankingPeriod.ALL_TIME)) {
+					hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_KILLS); 
+					} else if (changePeriod.get(sp).equals(SpleefRankingPeriod.MONTHLY)) {
+						hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_KILLS_MONTHLY); 
+					} else if (changePeriod.get(sp).equals(SpleefRankingPeriod.WEEKLY)) {
+						hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_KILLS_WEEKLY);
+					}
+			}
+		
+		return hashmap;
+	}
+	
+	
 	private String getAmount(SpleefPlayer sp) {
 		SpleefRankingType type = changeType.get(sp);
 		if (type.equals(SpleefRankingType.WINS)) {
@@ -217,13 +270,31 @@ public class Hologram {
 		}
 		return null;
 	}
-	private RankingType fromSpleefRankingType(SpleefRankingType srt) {
+	private RankingType fromSpleefRankingType(SpleefRankingType srt,SpleefRankingPeriod srp) {
 		if (srt.equals(SpleefRankingType.WINS)) {
+			if (srp.equals(SpleefRankingPeriod.ALL_TIME)) {
 			return RankingType.SPLEEFFFA_WINS;
+			} else if (srp.equals(SpleefRankingPeriod.MONTHLY)) {
+				return RankingType.SPLEEFFFA_WINS_MONTHLY;
+			}else if (srp.equals(SpleefRankingPeriod.WEEKLY)) {
+				return RankingType.SPLEEFFFA_WINS_WEEKLY;
+			}
 		} else if (srt.equals(SpleefRankingType.GAMES)) {
-			return RankingType.SPLEEFFFA_GAMES;
-		}if (srt.equals(SpleefRankingType.KILLS)) {
-			return RankingType.SPLEEFFFA_KILLS;
+			if (srp.equals(SpleefRankingPeriod.ALL_TIME)) {
+				return RankingType.SPLEEFFFA_GAMES;
+				} else if (srp.equals(SpleefRankingPeriod.MONTHLY)) {
+					return RankingType.SPLEEFFFA_GAMES_MONTHLY;
+				}else if (srp.equals(SpleefRankingPeriod.WEEKLY)) {
+					return RankingType.SPLEEFFFA_GAMES_WEEKLY;
+				}
+		}  if (srt.equals(SpleefRankingType.KILLS)) {
+			if (srp.equals(SpleefRankingPeriod.ALL_TIME)) {
+				return RankingType.SPLEEFFFA_KILLS;
+				} else if (srp.equals(SpleefRankingPeriod.MONTHLY)) {
+					return RankingType.SPLEEFFFA_KILLS_MONTHLY;
+				}else if (srp.equals(SpleefRankingPeriod.WEEKLY)) {
+					return RankingType.SPLEEFFFA_KILLS_WEEKLY;
+				}
 		}
 		return null;
 	}

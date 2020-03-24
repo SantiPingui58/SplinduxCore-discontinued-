@@ -1,5 +1,7 @@
 package me.santipingui58.splindux.task;
 
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -7,8 +9,9 @@ import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
+import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.death.DeathReason;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.utils.Utils;
 
@@ -66,7 +69,7 @@ public class OnMoveTask {
 		    		} else {
 		    			if (sp.getLocation().equals(sp.getPlayer().getLocation())) {
 		    			sp.setAFKTimer(sp.getAFKTimer()+1);
-		    			if (sp.getAFKTimer()>=350) {
+		    			if (sp.getAFKTimer()>=3500) {
 		    				sp.afk();
 		    				if (sp.getPlayer().hasPermission("splindux.afk")) {
 		    				sp.getPlayer().sendMessage("§7You are now AFK");	
@@ -88,7 +91,7 @@ public class OnMoveTask {
 		    			if (arena.getType().equals(SpleefType.SPLEEFFFA)) {
 		    			if (sp.getLocation().getYaw()==sp.getPlayer().getLocation().getYaw() && sp.getLocation().getPitch()==sp.getPlayer().getLocation().getPitch()) {
 			    			sp.addGameAFKTimer();
-			    			if (sp.getGameAFKTimer()>400) {		    				
+			    			if (sp.getGameAFKTimer()>1600) {		    				
 			    				GameManager.getManager().leaveQueue(sp, arena);
 			    				sp.getPlayer().sendMessage("§cYou got off from the game because you were afk too long!");
 			    			}
@@ -105,9 +108,8 @@ public class OnMoveTask {
 		    			
 		    			if (sp.getPlayer().getLocation().getBlockY()<arena.getArena1().getBlockY()) {	 
 		    				if (arena.getState().equals(GameState.GAME)) {
-		    				Location death_block = GameManager.getManager().getNearest(sp.getPlayer().getLocation(), arena.getKills());
-		    			SpleefPlayer killer = GameManager.getManager().getKillerByLocation(arena, death_block);
-		    				GameManager.getManager().fell(sp,killer,GameManager.getManager().getReasonByKiller(arena, killer));
+		    					HashMap<DeathReason, SpleefPlayer> reason = GameManager.getManager().getDeathReason(sp);
+		    				GameManager.getManager().fell(sp,reason);
 		    				
 		    			}else  {
 		    				if (arena.getType().equals(SpleefType.SPLEEF1VS1)) {
@@ -122,6 +124,6 @@ public class OnMoveTask {
 		    		}
 		    	}
 		    }
-		    }, 20, 8L);
+		    }, 20, 2L);
 	}
 }

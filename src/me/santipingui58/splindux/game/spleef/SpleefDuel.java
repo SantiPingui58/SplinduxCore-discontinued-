@@ -1,5 +1,7 @@
 package me.santipingui58.splindux.game.spleef;
 
+import me.santipingui58.splindux.game.SpleefPlayer;
+
 public class SpleefDuel {
 
 	private String arena;

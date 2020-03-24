@@ -9,7 +9,9 @@ import org.bukkit.Material;
 
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameState;
-import me.santipingui58.splindux.game.death.SpleefKill;
+import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.death.BrokenBlock;
+import me.santipingui58.splindux.replay.GameReplay;
 import me.santipingui58.splindux.utils.Utils;
 
 public class SpleefArena {
@@ -28,7 +30,7 @@ public class SpleefArena {
 	private GameState state;
 	private List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
 	private List<SpleefPlayer> queue = new ArrayList<SpleefPlayer>();
-	private List<SpleefKill> kills = new ArrayList<SpleefKill>();
+	private List<BrokenBlock> brokenblocks = new ArrayList<BrokenBlock>();
 	
 	private Location arena1_1vs1;
 	private Location arena2_1vs1;
@@ -46,7 +48,9 @@ public class SpleefArena {
 	private HashMap<SpleefPlayer, Integer> playtorequest = new HashMap<SpleefPlayer,Integer>();
 	private HashMap<SpleefPlayer, Integer> crumblerequest = new HashMap<SpleefPlayer,Integer>();
 	
-	
+	private boolean isRecording;
+	private boolean recordingRequest;
+	private GameReplay replay;
 	public SpleefArena(String name,Location mainspawn,Location lobby,Location arena1, Location arena2,SpleefType type) {
 		this.name = name;
 		this.mainspawn = mainspawn;
@@ -79,7 +83,37 @@ public class SpleefArena {
 		this.item= item;	
 	}
 	
+	public GameReplay getReplay() {
+		return this.replay;
+	}
 	
+	public void setReplay(GameReplay replay) {
+		this.replay = replay;
+	}
+	
+	public boolean getRecordingRequest() {
+		return this.recordingRequest;
+	}
+	
+	public void cancelRecordingRequest() {
+		this.recordingRequest = false;
+	}
+	
+	public void doRecordingRequest() {
+		this.recordingRequest = true;
+	}
+	public void record() {
+		this.isRecording = true;
+	}
+	
+	public void resetRecord() {
+		this.isRecording = false;
+	}
+	
+	public boolean isRecording() {
+		return this.isRecording;
+	}
+	 
 	public Material getItem() {
 		return this.item;
 	}
@@ -184,8 +218,8 @@ public class SpleefArena {
 		return this.winstreak;
 	}
 	
-	public List<SpleefKill> getKills() {
-		return this.kills;
+	public List<BrokenBlock> getBrokenBlocks() {
+		return this.brokenblocks;
 	}
 	
 	public void time() {

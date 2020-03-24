@@ -9,14 +9,16 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.DataManager;
+import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
-import me.santipingui58.splindux.game.death.DeathReason;
-import me.santipingui58.splindux.game.death.SpleefKill;
+import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.death.BreakReason;
+import me.santipingui58.splindux.game.death.BrokenBlock;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 public class PlayerListener implements Listener {
 
@@ -37,8 +39,17 @@ public class PlayerListener implements Listener {
 				if (!e.getBlock().getType().equals(Material.SNOW_BLOCK)) {
 					e.setCancelled(true);
 				} else {
+					
+					
 					SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
-					arena.getKills().add(new SpleefKill(e.getBlock().getLocation(),sp,DeathReason.SPLEEFED));
+					BrokenBlock kill = new BrokenBlock(sp,e.getBlock().getLocation(),BreakReason.SHOVEL);
+					arena.getBrokenBlocks().add(kill);
+					
+					new BukkitRunnable() {
+				    	 public void run() {
+				    		 arena.getBrokenBlocks().remove(kill);
+				    	 }
+				     }.runTaskLaterAsynchronously(Main.get(), 20L*10);
 				}
 				} else {
 					e.setCancelled(true);

@@ -1,8 +1,4 @@
 package me.santipingui58.splindux.commands;
-
-
-import java.util.Set;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -13,12 +9,11 @@ import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
 
 
 public class AdminCommand implements CommandExecutor {
 
-	
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
@@ -50,11 +45,9 @@ public class AdminCommand implements CommandExecutor {
 					World world = Bukkit.getWorld(args[1]);
 					p.teleport(world.getSpawnLocation());
 				} else if (args[0].equalsIgnoreCase("test")) {
-					 Set<String> players = Main.data.getConfig().getConfigurationSection("players").getKeys(false);
-					 for (String s : players) {
-						 Main.data.getConfig().set("players."+s+".onlinetime", 0);
-					 }
-					 Main.data.saveConfig();
+					SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+					sp.getOptions().translate(true);
+					
 				}
 			}
 			}

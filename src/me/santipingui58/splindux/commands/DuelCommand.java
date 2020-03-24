@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.GameManager;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.gui.DuelMenu;
 
@@ -29,7 +29,7 @@ public class DuelCommand implements CommandExecutor{
 	 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 	
 	if (args.length<2) {
-		sender.sendMessage("§aUso of command: /duel <Player> Spleef/Splegg");
+		sender.sendMessage("§aUse of command: /duel <Player> Spleef/Splegg");
 	} else {
 		SpleefType type = null;
 		if (args[1].equalsIgnoreCase("Spleef")) {
@@ -37,11 +37,14 @@ public class DuelCommand implements CommandExecutor{
 		} else if (args[1].equalsIgnoreCase("Splegg")) {
 			type = SpleefType.SPLEGG1VS1;
 		} else {
-			sender.sendMessage("§aUso of command: /duel <Player> Spleef/Splegg");
+			sender.sendMessage("§aUse of command: /duel <Player> Spleef/Splegg");
 			return false;
 		}
 		
 		Player op = Bukkit.getPlayer(args[0]);
+		if (!op.hasPlayedBefore()) {
+			sender.sendMessage("§cThe player §b" + args[0] + "§c does not exist or is not online.");
+		}
 		if (SpleefPlayer.getSpleefPlayer(op)==null) {
 			sender.sendMessage("§cThe player §b" + args[0] + "§c does not exist or is not online.");
 			return false;

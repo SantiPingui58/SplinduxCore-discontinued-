@@ -9,7 +9,7 @@ import org.bukkit.Location;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.utils.Utils;
 
 public class HologramManager {
@@ -81,7 +81,7 @@ public class HologramManager {
 	 
 	 
 	 public void updateHolograms() {
-		 for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {			 
+		 for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {			
 			 sendHolograms(sp);
 		 }
 	 }
@@ -91,21 +91,46 @@ public class HologramManager {
 		 }
 	 }
 	 
+	 public void removeHolograms(SpleefPlayer sp) {
+		 for (Hologram h : this.holograms) {
+			 h.delete(sp);
+		 }
+	 }
+	 
 	 public void changeChangeType(SpleefPlayer sp,int id) {
 		 Hologram hologram = getHologramByID(id,sp);
 		 
 		 if (hologram.getChangeType().get(sp).equals(SpleefRankingType.WINS)) {
 			 hologram.getChangeType().put(sp, SpleefRankingType.KILLS);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA KILLS All Time Ranking");
+			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA KILLS");
 		 } else  if (hologram.getChangeType().get(sp).equals(SpleefRankingType.KILLS)) {
 			 hologram.getChangeType().put(sp, SpleefRankingType.GAMES);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA GAMES All Time Ranking");
+			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA GAMES");
 		 } else  if (hologram.getChangeType().get(sp).equals(SpleefRankingType.GAMES)) {
 			 hologram.getChangeType().put(sp, SpleefRankingType.WINS);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA WINS All Time Ranking");
+			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA WINS");
 		 } 
 		 sendHolograms(sp);
 	 }
+	 
+	 
+	 public void changeChangePeriod(SpleefPlayer sp,int id) {
+		 Hologram hologram = getHologramByID(id,sp);
+		 
+		 if (hologram.getChangePeriod().get(sp).equals(SpleefRankingPeriod.ALL_TIME)) {
+			 hologram.getChangePeriod().put(sp, SpleefRankingPeriod.MONTHLY);
+			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA MONTHLY");
+		 } else  if (hologram.getChangePeriod().get(sp).equals(SpleefRankingPeriod.MONTHLY)) {
+			 hologram.getChangePeriod().put(sp, SpleefRankingPeriod.WEEKLY);
+			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA WEEKLY");
+		 } else  if (hologram.getChangePeriod().get(sp).equals(SpleefRankingPeriod.WEEKLY)) {
+			 hologram.getChangePeriod().put(sp, SpleefRankingPeriod.ALL_TIME);
+			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA ALL TIME");
+		 } 
+		 sendHolograms(sp);
+	 }
+	 
+	 
 	 
 	 public Hologram getHologramByID(int id,SpleefPlayer sp) {
 		 for (Hologram h : this.holograms) {

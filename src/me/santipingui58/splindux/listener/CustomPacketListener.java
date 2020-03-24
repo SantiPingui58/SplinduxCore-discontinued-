@@ -15,9 +15,10 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.scoreboard.hologram.Hologram;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
+
 
 public class CustomPacketListener {
 
@@ -34,13 +35,14 @@ public class CustomPacketListener {
                 PacketType.Play.Client.USE_ENTITY) {
 			@Override
             public void onPacketReceiving(PacketEvent event) {
+				if (event.getPacket()==null) return;
 				Player player = event.getPlayer();
             	SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(player);			
                 if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {                
                 	PacketContainer packet = event.getPacket();
                 	for (Hologram h : HologramManager.getManager().getHolograms()) {
-                	
-                		if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp))) {
+                		try {
+                		if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp).get(me.santipingui58.splindux.scoreboard.hologram.PacketType.TYPE))) {
                     		if (!delay.contains(sp)) {
                     		HologramManager.getManager().changeChangeType(sp, packet.getIntegers().read(0));
                     		delay.add(sp);
@@ -51,7 +53,19 @@ public class CustomPacketListener {
                     		}.runTaskLater(Main.get(),3L);
                     		} 
                     		return;
-                    	} 
+                    	} else if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp).get(me.santipingui58.splindux.scoreboard.hologram.PacketType.PERIOD))) {
+                    		if (!delay.contains(sp)) {
+                    		HologramManager.getManager().changeChangePeriod(sp, packet.getIntegers().read(0));
+                    		delay.add(sp);
+                    		new BukkitRunnable() {
+                    		public void run() {
+                    			delay.remove(sp);
+                    		}	
+                    		}.runTaskLater(Main.get(),3L);
+                    		} 
+                    		return;
+                    	}
+                	} catch (Exception e) {}
                 	}
                 	
                 }

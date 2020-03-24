@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
 
 public class LevelManager {
 
@@ -131,5 +131,15 @@ public class LevelManager {
 		  
 	  }
 	 
+	 
+	 public String getPercentage(SpleefPlayer sp) {
+		SpleefRank rank = LevelManager.getManager().getRank(sp);
+		 int current = sp.getLevel()-rank.getRequiredLevel();
+		 int max = rank.getNextRank().getRequiredLevel() - rank.getRequiredLevel();		
+		 double p = (double)current/ (double) max;
+		 int p2 = (int) (p*100);
+		 return String.valueOf(p2)+"%";
+		 
+	 }
 	 
 }

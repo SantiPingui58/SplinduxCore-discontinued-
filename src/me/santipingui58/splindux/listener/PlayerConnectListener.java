@@ -11,14 +11,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameManager;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.security.SecurityManager;
 import me.santipingui58.splindux.stats.level.LevelManager;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import me.santipingui58.splindux.utils.Utils;
@@ -38,10 +39,11 @@ public class PlayerConnectListener implements Listener {
 		SpleefPlayer sp = null;
 		if (!Main.data.getConfig().contains("players."+p.getUniqueId().toString())) {
 		 DataManager.getManager().createSpleefPlayer(p);
+		 return;
 		} 
 		
 		sp = SpleefPlayer.getSpleefPlayer(p);
-		HologramManager.getManager().sendHolograms(sp);
+		
 		DataManager.getManager().saveIP(e.getPlayer());
 		SecurityManager.getManager().adminLogin(sp);
 		sp.setScoreboard(ScoreboardType.LOBBY);
@@ -63,12 +65,19 @@ public class PlayerConnectListener implements Listener {
 		
 		
 		sp.setLastLogin(new Date());
+		
+		new BukkitRunnable() {
+			public void run() {
+		HologramManager.getManager().sendHolograms(SpleefPlayer.getSpleefPlayer(p));
+			}
+		}.runTaskLater(Main.get(), 30L);
 	}
 	@EventHandler
 	public void onLeave(PlayerQuitEvent e) {
 		e.setQuitMessage(null);
 		Player p = e.getPlayer();
 		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);	
+		if (sp==null) return;
 		if (GameManager.getManager().isInGame(sp)) {
 			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
 			GameManager.getManager().leaveQueue(sp, arena);

@@ -11,7 +11,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.stats.RankingType;
 import me.santipingui58.splindux.stats.StatsManager;
 import me.santipingui58.splindux.stats.level.LevelManager;
@@ -40,7 +40,7 @@ public class StatsCommand implements CommandExecutor {
 			p.sendMessage("§aRegister date: §b" + format.format(sp.getRegisterDate()));
 			p.sendMessage("§aTotal Online Time: §b" + Utils.getUtils().minutesToDate(sp.getTotalOnlineTime()));
 			p.sendMessage("§aCurrent Online Time: §b" + Utils.getUtils().secondsToDate(sp.getOnlineTime()));
-			p.sendMessage("§aSpleef Rank: §b" + LevelManager.getManager().getRank(sp).getRankName() + " §7(" + sp.getLevel() + " EXP)");
+			p.sendMessage("§aSpleef Rank: §b" + LevelManager.getManager().getRank(sp).getRankName() + " §7(" + sp.getLevel() + " EXP / " + LevelManager.getManager().getPercentage(sp) +")");
 			p.sendMessage(" ");
 			p.sendMessage("§6-=FFA SPLEEF=-");
 			p.sendMessage("§aFFA Wins: §b"+sp.getFFAWins() + " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEFFFA_WINS,sp) + "° Pos.)");
@@ -70,7 +70,7 @@ public class StatsCommand implements CommandExecutor {
 				p.sendMessage("§aRegister date: §b" + format.format(sp2.getRegisterDate()));
 				p.sendMessage("§aTotal Online Time: §b" + Utils.getUtils().minutesToDate(sp2.getTotalOnlineTime()));
 				p.sendMessage("§aCurrent Online Time: §b" + Utils.getUtils().secondsToDate(sp2.getOnlineTime()));
-				p.sendMessage("§aSpleef Rank: §b" + LevelManager.getManager().getRank(sp2).getRankName() + " §7(" + sp2.getLevel() + " EXP)");
+				p.sendMessage("§aSpleef Rank: §b" + LevelManager.getManager().getRank(sp2).getRankName() + " §7(" + sp2.getLevel() + " EXP / " + LevelManager.getManager().getPercentage(sp2) +")");
 				p.sendMessage(" ");
 				p.sendMessage("§6-=FFA SPLEEF=-");
 				p.sendMessage("§aFFA Wins: §b"+sp2.getFFAWins() + " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEFFFA_WINS, sp2) + "° Pos.)");
@@ -113,7 +113,9 @@ public class StatsCommand implements CommandExecutor {
 				} 
 			
 			}
-		} else {
+		} else if (args[0].equalsIgnoreCase("monthly")) {
+			
+		}else {
 			p.sendMessage("§cPlayer not found.");
 		}
 		}
@@ -122,6 +124,8 @@ public class StatsCommand implements CommandExecutor {
 		return false;
 	}
 
+	
+	
 	
 	private boolean sendRanking(String[] args,RankingType type,SpleefPlayer sp) {
 		Player p = sp.getPlayer();

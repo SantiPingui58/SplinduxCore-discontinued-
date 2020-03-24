@@ -14,8 +14,8 @@ import com.nametagedit.plugin.NametagEdit;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.stats.level.LevelManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -34,7 +34,7 @@ public class PinguiScoreboard {
 				String[] data = null;
 				List<String> cache = new ArrayList<String>();
 				DecimalFormat df = new DecimalFormat("0.00");
-				String displayname = "§e§lSplin§5§lDux";
+				String displayname = "§e§lSplin§b§lDux";
 				if (sp.getScoreboard().equals(ScoreboardType.LOBBY)) {
 					cache.add(displayname);
 					cache.add("§f§f§f");
@@ -134,7 +134,8 @@ public class PinguiScoreboard {
 		if (sp.isAfk() && sp.getPlayer().hasPermission("splindux.afk")) {	
 			NametagEdit.getApi().setPrefix(p, "§7§oAFK ");
 		} else {
-			if (p.hasPermission("splindux.donator")) {
+			String prefix = PermissionsEx.getUser(p).getPrefix();
+			if (!prefix.isEmpty()) {
 			NametagEdit.getApi().setPrefix(p, PermissionsEx.getUser(p).getPrefix());
 			} else {
 				NametagEdit.getApi().setPrefix(p, "§7");

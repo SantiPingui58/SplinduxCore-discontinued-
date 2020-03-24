@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+
 import me.santipingui58.splindux.DataManager;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.scoreboard.hologram.SpleefRankingPeriod;
 
 public class StatsManager {
 
@@ -175,8 +177,6 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 		spleefffawinsranking = sortByValue(spleefffawinsranking);
 		spleefffakillsranking = sortByValue(spleefffakillsranking);
 		spleefffagamesranking = sortByValue(spleefffagamesranking);
-		
-		
 		spleefffawinsranking_monthly = sortByValue(spleefffawinsranking_monthly);
 		spleefffakillsranking_monthly = sortByValue(spleefffakillsranking_monthly);
 		spleefffagamesranking_monthly = sortByValue(spleefffagamesranking_monthly);
@@ -201,10 +201,22 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 		HashMap<String,Integer> hashmap = new HashMap<String,Integer>();
 		if (type.equals(RankingType.SPLEEFFFA_WINS)) {
 			hashmap = spleefffawinsranking;
-		} else if (type.equals(RankingType.SPLEEFFFA_KILLS)) {
+		} else if (type.equals(RankingType.SPLEEFFFA_WINS_MONTHLY)) {
+			hashmap = spleefffawinsranking_monthly;
+		} else if (type.equals(RankingType.SPLEEFFFA_WINS_WEEKLY)) {
+			hashmap = spleefffawinsranking_weekly;
+		}else if (type.equals(RankingType.SPLEEFFFA_KILLS)) {
 			hashmap = spleefffakillsranking;
-		} else if (type.equals(RankingType.SPLEEFFFA_GAMES)) {
+		} else if (type.equals(RankingType.SPLEEFFFA_KILLS_MONTHLY)) {
+			hashmap = spleefffakillsranking_monthly;
+		} else if (type.equals(RankingType.SPLEEFFFA_KILLS_WEEKLY)) {
+			hashmap = spleefffakillsranking_weekly;
+		}else if (type.equals(RankingType.SPLEEFFFA_GAMES)) {
 			hashmap = spleefffagamesranking;
+		}else if (type.equals(RankingType.SPLEEFFFA_GAMES_MONTHLY)) {
+			hashmap = spleefffagamesranking_monthly;
+		} else if (type.equals(RankingType.SPLEEFFFA_GAMES_WEEKLY)) {
+			hashmap = spleefffagamesranking_weekly;
 		} else if (type.equals(RankingType.SPLEEF1VS1_ELO)) {
 			hashmap = spleef1vs1ELOranking;
 		} else if (type.equals(RankingType.SPLEEF1VS1_GAMES)) {
@@ -260,19 +272,30 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 	}
 	
 	public String getAmountByType(RankingType type) {
-		if (type.equals(RankingType.SPLEEFFFA_WINS)) {
+		if (type.equals(RankingType.SPLEEFFFA_WINS) || type.equals(RankingType.SPLEEFFFA_WINS_MONTHLY) || type.equals(RankingType.SPLEEFFFA_WINS_WEEKLY)) {
 			return "Wins";
-		} else if (type.equals(RankingType.SPLEEFFFA_KILLS)) {
+		} else if (type.equals(RankingType.SPLEEFFFA_KILLS) || type.equals(RankingType.SPLEEFFFA_KILLS_MONTHLY) || type.equals(RankingType.SPLEEFFFA_KILLS_WEEKLY)) {
 			return "Kills";
-		} else if (type.equals(RankingType.SPLEEFFFA_GAMES)) {
+		} else if (type.equals(RankingType.SPLEEFFFA_GAMES) || type.equals(RankingType.SPLEEFFFA_GAMES_MONTHLY) || type.equals(RankingType.SPLEEFFFA_GAMES_WEEKLY)) {
 			return "Games";
-		}else if (type.equals(RankingType.SPLEEFFFA_WG)) {
+		}	else if (type.equals(RankingType.SPLEEFFFA_WG)) {
 			return "W/G";
-		}else if (type.equals(RankingType.SPLEEFFFA_KG)) {
+		}	else if (type.equals(RankingType.SPLEEFFFA_KG)) {
 			return "K/G";
 		}
 		return null;
-	}
+	} 
+	
+	public String getAmountByPeriod(SpleefRankingPeriod type) {
+		if (type.equals(SpleefRankingPeriod.ALL_TIME)) {
+			return "All time";
+		} else if (type.equals(SpleefRankingPeriod.MONTHLY)) {
+			return "Monthly";
+		} else if (type.equals(SpleefRankingPeriod.WEEKLY)) {
+			return "Weekly";
+		}
+		return null;
+	} 
 	
 	public String getTitleByType(RankingType type) {
 		if (type.equals(RankingType.SPLEEFFFA_WINS)) {
@@ -288,6 +311,13 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 	}
 	
 	  public  HashMap<String, Integer> sortByValue(HashMap<String,Integer> hm) { 
+		  if (hm.size()<10) {
+				String s = "§f";
+				while (hm.size()<10) {				
+					hm.put("NO_PLAYER"+s, 0);
+					s = s+"§f";
+				}
+			}
 	        // Create a list from elements of HashMap 
 	        List<Map.Entry<String, Integer> > list = 
 	               new LinkedList<Map.Entry<String, Integer> >(hm.entrySet()); 

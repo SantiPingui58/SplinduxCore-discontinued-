@@ -6,8 +6,8 @@ import org.bukkit.event.Listener;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.GameManager;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;

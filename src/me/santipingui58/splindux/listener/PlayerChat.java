@@ -6,21 +6,26 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.stats.level.LevelManager;
+import me.santipingui58.translate.Language;
+import me.santipingui58.translate.TranslateAPI;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 
 
 public class PlayerChat implements Listener {
 	
+	
+	
 	private List<Player> cooldown = new ArrayList<Player>();
-	@EventHandler
+	@EventHandler (priority= EventPriority.MONITOR)
 	public void onChat(AsyncPlayerChatEvent e) {
 		Player p = e.getPlayer();
 		 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
@@ -28,6 +33,11 @@ public class PlayerChat implements Listener {
  			 e.setCancelled(true);
 				 return;	 
 		 }
+		  
+		  
+		  
+		  
+		  
 		  
 		if (!p.hasPermission("splindux.chatcooldown")) {
 			if (cooldown.contains(p)) {
@@ -55,7 +65,46 @@ public class PlayerChat implements Listener {
 		}
 		prefix = prefix + "§7["+ level+"§7] "+c;
 		String msg = e.getMessage();
+
 		 msg = e.getMessage().replaceAll("%", "%%");
+		 
+		 List<Player> remove = new ArrayList<Player>();
+		 for (Player r : e.getRecipients()) {
+			 if (r.equals(p)) continue;
+			 
+			 SpleefPlayer sr = SpleefPlayer.getSpleefPlayer(r);
+			 if (sr.getOptions().hasTranslate()) {
+				 remove.add(r);
+				 String translate = "";
+				 if (sr.getOptions().getLanguage().equals(Language.SPANISH)) {
+					  translate = TranslateAPI.getAPI().translate(msg, Language.ENGLISH, Language.SPANISH);  
+				 } else {
+					 translate = TranslateAPI.getAPI().translate(msg, Language.SPANISH, Language.ENGLISH);  
+				 }
+				 
+				 String output = "";
+				 if (translate==null) {
+					output = msg;
+				 }   else {
+					 output = translate;
+				 }
+				 
+				 if (p.hasPermission("splindux.staff")) {
+					 output = ChatColor.translateAlternateColorCodes('&', output);
+					 r.sendMessage(prefix +p.getName() +"§8: §b"+output );
+				} else if (p.hasPermission("splindux.donatorchat")) {
+					output = ChatColor.translateAlternateColorCodes('&', output);
+					r.sendMessage(prefix +p.getName() +"§8: §f"+output);
+				} else {
+					r.sendMessage(prefix +" "+p.getName() +"§8: §7"+ output );
+				}
+			 }
+		 }
+		 
+		 for (Player r : remove) {
+			 e.getRecipients().remove(r);
+		 }
+		 		
 		if (p.hasPermission("splindux.staff")) {
 			 msg = ChatColor.translateAlternateColorCodes('&', msg);
 			e.setFormat(prefix +p.getName() +"§8: §b"+msg );
