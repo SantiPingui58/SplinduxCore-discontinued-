@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.utils.Utils;
 
@@ -80,7 +81,7 @@ public class SetupCommand implements CommandExecutor {
 				}
 			}  else if (args[0].equalsIgnoreCase("setitem")) {
 				if (args.length==2) {
-					p.sendMessage("§aYou have set the the location of Lobby on arena §b"+ p.getItemInHand().getType());
+					p.sendMessage("§aYou have set the the item to §b"+p.getItemInHand().getType()+ "§a on arena §b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".item", p.getItemInHand().getType().toString());
 					Main.arenas.saveConfig();
 				} else {
@@ -94,12 +95,12 @@ public class SetupCommand implements CommandExecutor {
 				} else {
 					
 				}
-			}else if (args[0].equalsIgnoreCase("settype")) {
+			}else if (args[0].equalsIgnoreCase("setspleeftype")) {
 				if (args.length==3) {
 					try {
 						SpleefType.valueOf(args[2]);
 					p.sendMessage("§aYou have set the the location of Type on arena §b"+ args[1]);
-					Main.arenas.getConfig().set("arenas."+args[1]+".type", args[2]);
+					Main.arenas.getConfig().set("arenas."+args[1]+".spleeftype", args[2]);
 					Main.arenas.saveConfig();
 				} catch(Exception e) {
 					p.sendMessage("§cThe Spleef Type §b" + args[2] + " §cdoes not exist.");
@@ -107,25 +108,40 @@ public class SetupCommand implements CommandExecutor {
 					
 			} else {
 				}
-			} else if (args[0].equalsIgnoreCase("create")) {
+			} else if (args[0].equalsIgnoreCase("setgametype")) {
+				if (args.length==3) {
+					try {
+						GameType.valueOf(args[2]);
+					p.sendMessage("§aYou have set the the location of Type on arena §b"+ args[1]);
+					Main.arenas.getConfig().set("arenas."+args[1]+".gametype", args[2]);
+					Main.arenas.saveConfig();
+				} catch(Exception e) {
+					p.sendMessage("§cThe Game Type §b" + args[2] + " §cdoes not exist.");
+				} 
+					
+			} else {
+				}
+			}else if (args[0].equalsIgnoreCase("create")) {
 				if (args.length == 2) {
 					if (Main.arenas.getConfig().contains("arenas."+args[1]+".arena1") && 
 							Main.arenas.getConfig().contains("arenas."+args[1]+".arena2") &&
 							Main.arenas.getConfig().contains("arenas."+args[1]+".item") &&
-							Main.arenas.getConfig().contains("arenas."+args[1]+".type")) {
+							Main.arenas.getConfig().contains("arenas."+args[1]+".gametype") &&
+							Main.arenas.getConfig().contains("arenas."+args[1]+".spleeftype")) {
 						
 						Location arena1 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".arena1"));
 						Location arena2 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".arena2"));		
 						Material item = Material.valueOf(Main.arenas.getConfig().getString("arenas."+args[1]+".item"));
-						SpleefType type = SpleefType.valueOf(Main.arenas.getConfig().getString("arenas."+args[1]+".type"));
-						if (type.equals(SpleefType.SPLEEFFFA)) {
+						SpleefType spleeftype = SpleefType.valueOf(Main.arenas.getConfig().getString("arenas."+args[1]+".spleeftype"));
+						GameType gametype = GameType.valueOf(Main.arenas.getConfig().getString("arenas."+args[1]+".gametype"));
+						if (gametype.equals(GameType.FFA)) {
 							Location lobby = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".lobby"));
 							Location mainspawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".mainspawn"));
-						DataManager.getManager().loadArena(args[1], mainspawn,null,null, lobby, arena1, arena2, type,null);
-						} else if (type.equals(SpleefType.SPLEEF1VS1)) {
+						DataManager.getManager().loadArena(args[1], mainspawn,null,null, lobby, arena1, arena2,spleeftype,gametype,null);
+						} else if (gametype.equals(GameType.DUEL)) {
 							Location spawn1 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".spawn1"));
 							Location spawn2 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".spawn2"));
-							DataManager.getManager().loadArena(args[1], null,spawn1,spawn2, Main.lobby, arena1, arena2, type,item);
+							DataManager.getManager().loadArena(args[1], null,spawn1,spawn2, Main.lobby, arena1, arena2,spleeftype,gametype,item);
 						}
 						
 						p.sendMessage("§aThe arena §b" + args[1] + " §ahas been created succesfully!.");

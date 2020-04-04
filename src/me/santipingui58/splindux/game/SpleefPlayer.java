@@ -59,8 +59,8 @@ public class SpleefPlayer {
 	private int parkourtimer;
 	private boolean parkour;
 	private SpleefPlayer spectate;
-	private List<SpleefDuel> dueled = new ArrayList<SpleefDuel>();
-	
+	private List<SpleefDuel> duels = new ArrayList<SpleefDuel>();
+
 	
 	private boolean adminlogin;
 	private boolean islogged;
@@ -204,22 +204,39 @@ public class SpleefPlayer {
 		} 
 		return true;
 	}
-	public List<SpleefDuel> getDueledPlayers() {
-		return this.dueled;
+	
+	public boolean isGameDead() {
+		if (GameManager.getManager().isInGame(this)) {
+		if (GameManager.getManager().getArenaByPlayer(this).getDeadPlayers1().contains(this) ||
+				GameManager.getManager().getArenaByPlayer(this).getDeadPlayers2().contains(this)) return true;
+	}	
+		return false;
+	}
+	public List<SpleefDuel> getDuels() {
+		return this.duels;
 	}
 	
-	public boolean isDueled(SpleefPlayer sp) {
-		for (SpleefDuel sd : this.dueled) {
-			if (sd.getPlayer2().equals(sp)) {
+	public SpleefDuel getDuelByUUID(UUID uuid) {
+		for (SpleefDuel d : this.duels) {
+			if (d.getUUID().equals(uuid)) {
+				return d;
+			}
+		}
+		return null;
+	}
+	
+	public boolean hasDueled(SpleefPlayer sp) {
+		for (SpleefDuel sd : this.duels) {
+			if (sd.getDueledPlayers().contains(sp)) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public SpleefDuel getDuelByPlayer(SpleefPlayer sp) {
-		for (SpleefDuel sd : this.dueled) {
-			if (sd.getPlayer2().equals(sp)) {
+	public SpleefDuel getDuelByDueledPlayer(SpleefPlayer sp) {
+		for (SpleefDuel sd : this.duels) {
+			if (sd.getDueledPlayers().contains(sp)) {
 				return sd;
 			}
 		}

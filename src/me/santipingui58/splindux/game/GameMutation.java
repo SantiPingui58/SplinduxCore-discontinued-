@@ -42,6 +42,7 @@ public enum GameMutation {
 	ENDER_SPLEEF, //3
 	BOW_SPLEEF, //3
 	EXPERIENCE_SPLEEF, //3
-	KOHI_SPLEEF; //5
+	KOHI_SPLEEF, //5
+	JUMP_SPLEEF;
 	
 }

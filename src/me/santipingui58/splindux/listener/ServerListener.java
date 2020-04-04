@@ -1,11 +1,15 @@
 package me.santipingui58.splindux.listener;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Egg;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -19,12 +23,15 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
+import org.bukkit.util.Vector;
+
 import com.yapzhenyie.GadgetsMenu.api.GadgetsMenuAPI;
 
 import me.santipingui58.splindux.DataManager;
@@ -35,13 +42,17 @@ import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.death.BreakReason;
 import me.santipingui58.splindux.game.death.BrokenBlock;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import net.apcat.simplesit.SimpleSitPlayer;
 import net.apcat.simplesit.events.PlayerSitEvent;
 import net.apcat.simplesit.events.PlayerStopSittingEvent;
 
+
 public class ServerListener implements Listener {
 
+	private List<SpleefPlayer> spleggDelay = new ArrayList<SpleefPlayer>();
+	
 	@EventHandler
 	public void onSmelt(BlockFadeEvent e) {
 		e.setCancelled(true);
@@ -54,11 +65,31 @@ public class ServerListener implements Listener {
 	
 	@EventHandler 
 	public void onDeath(EntityDamageByEntityEvent e) {
+		if (Main.pvp) {
+		Entity entity = e.getEntity();
+		if (entity instanceof Player) {
+			Player p = (Player) entity;
+			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+			if (GameManager.getManager().isInGame(sp)) {
+				return;
+			}
+		}
+		}
 		e.setCancelled(true);
 	}
 	
 	@EventHandler
 	public void onDamage(EntityDamageEvent e) {
+		if (Main.pvp) {
+		Entity entity = e.getEntity();
+		if (entity instanceof Player) {
+			Player p = (Player) entity;
+			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+			if (GameManager.getManager().isInGame(sp)) {
+				return;
+			}
+		}
+		}
 		e.setCancelled(true);
 	}
 	
@@ -123,24 +154,45 @@ public class ServerListener implements Listener {
 		                                                          
 		                                                         
 	    if (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-	    	if (p.getItemInHand().isSimilar(new ItemStack(Material.GOLD_SPADE))) {
-	    		Snowball snowball = p.getWorld().spawn(p.getEyeLocation(), Snowball.class);
-	    		snowball.setVelocity(p.getLocation().getDirection().multiply(1.5)); 
-	    		snowball.setShooter(p);
+	    	if (p.getItemInHand().isSimilar(DataManager.getManager().gameitems()[9])) {
+	    		if (GameManager.getManager().isInGame(sp)) {
+	    			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+	    			if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) return;
+	    		if (!spleggDelay.contains(sp)) {
+		    		Vector speed = p.getLocation().getDirection().multiply(1.4);
+		    		Vector shift = speed.getCrossProduct(new Vector(0, 1 ,0)).normalize().multiply(0.15);
+		    		Egg egg = p.getWorld().spawn(p.getEyeLocation().add(shift), Egg.class);
+		    		egg.setVelocity(speed);   		
+		    		egg.setShooter(p);
+		    		 p.playSound(p.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5F, 2.0F);
+		    		spleggDelay.add(sp);
+		    		new BukkitRunnable() {
+		    			public void run() {
+		    				spleggDelay.remove(sp);
+		    			}
+		    		}.runTaskLater(Main.get(), 2L);
+		    		}
+	    	}
 	    	} else if (p.getItemInHand().equals(DataManager.getManager().queueitems()[1])) {
 	    			GameManager.getManager().leaveQueue(sp, GameManager.getManager().getArenaByPlayer(sp));    		
 	    	} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[1])) {
 	    		GadgetsMenuAPI.goBackToMainMenu(p);
-	    	}
+	    	} 
+	    		
+	    	
 	    }
 		
 	}
 	
 	
 	
+	@EventHandler
+	public void onEggThrow(PlayerEggThrowEvent event) {
+		 event.setHatching(false);
+	}
 	
 	@EventHandler
-	public void onInventoryMove(InventoryClickEvent e) {		
+	public void onInventoryMove(InventoryClickEvent e) {
 		for (ItemStack i : DataManager.getManager().lobbyitems()) {
 			if (e.getCurrentItem()!=null) {
 				if (e.getCurrentItem().equals(i)) {
@@ -158,6 +210,13 @@ public class ServerListener implements Listener {
 				}
 			}
 		}
+		
+			if (e.getSlot()==5) {
+				e.setCancelled(true);
+			}
+		
+		
+		
 	}
 
 	@SuppressWarnings("deprecation")
@@ -179,6 +238,23 @@ public class ServerListener implements Listener {
 	      }
 	    }
 	    if (hitblock.getType() == Material.SNOW_BLOCK)
+	    {
+	      p.playSound(hitblock.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5F, 2.0F);
+	      hitblock.setType(Material.AIR);
+	      SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+	      BrokenBlock kill = new BrokenBlock(sp,hitblock.getLocation(),BreakReason.SNOWBALL);
+			arena.getBrokenBlocks().add(kill);
+			
+			new BukkitRunnable() {
+		    	 public void run() {
+		    		 arena.getBrokenBlocks().remove(kill);
+		    	 }
+		     }.runTaskLaterAsynchronously(Main.get(), 20L*10);
+	      
+	    }
+	    
+	    
+	    if (hitblock.getTypeId()==159 && GameManager.getManager().getArenaByPlayer(sp).getSpleefType().equals(SpleefType.SPLEGG))
 	    {
 	      p.playSound(hitblock.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5F, 2.0F);
 	      hitblock.setType(Material.AIR);
@@ -275,7 +351,7 @@ public class ServerListener implements Listener {
 		  Player p = e.getPlayer();
 		  SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 		  if (sp==null) return;
-		  if (sp.isSpectating()) {
+		  if (sp.isSpectating() || sp.isGameDead()) {
 		 if( e.getCause().equals(TeleportCause.SPECTATE)) {
 			 e.setCancelled(true);
 		 }		  

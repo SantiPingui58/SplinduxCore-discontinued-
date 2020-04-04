@@ -55,7 +55,7 @@ public class GetCountry {
 				e.printStackTrace();
 			}
 	    	
-			 JSONObject json = new Gson().fromJson(jsonS, JSONObject.class);
+			JSONObject json = new Gson().fromJson(jsonS, JSONObject.class);
 			 sp.setCountry(json.get("countryCode").toString());
 
 	        

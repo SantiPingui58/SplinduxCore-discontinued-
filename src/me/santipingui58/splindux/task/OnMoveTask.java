@@ -11,8 +11,8 @@ import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.death.DeathReason;
+import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.utils.Utils;
 
 
@@ -27,13 +27,15 @@ public class OnMoveTask {
 			
 		    public void run() {
 		    			  
+
+		    	
 		    	for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
 		  		  if (sp.needsAdminLoginQuestionmark() && !sp.isLogged()) {
 		    			sp.getPlayer().teleport(Main.lobby);
 				 }
 		    		
 		    		if (sp.isSpectating()) {
-		    			if (sp.getSpectating().getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 100) {
+		    			if (sp.getSpectating().getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 25) {
 		    				sp.getPlayer().teleport(sp.getSpectating().getLocation());
 		    			}
 		    		}
@@ -50,7 +52,7 @@ public class OnMoveTask {
 
 		    			Location spawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true);
 		    			
-		    			if (sp.getPlayer().getLocation().getY() < 0 ) {
+		    			if (sp.getPlayer().getLocation().getY() < 0  || sp.getPlayer().getLocation().distance(spawn)>100) {
 		    				sp.getPlayer().teleport(spawn);
 		    			}
 		    			
@@ -88,7 +90,7 @@ public class OnMoveTask {
 		    		
 		    		if (GameManager.getManager().isInGame(sp) || GameManager.getManager().isInQueue(sp)) {
 		    			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
-		    			if (arena.getType().equals(SpleefType.SPLEEFFFA)) {
+		    			if (arena.getGameType().equals(GameType.FFA)) {
 		    			if (sp.getLocation().getYaw()==sp.getPlayer().getLocation().getYaw() && sp.getLocation().getPitch()==sp.getPlayer().getLocation().getPitch()) {
 			    			sp.addGameAFKTimer();
 			    			if (sp.getGameAFKTimer()>1600) {		    				
@@ -104,19 +106,23 @@ public class OnMoveTask {
 		    		
 		    		if (GameManager.getManager().isInGame(sp)) {
 		    			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
-		    			
+		    			if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) continue;
 		    			
 		    			if (sp.getPlayer().getLocation().getBlockY()<arena.getArena1().getBlockY()) {	 
 		    				if (arena.getState().equals(GameState.GAME)) {
-		    					HashMap<DeathReason, SpleefPlayer> reason = GameManager.getManager().getDeathReason(sp);
+		    					
+		    					HashMap<DeathReason, SpleefPlayer> reason = new HashMap<DeathReason,SpleefPlayer>();
+		    					if (arena.getGameType().equals(GameType.FFA)) {
+		    						 reason = GameManager.getManager().getDeathReason(sp);
+		    					}
 		    				GameManager.getManager().fell(sp,reason);
 		    				
 		    			}else  {
-		    				if (arena.getType().equals(SpleefType.SPLEEF1VS1)) {
-		    					if (arena.getPlayers().get(0).equals(sp)) {
-		    						sp.getPlayer().teleport(arena.getSpawn1_1vs1());
-		    					} else {
+		    				if (arena.getGameType().equals(GameType.DUEL)) {
+		    					if (arena.getDuelPlayers2().contains(sp)) {
 		    						sp.getPlayer().teleport(arena.getSpawn2_1vs1());
+		    					} else {
+		    						sp.getPlayer().teleport(arena.getSpawn1_1vs1());
 		    					}
 		    				}
 		    			}

@@ -6,7 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,10 +26,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.replay.BrokenBlock;
 import me.santipingui58.splindux.replay.GameReplay;
+import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
+import me.santipingui58.splindux.stats.RankingType;
+import me.santipingui58.splindux.stats.StatsManager;
 import me.santipingui58.splindux.utils.ItemBuilder;
 import me.santipingui58.splindux.utils.Utils;
 import me.santipingui58.translate.Language;
@@ -94,7 +101,8 @@ public class  DataManager {
 			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			Main.data.getConfig().set("players."+p.getUniqueId()+".registerdate", format.format(now));
 			Main.data.getConfig().set("players."+p.getUniqueId()+".onlinetime",0);
-			Main.data.getConfig().set("players."+p.getUniqueId()+".coins",0);			
+			Main.data.getConfig().set("players."+p.getUniqueId()+".coins",0);		
+			Main.data.getConfig().set("players."+p.getUniqueId()+".options.translate",true);	
 			Main.data.saveConfig();
 			
 			loadPlayer(p.getUniqueId().toString());
@@ -321,12 +329,12 @@ public class  DataManager {
 		 }
 		   
 	 }
-	 public SpleefArena loadArena(String name, Location mainspawn,Location spawn1,Location spawn2,Location lobby,Location arena1,Location arena2,SpleefType type,Material item) {  
+	 public SpleefArena loadArena(String name, Location mainspawn,Location spawn1,Location spawn2,Location lobby,Location arena1,Location arena2,SpleefType spleeftype,GameType gametype,Material item) {  
 		 SpleefArena a = null;
-		 if (type.equals(SpleefType.SPLEEFFFA)) {
-		  a = new SpleefArena(name,mainspawn,lobby,arena1,arena2,type);
-		 } else if (type.equals(SpleefType.SPLEEF1VS1)) {
-			 a = new SpleefArena(name,spawn1,spawn2,lobby,arena1,arena2,type,item);
+		 if (gametype.equals(GameType.FFA)) {
+		  a = new SpleefArena(name,mainspawn,lobby,arena1,arena2,spleeftype,gametype);
+		 } else if (gametype.equals(GameType.DUEL)) {
+			 a = new SpleefArena(name,spawn1,spawn2,lobby,arena1,arena2,spleeftype,gametype,item);
 		 }
         this.arenas.add(a);      
         GameManager.getManager().resetArena(a);
@@ -345,22 +353,24 @@ public class  DataManager {
     				Location lobby = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".lobby"), false);	
         			Location arena1 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".arena1"), false);
         			Location arena2 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".arena2"), false);
-    				String type = Main.arenas.getConfig().getString("arenas."+b+".type");
-    				type = type.toUpperCase();		
-    				SpleefType spleeftype = SpleefType.valueOf(type);
-    			
+    				String stype = Main.arenas.getConfig().getString("arenas."+b+".spleeftype");
+    				String gtype = Main.arenas.getConfig().getString("arenas."+b+".gametype");
+    				stype = stype.toUpperCase();	
+    				gtype = gtype.toUpperCase();	
+    				SpleefType spleeftype = SpleefType.valueOf(stype);
+    				GameType gametype = GameType.valueOf(gtype);
     				
-    				if (spleeftype.equals(SpleefType.SPLEEFFFA)) {
+    				if (gametype.equals(GameType.FFA)) {
     			Location mainspawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".mainspawn"), false);
-				DataManager.getManager().loadArena(b,mainspawn,null,null,lobby,arena1,arena2,spleeftype,null);
-    				} else if (spleeftype.equals(SpleefType.SPLEEF1VS1)) {
+				DataManager.getManager().loadArena(b,mainspawn,null,null,lobby,arena1,arena2,spleeftype,gametype,null);
+    				} else if (gametype.equals(GameType.DUEL)) {
     					Location spawn1 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".spawn1"), true);
             			Location spawn2 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".spawn2"), true);
             			String it = null;
             			 it = Main.arenas.getConfig().getString("arenas."+b+".item");
          				it = it.toUpperCase();
          				Material item = Material.valueOf(it);
-            			DataManager.getManager().loadArena(b,null,spawn1,spawn2,lobby,arena1,arena2,spleeftype, item);
+            			DataManager.getManager().loadArena(b,null,spawn1,spawn2,lobby,arena1,arena2,spleeftype,gametype, item);
     				}
 				arenasint++;
     			} catch (Exception e) {
@@ -374,11 +384,13 @@ public class  DataManager {
      
     
     public void resetMonthlyStats() {
+    	HologramManager.getManager().updateHolograms();
     	for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
     		Main.data.getConfig().set("players."+s+".stats.monthly.FFA_kills", 0);
     		Main.data.getConfig().set("players."+s+".stats.monthly.FFA_games", 0);
-    		Main.data.getConfig().set("players."+s+".stats.monthly.FFA_games", 0);
+    		Main.data.getConfig().set("players."+s+".stats.monthly.FFA_wins", 0);
     	}
+    	
     	
     	Main.data.saveConfig();
     	
@@ -387,6 +399,8 @@ public class  DataManager {
     		sp.setMonthlyFFAKills(0);
     		sp.setMonthlyFFAWins(0);
     	}
+    	
+    	
     }
 
     public void resetDailyWinsLimit() {
@@ -397,32 +411,68 @@ public class  DataManager {
     	Main.data.saveConfig();
     }
     
-    public void resetWeeklyStats() {
+    @SuppressWarnings("deprecation")
+	public void resetWeeklyStats() {
+    	HologramManager.getManager().updateHolograms();
+    	
+    	HashMap<String, Integer> hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEF1VS1_WINS_WEEKLY);
+    	
+    	HashMap<String,Integer> topPositions = new HashMap<String,Integer>();
+    	 Iterator<Entry<String, Integer>> it = hashmap.entrySet().iterator();
+    	 int i = 1;
+    	    while (it.hasNext()) {
+    	        Map.Entry<String,Integer> pair = (Map.Entry<String,Integer>)it.next();
+    	        while(i<=10) {
+    	        String s = pair.getKey();
+    	       topPositions.put(s, i);
+    	       i++;
+    	        } 
+    	    }
+    	
+    	
     	for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
     		Main.data.getConfig().set("players."+s+".stats.weekly.FFA_kills", 0);
     		Main.data.getConfig().set("players."+s+".stats.weekly.FFA_games", 0);
-    		Main.data.getConfig().set("players."+s+".stats.weekly.FFA_games", 0);
+    		Main.data.getConfig().set("players."+s+".stats.weekly.FFA_wins", 0);
+    		String name = Bukkit.getOfflinePlayer(s).getName();
+    		if (topPositions.containsKey(name)) {
+    			int stars = 0;
+    			if (topPositions.get(name)==1) stars = 5;
+    			else if (topPositions.get(name)<=4) stars = 4;
+    			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gmysteryboxes give " + name+ " 1 "  + stars);
+    		}
+    		 
     	}
     	
+    	 	
     	Main.data.saveConfig();
+    	
+    	 
     	
     	for (SpleefPlayer sp : this.players) {
     		sp.setWeeklyFFAGames(0);
     		sp.setWeeklyFFAKills(0);
     		sp.setWeeklyFFAWins(0);
     	}
+    	
+    	
     }
     
 	
 	public void giveGameItems(SpleefPlayer sp) {
 		sp.getPlayer().getInventory().clear();
 		SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+		if (arena.getSpleefType().equals(SpleefType.SPLEEF)) {
 		if (sp.getPlayer().hasPermission("splindux.diamondshovel")) {
 			sp.getPlayer().getInventory().setItem(0, gameitems()[1]);
 		} else {
 			sp.getPlayer().getInventory().setItem(0, gameitems()[0]);
 		}
-		if (arena.getType().equals(SpleefType.SPLEEFFFA)) {
+		} else if (arena.getSpleefType().equals(SpleefType.SPLEGG)) {
+			sp.getPlayer().getInventory().setItem(0, gameitems()[9]);
+		}
+		
+		if (arena.getGameType().equals(GameType.FFA) && arena.getSpleefType().equals(SpleefType.SPLEEF)) {
 		if (sp.getPlayer().hasPermission("splindux.x10snowballs")) {
 			sp.getPlayer().getInventory().setItem(1, gameitems()[6]);
 		} else if (sp.getPlayer().hasPermission("splindux.x8snowballs")) {
@@ -434,10 +484,20 @@ public class  DataManager {
 		} else {
 			sp.getPlayer().getInventory().setItem(1, gameitems()[2]);
 		}
-			
 		
-		//giveLeaderboardHelmets(sp);
+		} else if (arena.getGameType().equals(GameType.DUEL) && arena.getDuelPlayers1().size()>=2 && arena.getDuelPlayers2().size()>=2) {
+
+			if (arena.getDuelPlayers1().contains(sp)) {
+				sp.getPlayer().getInventory().setHelmet(gameitems()[7]);
+				sp.getPlayer().getInventory().setItem(8, new ItemStack(Material.INK_SACK,1,(byte) 4));
+			} else if (arena.getDuelPlayers2().contains(sp)) {
+				sp.getPlayer().getInventory().setHelmet(gameitems()[8]);
+				sp.getPlayer().getInventory().setItem(8, new ItemStack(Material.INK_SACK,1,(byte) 1));
+			}
+		
 		}
+		
+		
 	}
 	
 	public void giveLobbyItems(SpleefPlayer sp) {
@@ -470,13 +530,23 @@ public class  DataManager {
 		diamondMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		diamond_shovel.setItemMeta(diamondMeta);
 		
+		ItemStack golden_shovel = new ItemStack(Material.GOLD_SPADE);
+		ItemMeta goldenMeta = diamond_shovel.getItemMeta();
+		goldenMeta.setUnbreakable(true);
+		goldenMeta.addEnchant(Enchantment.DIG_SPEED, 5, true);
+		goldenMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+		golden_shovel.setItemMeta(goldenMeta);
+		
 		ItemStack x2snowball = new ItemBuilder(Material.SNOW_BALL).setAmount(2).build();
 		ItemStack x4snowball = new ItemBuilder(Material.SNOW_BALL).setAmount(4).build();
 		ItemStack x6snowball = new ItemBuilder(Material.SNOW_BALL).setAmount(6).build();
 		ItemStack x8snowball = new ItemBuilder(Material.SNOW_BALL).setAmount(8).build();
 		ItemStack x10snowball = new ItemBuilder(Material.SNOW_BALL).setAmount(10).build();
 		
-		ItemStack[] items = {iron_shovel, diamond_shovel, x2snowball,x4snowball,x6snowball,x8snowball,x10snowball};
+		ItemStack redflag = new ItemBuilder(Material.WOOL,1,(byte)14).build();
+		ItemStack blueflag = new ItemBuilder(Material.WOOL,1,(byte)11).build();
+	
+		ItemStack[] items = {iron_shovel, diamond_shovel, x2snowball,x4snowball,x6snowball,x8snowball,x10snowball,blueflag,redflag,golden_shovel};
 		return items;
 	}
 	
@@ -514,6 +584,12 @@ public class  DataManager {
 			|| s.equalsIgnoreCase("GT")
 			|| s.equalsIgnoreCase("HN")) {
 			return Language.SPANISH;
+		} else if (s.equalsIgnoreCase("RU")
+				|| s.equalsIgnoreCase("BY")
+				|| s.equalsIgnoreCase("KZ")
+				|| s.equalsIgnoreCase("KG")
+				|| s.equalsIgnoreCase("UZ")){
+			return Language.RUSSIAN;
 		} else {
 			return Language.ENGLISH;
 		}

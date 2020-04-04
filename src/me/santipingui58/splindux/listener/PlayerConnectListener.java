@@ -20,6 +20,7 @@ import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.security.SecurityManager;
 import me.santipingui58.splindux.stats.level.LevelManager;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefDuel;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import me.santipingui58.splindux.utils.Utils;
@@ -78,6 +79,8 @@ public class PlayerConnectListener implements Listener {
 		Player p = e.getPlayer();
 		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);	
 		if (sp==null) return;
+		
+	
 		if (GameManager.getManager().isInGame(sp)) {
 			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
 			GameManager.getManager().leaveQueue(sp, arena);
@@ -85,10 +88,22 @@ public class PlayerConnectListener implements Listener {
 					s.getPlayer().sendMessage(ChatColor.GOLD + e.getPlayer().getName() + " §chas left the server!");
 				}
 			}	
-		if (GameManager.getManager().isInQueue(sp)) {
-			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
-			GameManager.getManager().leaveQueue(sp, arena);
+
+
+		
+		for (SpleefPlayer online : DataManager.getManager().getOnlinePlayers()) {
+			if (online.getDuelByDueledPlayer(sp)!=null) {
+				SpleefDuel duel = online.getDuelByDueledPlayer(sp);
+				if (duel.getDueledPlayers().contains(sp)) {
+					for (SpleefPlayer dueled : duel.getDueledPlayers()) {
+					dueled.getPlayer().sendMessage("§cThe player §b" + sp.getPlayer().getName() + "§c has left the Server! Duel cancelled.");
+					}
+					duel.getChallenger().getDuels().remove(duel);
+				}
+			}
 		}
+		
+		GameManager.getManager().leave(sp);
 		DataManager.getManager().saveData(sp);
 		}
 	

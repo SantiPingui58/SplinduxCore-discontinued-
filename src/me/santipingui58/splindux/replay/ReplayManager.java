@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import me.santipingui58.splindux.DataManager;
+import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 
 public class ReplayManager {
@@ -19,14 +20,35 @@ public class ReplayManager {
 		 Date now = new Date();
 			SimpleDateFormat format = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");
 		String string = format.format(now);
-		return string + "_" + arena.getPlayers().get(0).getOfflinePlayer().getName()+"_vs_" + arena.getPlayers().get(1).getOfflinePlayer().getName();
+		return string + "_" + teamName(arena)[0]+"_vs_" + teamName(arena)[1];
 	}
 	
 	
-	
+	public String[] teamName(SpleefArena arena) {
+		String p1 = null;
+		 String p2 = null;
+		 for (SpleefPlayer sp1 : arena.getDuelPlayers1()) {
+			if(p1==null) {
+			p1 = sp1.getOfflinePlayer().getName();	
+			}  else {
+				p1 = "_" + sp1.getOfflinePlayer().getName();
+			}
+		 }
+		 
+		 for (SpleefPlayer sp1 : arena.getDuelPlayers2()) {
+				if(p1==null) {
+				p1 = sp1.getOfflinePlayer().getName();	
+				}  else {
+					p1 = "_" + sp1.getOfflinePlayer().getName();
+				}
+			 }
+		 String[] r = {p1,p2};
+		return r;
+	}
 	public GameReplay createReplay(String name) {
 		GameReplay replay = new GameReplay(name);
 		DataManager.getManager().getReplays().add(replay);
+		
 		return replay;
 	}
 }

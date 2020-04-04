@@ -16,7 +16,8 @@ import me.santipingui58.splindux.utils.Utils;
 
 public class SpleefArena {
 
-	private SpleefType type;
+	private SpleefType spleeftype;
+	private GameType gametype;
 	private Location mainspawn;
 	private Location lobby;
 	private Location arena1;
@@ -28,7 +29,11 @@ public class SpleefArena {
 	private int time;
 	private int totaltime;
 	private GameState state;
-	private List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
+	private List<SpleefPlayer> FFAplayers = new ArrayList<SpleefPlayer>();
+	private List<SpleefPlayer> spleefDuelPlayers1 = new ArrayList<SpleefPlayer>();
+	private List<SpleefPlayer> spleefDuelPlayers2 = new ArrayList<SpleefPlayer>();
+	private List<SpleefPlayer> duelDeadPlayers1 = new ArrayList<SpleefPlayer>();
+	private List<SpleefPlayer> duelDeadPlayers2 = new ArrayList<SpleefPlayer>();
 	private List<SpleefPlayer> queue = new ArrayList<SpleefPlayer>();
 	private List<BrokenBlock> brokenblocks = new ArrayList<BrokenBlock>();
 	
@@ -45,33 +50,34 @@ public class SpleefArena {
 	private List<SpleefPlayer> resetrequest = new ArrayList<SpleefPlayer>();
 	private List<SpleefPlayer> endgamerequest = new ArrayList<SpleefPlayer>();
 	
-	private HashMap<SpleefPlayer, Integer> playtorequest = new HashMap<SpleefPlayer,Integer>();
-	private HashMap<SpleefPlayer, Integer> crumblerequest = new HashMap<SpleefPlayer,Integer>();
-	
+	private Request crumbleRequest;
+	private Request playtoRequest;
 	private boolean isRecording;
 	private boolean recordingRequest;
 	private GameReplay replay;
-	public SpleefArena(String name,Location mainspawn,Location lobby,Location arena1, Location arena2,SpleefType type) {
+	public SpleefArena(String name,Location mainspawn,Location lobby,Location arena1, Location arena2,SpleefType spleeftype,GameType gametype) {
 		this.name = name;
 		this.mainspawn = mainspawn;
 		this.lobby = lobby;
 		this.arena1 = arena1;
 		this.arena2 = arena2;
-		this.type = type;
+		this.spleeftype = spleeftype;
+		this.gametype = gametype;
 		this.state = GameState.LOBBY;
 		this.time = 150;
 		
 		
 	}
 
-	public SpleefArena(String name,Location spawn1,Location spawn2,Location lobby,Location arena1, Location arena2,SpleefType type,Material item) {
+	public SpleefArena(String name,Location spawn1,Location spawn2,Location lobby,Location arena1, Location arena2,SpleefType spleeftype, GameType gametype,Material item) {
 		this.name = name;
 		this.spawn1 = spawn1;
 		this.spawn2 = spawn2;
 		this.lobby = lobby;
 		this.arena1 = arena1;
 		this.arena2 = arena2;
-		this.type = type;
+		this.spleeftype = spleeftype;
+		this.gametype = gametype;
 		this.state = GameState.LOBBY;
 		this.time = 150;
 		this.resetround = 0;
@@ -81,6 +87,22 @@ public class SpleefArena {
 		this.spawn2_1vs1 = this.spawn2;
 		this.playto = 7;
 		this.item= item;	
+	}
+	
+	public Request getCrumbleRequest() {
+		return this.crumbleRequest;
+	}
+	
+	public void setCrumbleRequest(Request request) {
+		this.crumbleRequest= request;
+	}
+	
+	public Request getPlayToRequest() {
+		return this.playtoRequest;
+	}
+	
+	public void setPlayToRequest(Request request) {
+		this.playtoRequest= request;
 	}
 	
 	public GameReplay getReplay() {
@@ -117,12 +139,7 @@ public class SpleefArena {
 	public Material getItem() {
 		return this.item;
 	}
-	public HashMap<SpleefPlayer,Integer> getPlayToRequest() {
-		return this.playtorequest;
-	}
-	public HashMap<SpleefPlayer,Integer> getCrumbleRequest() {
-		return this.crumblerequest;
-	}
+
 	
 	public List<SpleefPlayer> getResetRequest() {
 		return this.resetrequest;
@@ -241,9 +258,9 @@ public class SpleefArena {
 		return this.totaltime;
 	}
 	public void resetTimer() {
-		if (this.type.equals(SpleefType.SPLEEFFFA)) {
+		if (this.gametype.equals(GameType.FFA)) {
 		this.time = 150;
-		} else if (this.type.equals(SpleefType.SPLEEF1VS1)) {
+		} else if (this.gametype.equals(GameType.DUEL)) {
 			if (this.resetround==0) {
 				this.time = 180;
 			} else if (this.resetround==1){
@@ -276,10 +293,23 @@ public class SpleefArena {
 			
 		}
 	}
-	public List<SpleefPlayer> getViewers() {
+	public List<SpleefPlayer> getViewers() {	
 		List<SpleefPlayer> viewers = new ArrayList<SpleefPlayer>();
-		for (SpleefPlayer s : this.players) {
+		if (this.gametype.equals(GameType.FFA)) {
+		for (SpleefPlayer s : this.FFAplayers) {
 			viewers.add(s);
+		}
+		} else if (this.gametype.equals(GameType.DUEL)) {
+			for (SpleefPlayer s : getPlayers()) {
+				viewers.add(s);
+			}
+			
+			for (SpleefPlayer s : getPlayers()) {
+				for (SpleefPlayer sp : s.getSpectators()) {
+					if (!viewers.contains(sp))
+					viewers.add(sp);
+				}
+			}
 		}
 		for (SpleefPlayer s : this.queue) {
 			if (!viewers.contains(s)) {
@@ -289,8 +319,25 @@ public class SpleefArena {
 		return viewers;
 	}
 	
-	public List<SpleefPlayer> getPlayers() {
-		return this.players;
+	public List<SpleefPlayer> getFFAPlayers() {
+		return this.FFAplayers;
+	}
+	
+	public List<SpleefPlayer> getDuelPlayers1() {
+		return this.spleefDuelPlayers1;
+	}
+	
+	public List<SpleefPlayer> getDuelPlayers2() {
+		return this.spleefDuelPlayers2;	
+	}
+	
+	
+	public List<SpleefPlayer> getDeadPlayers1() {
+		return this.duelDeadPlayers1;
+	}
+	
+	public List<SpleefPlayer> getDeadPlayers2() {
+		return this.duelDeadPlayers2;	
 	}
 	
 	public int getTime() {
@@ -331,7 +378,46 @@ public class SpleefArena {
 		return this.arena2;
 	}
 	
-	public SpleefType getType() {
-		return this.type;
+	public SpleefType getSpleefType() {
+		return this.spleeftype;
+	}
+	
+	public GameType getGameType() {
+		return this.gametype;
+	}
+	
+	public List<SpleefPlayer> getPlayers() {
+		if (this.gametype.equals(GameType.FFA)) {
+			return this.FFAplayers;
+		} else if (this.gametype.equals(GameType.DUEL)) {
+			List<SpleefPlayer> list = new ArrayList<SpleefPlayer>();
+			list.addAll(spleefDuelPlayers1);
+			list.addAll(spleefDuelPlayers2);
+			return list;
+		}
+		
+		return null;
+	}
+	
+	public String getTeamName(int i) {
+		if (i!=1 && i!=2) return null;
+		 List<SpleefPlayer> list = new ArrayList<SpleefPlayer>();
+		 if (i==1) {
+			 list.addAll(this.spleefDuelPlayers1);
+		 } else if (i==2) {
+			 list.addAll(this.spleefDuelPlayers2);
+			 }
+		 
+		 String p = "";
+		 for (SpleefPlayer sp : list) {
+			if(p.equalsIgnoreCase("")) {
+			p = sp.getOfflinePlayer().getName();	
+			}  else {
+				p = p+"-" + sp.getOfflinePlayer().getName();
+			}
+		 }
+		 
+		return p;
+		
 	}
 }

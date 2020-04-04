@@ -1,6 +1,5 @@
 package me.santipingui58.splindux;
 
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.WorldCreator;
@@ -56,21 +55,32 @@ import me.santipingui58.splindux.task.TabTask;
 import me.santipingui58.splindux.utils.Configuration;
 import me.santipingui58.splindux.utils.Utils;
 
-//Añadir todas las arenas
-//Powerups
+
+//Agregar 3 arenas por mapa  2.2.1.0
+//Cambiar el tamaño de las arenas según cantidad de jugadores
+//En el menú de duel, que te ordene los mapas según el tamaño recomendable de la arena
+
+//Powerups 2.3.0.0
 //FFA Event
-//Parkour
-//Replay
-//Splegg
-//Spleef KotH
-//Spleef Mobs
-//Ranked
-//Votar NameMC
+
+//Votar NameMC 2.4.0.0
 //Join Discord
 //Votifier
+
+//Ranked 2.5.0.0
 //Friends
+//LootBoxes
+
+//Test Arena 2.6.0.0
+//Spleef KotH
+//Spleef Mobs
+
+//Parkour
+//Replay
+
+
+
 //Anticheat
-//Translate
 //BowSpleef
 //guilds
 
@@ -82,6 +92,7 @@ public class Main extends JavaPlugin {
 	public static boolean prefix_enabled;
 	public static Configuration config,messages,arenas,data,recordings;
 	public static Location lobby;
+	public static boolean pvp;
 	public static Plugin get() {
 	    return pl;
 	  }	
@@ -113,6 +124,7 @@ public class Main extends JavaPlugin {
 			@Override
 			public void run() {
 				new WorldCreator("arenas").createWorld();
+				new WorldCreator("construccion").createWorld();
 				
 			}
 			
@@ -122,6 +134,7 @@ public class Main extends JavaPlugin {
 		@Override
 		public void run() {
 			DataManager.getManager().loadArenas();
+
 		}
 		
 	}.runTaskLater(this, 20L);
@@ -130,6 +143,7 @@ public class Main extends JavaPlugin {
 	new BukkitRunnable() {
 		public void run() {
 			HologramManager.getManager().updateHolograms();
+
 		}
 		
 	}.runTaskLater(this, 60L);
@@ -186,6 +200,9 @@ public class Main extends JavaPlugin {
                } catch(Exception e) {}
 	 */
 	
+	
+	
+
 	}
 
 	@Override

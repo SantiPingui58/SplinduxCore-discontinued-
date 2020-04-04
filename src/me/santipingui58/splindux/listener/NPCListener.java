@@ -7,8 +7,8 @@ import org.bukkit.event.Listener;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefType;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
 public class NPCListener implements Listener {
@@ -23,7 +23,7 @@ public class NPCListener implements Listener {
 		//FFA
 		if (npc.getId()==0) {
 			for (SpleefArena arena : DataManager.getManager().getArenas()) {
-				if (arena.getType().equals(SpleefType.SPLEEFFFA)) {
+				if (arena.getGameType().equals(GameType.FFA)) {
 					GameManager.getManager().addQueue(sp, arena);
 					
 					}

@@ -1,10 +1,9 @@
 package me.santipingui58.splindux.task;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
-import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.scoreboard.PinguiScoreboard;
 
 
@@ -22,8 +21,8 @@ public class ScoreboardTask {
 			
 		    public void run() {
 		    	
-		    	for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {	   		    		
-		    		PinguiScoreboard.getScoreboard().scoreboard(sp);	
+		    	for (Player p : Bukkit.getOnlinePlayers()) {	   		    		
+		    		PinguiScoreboard.getScoreboard().scoreboard(p);	
 		    		
 		    		}
 		    }

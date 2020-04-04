@@ -54,7 +54,18 @@ public class Utils {
 	 }
 	 
 	 
-	
+	public String getPlayerNamesFromList(List<SpleefPlayer> list) {		 
+		 String p = "";
+		 for (SpleefPlayer sp : list) {
+			if(p.equalsIgnoreCase("")) {
+			p = sp.getOfflinePlayer().getName();	
+			}  else {
+				p = p+", " + sp.getOfflinePlayer().getName();
+			}
+		 }
+		 
+		return p;
+	}
 	 
 	  public  String setLoc(Location loc, boolean pitch)
 	  {

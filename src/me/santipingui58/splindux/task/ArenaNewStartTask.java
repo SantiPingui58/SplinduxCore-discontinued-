@@ -6,8 +6,8 @@ import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefType;
 
 public class ArenaNewStartTask {
 
@@ -29,7 +29,7 @@ public class ArenaNewStartTask {
                @Override
                public void run() {
             	   int size = 3;
-            	   if (arena.getType().equals(SpleefType.SPLEEF1VS1)) {
+            	   if (arena.getGameType().equals(GameType.DUEL)) {
             		   size = 2;
             	   }
             	   if (arena.getQueue().size()>=size) {

@@ -26,14 +26,16 @@ public class OnlineTimeTask {
 		    	}
 		    	EconomyManager.getManager().checkSplinboxes();
 		    	Date date = new Date();
-                if (date.getHours() == 0 && date.getMinutes() == 0) {
+                if (date.getHours() == 0 && date.getMinutes() == 0 && date.getSeconds()==0) {
                 	if (date.getDay()==0) {
                 		DataManager.getManager().resetWeeklyStats();
+                		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "plugman reload SplinduxCore");
                 		}
                 	
                 	
 	                if (date.getDate()==1){
 	                	DataManager.getManager().resetMonthlyStats();
+	                	Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "plugman reload SplinduxCore");
 	                }
 	                
                 }

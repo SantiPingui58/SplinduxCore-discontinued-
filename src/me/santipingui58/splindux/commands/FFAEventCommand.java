@@ -17,7 +17,7 @@ import me.santipingui58.splindux.gui.DuelMenu;
 
 
 
-public class DuelCommand implements CommandExecutor{
+public class FFAEventCommand implements CommandExecutor{
 
 	
 	
@@ -28,7 +28,7 @@ public class DuelCommand implements CommandExecutor{
 			sender.sendMessage("Solo los jugadores pueden hacer esto!");
 			return true;
 			
-} else if(cmd.getName().equalsIgnoreCase("duel")){
+} else if(cmd.getName().equalsIgnoreCase("ffaevent")){
 	final Player p = (Player) sender;
 	 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 	

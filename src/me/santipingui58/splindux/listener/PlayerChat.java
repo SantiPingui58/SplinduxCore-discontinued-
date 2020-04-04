@@ -34,11 +34,6 @@ public class PlayerChat implements Listener {
 				 return;	 
 		 }
 		  
-		  
-		  
-		  
-		  
-		  
 		if (!p.hasPermission("splindux.chatcooldown")) {
 			if (cooldown.contains(p)) {
 					p.sendMessage("§cWait 2 seconds between messages.");
@@ -76,14 +71,15 @@ public class PlayerChat implements Listener {
 			 if (sr.getOptions().hasTranslate()) {
 				 remove.add(r);
 				 String translate = "";
-				 if (sr.getOptions().getLanguage().equals(Language.SPANISH)) {
-					  translate = TranslateAPI.getAPI().translate(msg, Language.ENGLISH, Language.SPANISH);  
-				 } else {
-					 translate = TranslateAPI.getAPI().translate(msg, Language.SPANISH, Language.ENGLISH);  
-				 }
+				 Language receptor = sr.getOptions().getLanguage();
+				 Language emisor = sp.getOptions().getLanguage();
 				 
+				 if (receptor!=emisor) {
+					 translate = TranslateAPI.getAPI().translate(msg, emisor, receptor);
+				 }
+
 				 String output = "";
-				 if (translate==null) {
+				 if (translate==null || translate=="") {
 					output = msg;
 				 }   else {
 					 output = translate;
