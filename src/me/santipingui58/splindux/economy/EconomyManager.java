@@ -44,7 +44,7 @@ public class EconomyManager extends GEconomyProvider {
 	  
 	  public void checkSplinboxes() {
 		  for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
-			  if (sp.getSplinboxPoints()>=18000) {
+			  if (sp.getSplinboxPoints()>=25000) {
 				  sp.resetSplinboxPoints();
 
 				   int r = new Random().nextInt((100 - 1) + 1) + 1;

@@ -75,7 +75,7 @@ public class ResetCommand implements CommandExecutor {
 			+ Utils.getUtils().getPlayerNamesFromList(list) + ")");
 				
 				
-				if (arena.getPlayers().contains(players) && !arena.getResetRequest().contains(players)) {
+				if (arena.getPlayers().contains(players) && !arena.getResetRequest().contains(players) && !arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {
 				TextComponent message = new TextComponent("§bClick here to reset the arena!");
 				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/reset"));
 				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aReset arena").create()));

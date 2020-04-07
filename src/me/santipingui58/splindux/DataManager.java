@@ -329,15 +329,15 @@ public class  DataManager {
 		 }
 		   
 	 }
-	 public SpleefArena loadArena(String name, Location mainspawn,Location spawn1,Location spawn2,Location lobby,Location arena1,Location arena2,SpleefType spleeftype,GameType gametype,Material item) {  
+	 public SpleefArena loadArena(String name, Location mainspawn,Location spawn1,Location spawn2,Location lobby,Location arena1,Location arena2,SpleefType spleeftype,GameType gametype,Material item,int min,int max) {  
 		 SpleefArena a = null;
 		 if (gametype.equals(GameType.FFA)) {
 		  a = new SpleefArena(name,mainspawn,lobby,arena1,arena2,spleeftype,gametype);
 		 } else if (gametype.equals(GameType.DUEL)) {
-			 a = new SpleefArena(name,spawn1,spawn2,lobby,arena1,arena2,spleeftype,gametype,item);
+			 a = new SpleefArena(name,spawn1,spawn2,lobby,arena1,arena2,spleeftype,gametype,item,0,0);
 		 }
         this.arenas.add(a);      
-        GameManager.getManager().resetArena(a);
+        GameManager.getManager().resetArena(a,false);
         return a;
     }
     

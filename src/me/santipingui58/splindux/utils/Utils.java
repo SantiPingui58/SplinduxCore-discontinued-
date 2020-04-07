@@ -3,7 +3,9 @@ package me.santipingui58.splindux.utils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -32,7 +34,15 @@ public class Utils {
 	        return manager;
 	    }
 	
-	
+
+	 public <T> boolean hasDuplicate(Iterable<T> all) {
+		    Set<T> set = new HashSet<T>();
+		    // Set#add returns false if the set does not change, which
+		    // indicates that a duplicate element has been added.
+		    for (T each: all) if (!set.add(each)) return true;
+		    return false;
+		}
+	 
 	 
 	 public SpleefPlayer getNearestPlayer(SpleefPlayer sp) {
 		 SpleefPlayer nearest = null;
@@ -133,7 +143,7 @@ public class Utils {
 	  }
 	  
 	  
-	  public  boolean containsIgnoreCase(String fullStr, String searchStr)   {
+	  public boolean containsIgnoreCase(String fullStr, String searchStr)   {
 		    if(fullStr == null || searchStr == null) return false;
 
 		    final int length = searchStr.length();

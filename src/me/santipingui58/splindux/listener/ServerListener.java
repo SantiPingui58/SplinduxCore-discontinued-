@@ -20,6 +20,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -210,12 +211,12 @@ public class ServerListener implements Listener {
 				}
 			}
 		}
+
 		
-			if (e.getSlot()==5) {
-				e.setCancelled(true);
-			}
-		
-		
+	        if(e.getSlotType() == InventoryType.SlotType.ARMOR)  {
+	            e.setCancelled(true);
+	        } 
+	
 		
 	}
 

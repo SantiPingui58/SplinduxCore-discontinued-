@@ -3,7 +3,6 @@ package me.santipingui58.splindux.commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,6 +13,7 @@ import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.gui.DuelMenu;
+import me.santipingui58.splindux.utils.Utils;
 
 
 
@@ -64,10 +64,20 @@ public class DuelCommand implements CommandExecutor{
 			return false;
 		}
 		
+		List<Player> players = new ArrayList<Player>();
+		
+
+		if (Utils.getUtils().hasDuplicate(list)) {
+			sender.sendMessage("§cYou can only duel the same player once...");
+			return false;
+		}
+		
+		
 	  for (String s : list) {
 		  Player op = Bukkit.getPlayer(s);
 		  if (Bukkit.getOnlinePlayers().contains(op)) {
 			  if (!op.equals(p)) {
+				  players.add(op);
 					 SpleefPlayer dueled = SpleefPlayer.getSpleefPlayer(op);
 				  if (!sp.hasDueled(dueled)) {
 					  if (!GameManager.getManager().isInGame(dueled)) {
@@ -90,6 +100,11 @@ public class DuelCommand implements CommandExecutor{
 			  return false;
 		  }
 	  }
+	  
+	  if (Utils.getUtils().hasDuplicate(players)) {
+			sender.sendMessage("§cYou can only duel the same player once...");
+			return false;
+		}
 	  
 	  new DuelMenu(sp,sp2,type).o(p);
 	  

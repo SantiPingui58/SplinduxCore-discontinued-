@@ -126,17 +126,19 @@ public class HoverCommand implements CommandExecutor {
 					} else {
 						p.sendMessage("§cThis duel request has ended since the player isnt online!");
 					}
-			} else if (args[0].equalsIgnoreCase("duelcancel")) {
+			} else if (args[0].equalsIgnoreCase("duelcancel")) {				
+				SpleefDuel duel = sp.getDuelByUUID(UUID.fromString(args[1]));		
+						if (duel!=null) {
+							for (SpleefPlayer dueled : duel.getDueledPlayers()) {
+								dueled.getPlayer().sendMessage("§b" + sp.getPlayer().getName() + "§c has cancelled the request.");
+							}
+							duel.getChallenger().getDuels().remove(duel);
+							} else {
+								p.sendMessage("§cThis duel request has expired.");
+							}
+					
 				
-				SpleefDuel duel = sp.getDuelByUUID(UUID.fromString(args[1]));
-				if (duel!=null) {
-				for (SpleefPlayer dueled : duel.getDueledPlayers()) {
-					dueled.getPlayer().sendMessage("§b" + sp.getPlayer().getName() + "§c has cancelled the request.");
-				}
-				duel.getChallenger().getDuels().remove(duel);
-				} else {
-					p.sendMessage("§cThis duel request has expired.");
-				}
+						
 			} else if (args[0].equalsIgnoreCase("record")) {
 				if (GameManager.getManager().isInGame(sp)) {
 					SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
@@ -296,7 +298,7 @@ public class HoverCommand implements CommandExecutor {
 										if (!request.getAcceptedPlayers().contains(sp)) {
 											request.getAcceptedPlayers().add(sp);
 											
-											if (request.getAcceptedPlayers().size()>=arena.getPlayers().size()-arena.getDeadPlayers1().size()-arena.getDeadPlayers2().size()) {
+											if (request.getAcceptedPlayers().size()>=arena.getPlayers().size()) {
 												GameManager.getManager().playToWithCommand(arena, request.getAmount());
 											} else {
 												List<SpleefPlayer> leftToAccept = new ArrayList<SpleefPlayer>();		

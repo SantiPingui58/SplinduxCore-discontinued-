@@ -256,17 +256,32 @@ public class Hologram {
 	
 	
 	private String getAmount(SpleefPlayer sp) {
-		SpleefRankingType type = changeType.get(sp);
-		if (type.equals(SpleefRankingType.WINS)) {
-			return String.valueOf(sp.getFFAWins());
-		} else if (type.equals(SpleefRankingType.GAMES)) {
-			return String.valueOf(sp.getFFAGames());
-		}else if (type.equals(SpleefRankingType.KILLS)) {
+		SpleefRankingType srt = changeType.get(sp);
+		SpleefRankingPeriod srp = changePeriod.get(sp);
+		if (srt.equals(SpleefRankingType.WINS)) {
+			if (srp.equals(SpleefRankingPeriod.ALL_TIME)) {
 			return String.valueOf(sp.getFFAKills());
-		} else if (type.equals(SpleefRankingType.KG)) {
-			return String.valueOf(sp.getKillGameRatio());
-		}else if (type.equals(SpleefRankingType.WG)) {
-			return String.valueOf(sp.getWinGameRatio());
+			} else if (srp.equals(SpleefRankingPeriod.MONTHLY)) {
+				return String.valueOf(sp.getMonthlyFFAKills());
+			}else if (srp.equals(SpleefRankingPeriod.WEEKLY)) {
+				return String.valueOf(sp.getWeeklyFFAKills());
+			}
+		} else if (srt.equals(SpleefRankingType.GAMES)) {
+			if (srp.equals(SpleefRankingPeriod.ALL_TIME)) {
+				return String.valueOf(sp.getFFAGames());
+				} else if (srp.equals(SpleefRankingPeriod.MONTHLY)) {
+					return String.valueOf(sp.getMonthlyFFAGames());
+				}else if (srp.equals(SpleefRankingPeriod.WEEKLY)) {
+					return String.valueOf(sp.getWeeklyFFAGames());
+				}
+		}  if (srt.equals(SpleefRankingType.KILLS)) {
+			if (srp.equals(SpleefRankingPeriod.ALL_TIME)) {
+				return String.valueOf(sp.getFFAKills());
+				} else if (srp.equals(SpleefRankingPeriod.MONTHLY)) {
+					return String.valueOf(sp.getMonthlyFFAKills());
+				}else if (srp.equals(SpleefRankingPeriod.WEEKLY)) {
+					return String.valueOf(sp.getWeeklyFFAKills());
+				}
 		}
 		return null;
 	}

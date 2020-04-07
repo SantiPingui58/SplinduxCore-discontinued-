@@ -25,6 +25,8 @@ public class SpleefArena {
 	private Location spawn1;
 	private Location spawn2;
 	private String name;
+	private int min;
+	private int max;
 	private HashMap<SpleefPlayer,Integer> winstreak = new HashMap<SpleefPlayer,Integer>();
 	private int time;
 	private int totaltime;
@@ -69,7 +71,7 @@ public class SpleefArena {
 		
 	}
 
-	public SpleefArena(String name,Location spawn1,Location spawn2,Location lobby,Location arena1, Location arena2,SpleefType spleeftype, GameType gametype,Material item) {
+	public SpleefArena(String name,Location spawn1,Location spawn2,Location lobby,Location arena1, Location arena2,SpleefType spleeftype, GameType gametype,Material item,int min,int max) {
 		this.name = name;
 		this.spawn1 = spawn1;
 		this.spawn2 = spawn2;
@@ -87,6 +89,16 @@ public class SpleefArena {
 		this.spawn2_1vs1 = this.spawn2;
 		this.playto = 7;
 		this.item= item;	
+		this.min = min;
+		this.max = max;
+	}
+	
+	public int getMaxPlayersSize() {
+		return this.max;
+	}
+	
+	public int getMinPlayersSize() {
+		return this.min;
 	}
 	
 	public Request getCrumbleRequest() {

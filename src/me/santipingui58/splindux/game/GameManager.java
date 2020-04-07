@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import me.jumper251.replay.api.ReplayAPI;
 import me.santipingui58.splindux.DataManager;
@@ -338,7 +339,7 @@ public class GameManager {
 			arena.setState(GameState.STARTING);
 			
 			arena.resetTimer();
-			resetArena(arena);
+			resetArena(arena,false);
 			if (arena.getGameType().equals(GameType.FFA)) {
 			Location center = new Location(arena.getMainSpawn().getWorld(),arena.getMainSpawn().getX(),arena.getMainSpawn().getY()+1,arena.getMainSpawn().getZ());
 			Location center_player = new Location(center.getWorld(),center.getX(),center.getY()+1,center.getZ());
@@ -535,12 +536,17 @@ public class GameManager {
 		
 		
 		@SuppressWarnings("deprecation")
-		public void resetArena(SpleefArena arena) {		
+		public void resetArena(SpleefArena arena,boolean point) {		
 			
 			arena.setPlayToRequest(null);
 			arena.getEndGameRequest().clear();
 			arena.setCrumbleRequest(null);
 			arena.getResetRequest().clear();
+			
+			
+			for (SpleefPlayer sp : arena.getPlayers()) {
+				 sp.getPlayer().setVelocity(new Vector(0,0,0));
+			}
 			
 			Location a = null;
 			Location b = null;
@@ -582,16 +588,33 @@ public class GameManager {
 					  aire.getBlock().setType(Material.SNOW_BLOCK); 
 						  } else if (arena.getSpleefType().equals(SpleefType.SPLEGG)) {
 							  aire.getBlock().setType(Material.STAINED_CLAY);
-							  aire.getBlock().setData((byte) 1);
+							  aire.getBlock().setData((byte) 0);
 						  }
 					  }
 				  }
 			  }
-	       	   
+
 			if (arena.getGameType().equals(GameType.DUEL)) {	  	   	
-	  	   	for (SpleefPlayer s : arena.getDuelPlayers1()) s.getPlayer().teleport(arena.getSpawn1_1vs1());
-	  		for (SpleefPlayer s : arena.getDuelPlayers2()) s.getPlayer().teleport(arena.getSpawn2_1vs1());
+	  	   	for (SpleefPlayer s : arena.getDuelPlayers1()) {
+	  	   		if(!point) {
+	  	   		if (arena.getDeadPlayers1().contains(s)) {
+	  	   			continue;  	   		
+	  	   	}
+	  	   		}
+	  	   	s.getPlayer().teleport(arena.getSpawn1_1vs1());
+	  	   	}
 	  	   	
+	  		for (SpleefPlayer s : arena.getDuelPlayers2()) {
+	  			if(!point)
+	  			if (arena.getDeadPlayers2().contains(s)) {
+	  			continue;
+	  		}
+	  			s.getPlayer().teleport(arena.getSpawn2_1vs1());
+	  		}
+	  		
+	  		
+	  		
+	  		
 	  	   	}
 	 
 		}
@@ -648,7 +671,7 @@ public class GameManager {
 			winner.getPlayer().teleport(arena.getLobby());
 			DataManager.getManager().giveQueueItems(winner);
 			arena.getFFAPlayers().remove(winner);
-			resetArena(arena);
+			resetArena(arena,false);
 			
 			} else if (reason.equals(GameEndReason.TIME_OUT)) {
 				
@@ -716,13 +739,14 @@ public class GameManager {
 		}
 		
 		public void timeReset1vs1(SpleefArena arena) {
+			arena.setState(GameState.STARTING);
 			arenaShrink(arena,true);
 			arena.resetTimer();
 		}
 		
 		
 		public void endGameDuel(SpleefArena arena,String w,GameEndReason reason) {	
-			resetArena(arena);
+			resetArena(arena,false);
 			arena.resetResetRound();
 			arena.resetTotalTime();
 			arena.getResetRequest().clear();
@@ -978,7 +1002,7 @@ public class GameManager {
 					}
 				}	
 				
-				GameManager.getManager().resetArena(arena);
+				GameManager.getManager().resetArena(arena,true);
 		}
 		
 		
@@ -1056,7 +1080,7 @@ public class GameManager {
 			
 		}
 			new ArenaStartingCountdownTask(arena,keepDeadPlayers);
-			resetArena(arena);
+			resetArena(arena,true);
 		}
 		
 		
@@ -1115,12 +1139,13 @@ public class GameManager {
 				 if (block==null) {
 					 block = broken;
 				 }
-				 
+				 try {
 				 if (broken.getLocation().distance(sp.getPlayer().getLocation()) <i) {
 					 if (broken.getLocation().distance(sp.getPlayer().getLocation()) < block.getLocation().distance(sp.getPlayer().getLocation())) {
 						 block = broken;
 					 }
 				 }
+			 } catch(Exception ex) {}
 			 }
 			 return block;
 		 }

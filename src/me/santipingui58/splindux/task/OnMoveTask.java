@@ -1,6 +1,8 @@
 package me.santipingui58.splindux.task;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -35,10 +37,12 @@ public class OnMoveTask {
 				 }
 		    		
 		    		if (sp.isSpectating()) {
-		    			if (sp.getSpectating().getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 25) {
+		    			if (sp.getSpectating().getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 40) {
 		    				sp.getPlayer().teleport(sp.getSpectating().getLocation());
 		    			}
 		    		}
+		    		
+		    		
 		    		
 		    	
 		    		
@@ -52,10 +56,29 @@ public class OnMoveTask {
 
 		    			Location spawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true);
 		    			
-		    			if (sp.getPlayer().getLocation().getY() < 0  || sp.getPlayer().getLocation().distance(spawn)>100) {
+		    			if (sp.getPlayer().getLocation().getY() < 0  || sp.getPlayer().getLocation().distance(spawn)>200) {
 		    				sp.getPlayer().teleport(spawn);
 		    			}
 		    			
+		    		}
+		    		
+		    		if (GameManager.getManager().isInGame(sp)) {
+		    			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+		    			if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) {
+		    				List<SpleefPlayer> alive = new ArrayList<SpleefPlayer>();
+		    				for (SpleefPlayer players : arena.getPlayers()) {
+		    					if (!arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {
+		    						alive.add(players);
+		    					}
+		    				}
+		    				
+		    				for (SpleefPlayer a : alive) {
+		    					if (a.getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 40) {
+		    						sp.getPlayer().teleport(a.getPlayer());
+		    						break;
+		    					}
+		    				}
+		    			}
 		    		}
 		    		
 		    		

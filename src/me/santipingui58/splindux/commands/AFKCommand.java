@@ -26,7 +26,7 @@ public class AFKCommand implements CommandExecutor {
 			final Player p = (Player) sender;
 			 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			
-			if (p.hasPermission("jhspleef.afk")) {
+			if (p.hasPermission("splindux.afk")) {
 				if (sp.isAfk()) {
 					sp.back();
 					p.sendMessage("§7You are not longer AFK");				

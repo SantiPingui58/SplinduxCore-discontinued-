@@ -183,16 +183,8 @@ public class DuelMenu extends MenuBuilder {
 	private void sendMessage(SpleefPlayer sp, List<SpleefPlayer> sp2,SpleefType type) {
 		SpleefDuel duel = sp.getDuelByDueledPlayer(sp2.get(0));
 		if (sp2.contains(sp)) sp2.remove(sp);
-		if (sp2.size()==1) {
-		sp.getPlayer().sendMessage("§aYou have sent a duel request to §b" + sp2.get(0).getOfflinePlayer().getName()+ "§a!");
-		TextComponent msg1 = new TextComponent("[CANCEL DUEL]");
-		msg1.setColor(net.md_5.bungee.api.ChatColor.RED );
-		msg1.setBold( true );
-		msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover duelcancel " + duel.getUUID().toString()));	
-		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cCancel duel request").create()));
-		ComponentBuilder cb = new ComponentBuilder(msg1);
-		sp.getPlayer().spigot().sendMessage(cb.create());
 		
+		if (sp2.size()==1) {
 		sp2.get(0).getPlayer().sendMessage("§aThe Player §b" + sp.getPlayer().getName() + " §ahas sent you a duel request for "+ type.toString() + "! §7(This request expires in 1 minute.)");
 		sp2.get(0).getPlayer().spigot().sendMessage(getInvitation(sp));	
 	
@@ -206,6 +198,14 @@ public class DuelMenu extends MenuBuilder {
 				sp_2.getPlayer().spigot().sendMessage(getInvitation(sp));	
 			}
 		}
+		
+		sp.getPlayer().sendMessage("§aYou have sent a duel request to §b" + sp2.get(0).getOfflinePlayer().getName()+ "§a!");
+		TextComponent msg1 = new TextComponent("[CANCEL DUEL]");
+		msg1.setColor(net.md_5.bungee.api.ChatColor.RED );
+		msg1.setBold( true );
+		msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover duelcancel " + duel.getUUID().toString()));	
+		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cCancel duel request").create()));
+		sp.getPlayer().spigot().sendMessage(msg1);
 		sp.getPlayer().closeInventory();
 	}
 	

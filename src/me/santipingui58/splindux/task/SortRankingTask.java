@@ -39,15 +39,16 @@ public class SortRankingTask {
 		    		 }
 		    	 }
 		    	 
-		    	 
+		    	 try {
 		    	NPC npc = CitizensAPI.getNPCRegistry().getById(0);
 		    	SkinnableEntity entity = (SkinnableEntity) npc.getEntity();
-		    	if (!name.isEmpty()) {
+		    	if (!name.isEmpty() && !name.equalsIgnoreCase("")) {
 		    	entity.setSkinName(name);
 		    } else {
 		    	entity.setSkinName("SantiPingui58");
 		    }
-		    	}
+		    	}catch(Exception e) {}
+		    }
 		    }, 0, 2*60*20L);
 	
 	
