@@ -529,7 +529,7 @@ public class SpleefPlayer {
 	}
 	
 	public void add1vs1Games() {
-		this._1vs1_games++;
+		this._1vs1_games = this._1vs1_games+1;
 	}
 	public int get1vs1Wins() {
 		return this._1vs1_wins;

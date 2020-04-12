@@ -260,11 +260,11 @@ public class Hologram {
 		SpleefRankingPeriod srp = changePeriod.get(sp);
 		if (srt.equals(SpleefRankingType.WINS)) {
 			if (srp.equals(SpleefRankingPeriod.ALL_TIME)) {
-			return String.valueOf(sp.getFFAKills());
+			return String.valueOf(sp.getFFAWins());
 			} else if (srp.equals(SpleefRankingPeriod.MONTHLY)) {
-				return String.valueOf(sp.getMonthlyFFAKills());
+				return String.valueOf(sp.getMonthlyFFAWins());
 			}else if (srp.equals(SpleefRankingPeriod.WEEKLY)) {
-				return String.valueOf(sp.getWeeklyFFAKills());
+				return String.valueOf(sp.getWeeklyFFAWins());
 			}
 		} else if (srt.equals(SpleefRankingType.GAMES)) {
 			if (srp.equals(SpleefRankingPeriod.ALL_TIME)) {

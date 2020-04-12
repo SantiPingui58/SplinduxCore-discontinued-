@@ -13,7 +13,7 @@ THEMSELF,SPLEEFED,SNOWBALLED, PK_FAILED, PLAYING_FAILED;
 		} else if (this.equals(SPLEEFED)) {
 			return "§6"+ killed.getPlayer().getName() + "§b was spleefed by §6"+ killer.getPlayer().getName() + "§b! §a" + arena.getFFAPlayers().size()+" §bplayers left!";
 		} else if (this.equals(SNOWBALLED)) {
-			return "§6"+ killer.getPlayer().getName() + "§b was snowballed by §6"+ killer.getPlayer().getName() + "§b! §a" + arena.getFFAPlayers().size()+" §bplayers left!";
+			return "§6"+ killed.getPlayer().getName() + "§b was snowballed by §6"+ killer.getPlayer().getName() + "§b! §a" + arena.getFFAPlayers().size()+" §bplayers left!";
 		} else if (this.equals(PK_FAILED)) {
 			return "§6"+ killed.getPlayer().getName() + " §bfailed! §a" + arena.getFFAPlayers().size()+" §bplayers left!";
 		} else if (this.equals(PLAYING_FAILED)) {

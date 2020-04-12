@@ -53,7 +53,7 @@ public class GameManager {
 		 int i = 0;
 		 for (SpleefArena arena : DataManager.getManager().getArenas()) {
 
-			 if (!arena.getFFAPlayers().isEmpty() && arena.getGameType().equals(GameType.DUEL)) {
+			 if (!arena.getPlayers().isEmpty() && arena.getGameType().equals(GameType.DUEL)) {
 			 if (Utils.getUtils().containsIgnoreCase(arena.getName(), s)) {
 				 i++;
 			 }
@@ -339,8 +339,9 @@ public class GameManager {
 			arena.setState(GameState.STARTING);
 			
 			arena.resetTimer();
-			resetArena(arena,false);
+		
 			if (arena.getGameType().equals(GameType.FFA)) {
+				resetArena(arena,false,true);
 			Location center = new Location(arena.getMainSpawn().getWorld(),arena.getMainSpawn().getX(),arena.getMainSpawn().getY()+1,arena.getMainSpawn().getZ());
 			Location center_player = new Location(center.getWorld(),center.getX(),center.getY()+1,center.getZ());
 			
@@ -359,6 +360,7 @@ public class GameManager {
 				i++;
 			}
 			} else if (arena.getGameType().equals(GameType.DUEL)) {
+				
 				int i = 0;
 				
 				int teamSize = arena.getQueue().size()/2;
@@ -385,6 +387,9 @@ public class GameManager {
 				} 
 					
 					}
+				
+				GameManager.getManager().expandArena(arena);
+				resetArena(arena,false,false);
 				
 				
 				for (SpleefPlayer s : arena.getPlayers()) {
@@ -413,17 +418,17 @@ public class GameManager {
 			}
 			
 			
-			for (SpleefPlayer s : arena.getDuelPlayers1()) s.getPlayer().teleport(arena.getSpawn1_1vs1());
-			for (SpleefPlayer s : arena.getDuelPlayers2()) s.getPlayer().teleport(arena.getSpawn2_1vs1());
-			new ArenaStartingCountdownTask(arena,false);
+			for (SpleefPlayer s : arena.getDuelPlayers1()) s.getPlayer().teleport(arena.getShrinkedDuelSpawn1());
+			for (SpleefPlayer s : arena.getDuelPlayers2()) s.getPlayer().teleport(arena.getShrinkedDuelSpawn2());
+			new ArenaStartingCountdownTask(arena);
 			
 		}
 		
 		
 		public void crumbleArena(SpleefArena arena,int por) {
 			arena.setCrumbleRequest(null);
-			  Location a = arena.getArena1_1vs1();
-			  Location b = arena.getArena2_1vs1();
+			  Location a = arena.getShrinkedDuelArena1();
+			  Location b = arena.getShrinkedDuelArena2();
 			  
 			  int ax = a.getBlockX();
 			  int az = a.getBlockZ();
@@ -443,11 +448,11 @@ public class GameManager {
 			  Location p2block = new Location (p2.getPlayer().getWorld(), p2.getLocation().getBlockX(), p2.getLocation().getBlockY()-1,
 					  p2.getLocation().getBlockZ());
 			 
-			  Location spawn1 = new Location (arena.getSpawn1_1vs1().getWorld(),arena.getSpawn1_1vs1().getBlockX(),
-					  arena.getSpawn1_1vs1().getBlockY()-1, arena.getSpawn1_1vs1().getBlockZ());
+			  Location spawn1 = new Location (arena.getShrinkedDuelSpawn1().getWorld(),arena.getShrinkedDuelSpawn1().getBlockX(),
+					  arena.getShrinkedDuelSpawn1().getBlockY()-1, arena.getShrinkedDuelSpawn1().getBlockZ());
 			  
-			  Location spawn2 = new Location (arena.getSpawn2_1vs1().getWorld(),arena.getSpawn2_1vs1().getBlockX(),
-					  arena.getSpawn2_1vs1().getBlockY()-1, arena.getSpawn2_1vs1().getBlockZ());
+			  Location spawn2 = new Location (arena.getShrinkedDuelSpawn2().getWorld(),arena.getShrinkedDuelSpawn2().getBlockX(),
+					  arena.getShrinkedDuelSpawn2().getBlockY()-1, arena.getShrinkedDuelSpawn2().getBlockZ());
 			  
 			  for (int x = ax; x <= bx; x++) {
 				  for (int z = az; z <= bz; z++) {
@@ -511,7 +516,7 @@ public class GameManager {
 		}
 			arena.setState(GameState.STARTING);
 			if (arena.getSpleefType().equals(SpleefType.SPLEEF))
-		GameManager.getManager().arenaShrink(arena,true);
+		GameManager.getManager().arenaShrink(arena);
 		}
 		
 		public void playToWithCommand(SpleefArena g,int crumble) {
@@ -536,7 +541,7 @@ public class GameManager {
 		
 		
 		@SuppressWarnings("deprecation")
-		public void resetArena(SpleefArena arena,boolean point) {		
+		public void resetArena(SpleefArena arena,boolean point,boolean clean) {		
 			
 			arena.setPlayToRequest(null);
 			arena.getEndGameRequest().clear();
@@ -557,8 +562,17 @@ public class GameManager {
 				a = arena.getArena1();
 				b = arena.getArena2();
 			} else if (arena.getGameType().equals(GameType.DUEL)) {
-				a = arena.getArena1_1vs1();
-				b = arena.getArena2_1vs1();		
+
+				if (clean) {
+					a = arena.getArena1();
+					b = arena.getArena2();	
+				} else {
+				a = arena.getShrinkedDuelArena1();
+				b = arena.getShrinkedDuelArena2();	
+				}
+				c = arena.getDuelArena1();
+				 d = arena.getDuelArena2();
+
 			}
 			
 			if (arena.getGameType().equals(GameType.DUEL)) {
@@ -575,6 +589,8 @@ public class GameManager {
 						  }
 					  }
 			}
+			
+			
 		  int ax = a.getBlockX();
 		  int az = a.getBlockZ();	  
 		  int y = a.getBlockY();		  
@@ -601,7 +617,7 @@ public class GameManager {
 	  	   			continue;  	   		
 	  	   	}
 	  	   		}
-	  	   	s.getPlayer().teleport(arena.getSpawn1_1vs1());
+	  	   	s.getPlayer().teleport(arena.getShrinkedDuelSpawn1());
 	  	   	}
 	  	   	
 	  		for (SpleefPlayer s : arena.getDuelPlayers2()) {
@@ -609,11 +625,27 @@ public class GameManager {
 	  			if (arena.getDeadPlayers2().contains(s)) {
 	  			continue;
 	  		}
-	  			s.getPlayer().teleport(arena.getSpawn2_1vs1());
+	  			s.getPlayer().teleport(arena.getShrinkedDuelSpawn2());
 	  		}
 	  		
 	  		
+	  		for (SpleefPlayer sp : arena.getPlayers()) {
+				 sp.getPlayer().setVelocity(new Vector(0,0,0));
+			}
 	  		
+	  		if (point) {
+				GameMode mode = GameMode.SPECTATOR;
+				if (arena.getSpleefType().equals(SpleefType.SPLEEF)) {
+					mode = GameMode.SURVIVAL;
+				} else if (arena.getSpleefType().equals(SpleefType.SPLEGG)) {
+					mode = GameMode.ADVENTURE;
+				}
+			for (SpleefPlayer sp : arena.getDeadPlayers1()) sp.getPlayer().setGameMode(mode);
+			for (SpleefPlayer sp : arena.getDeadPlayers2()) sp.getPlayer().setGameMode(mode);
+		
+			arena.getDeadPlayers1().clear();
+			arena.getDeadPlayers2().clear();
+			}
 	  		
 	  	   	}
 	 
@@ -671,7 +703,7 @@ public class GameManager {
 			winner.getPlayer().teleport(arena.getLobby());
 			DataManager.getManager().giveQueueItems(winner);
 			arena.getFFAPlayers().remove(winner);
-			resetArena(arena,false);
+			resetArena(arena,false,false);
 			
 			} else if (reason.equals(GameEndReason.TIME_OUT)) {
 				
@@ -740,20 +772,26 @@ public class GameManager {
 		
 		public void timeReset1vs1(SpleefArena arena) {
 			arena.setState(GameState.STARTING);
-			arenaShrink(arena,true);
+			arenaShrink(arena);
 			arena.resetTimer();
 		}
 		
 		
 		public void endGameDuel(SpleefArena arena,String w,GameEndReason reason) {	
-			resetArena(arena,false);
+			resetArena(arena,false,true);
 			arena.resetResetRound();
 			arena.resetTotalTime();
 			arena.getResetRequest().clear();
-			arena.setArena1_1vs1(arena.getArena1());
-			arena.setArena2_1vs1(arena.getArena2());
-			arena.setSpawn1_1vs1(arena.getSpawn1());
-			arena.setSpawn2_1vs1(arena.getSpawn2());
+			arena.setShrinkedDuelArena1(arena.getArena1());
+			arena.setShrinkedDuelArena2(arena.getArena2());
+			arena.setShrinkedDuelSpawn1(arena.getSpawn1());
+			arena.setShrinkedDuelSpawn2(arena.getSpawn2());
+			
+			arena.setDuelArena1(arena.getArena1());
+			arena.setDuelArena2(arena.getArena2());
+			arena.setDuelSpawn1(arena.getSpawn1());
+			arena.setDuelSpawn2(arena.getSpawn2());
+			
 			arena.getDeadPlayers1().clear();
 			arena.getDeadPlayers2().clear();
 			arena.resetPlayTo();
@@ -853,6 +891,7 @@ public class GameManager {
 		
 		
 		public void removeBrokenBlocksAtDead(SpleefPlayer sp,SpleefArena arena) {
+			try {
 			List<BrokenBlock> blocks = new ArrayList<BrokenBlock>();
 			for (BrokenBlock block : arena.getBrokenBlocks()) {
 				if (block.getPlayer().equals(sp)) {
@@ -862,7 +901,8 @@ public class GameManager {
 			
 			for (BrokenBlock block : blocks) {
 				arena.getBrokenBlocks().remove(block);
-			}
+			} 
+			} catch(Exception ex) {}
 		}
 		
 		public void fell(SpleefPlayer sp,HashMap<DeathReason,SpleefPlayer> r) {		
@@ -965,10 +1005,10 @@ public class GameManager {
 			arena.resetResetRound();
 			arena.setCrumbleRequest(null);
 			arena.getEndGameRequest().clear();
-			arena.setArena1_1vs1(arena.getArena1());
-			arena.setArena2_1vs1(arena.getArena2());
-			arena.setSpawn1_1vs1(arena.getSpawn1());
-			arena.setSpawn2_1vs1(arena.getSpawn2());		
+			arena.setShrinkedDuelArena1(arena.getDuelArena1());
+			arena.setShrinkedDuelArena2(arena.getDuelArena2());
+			arena.setShrinkedDuelSpawn1(arena.getDuelSpawn1());
+			arena.setShrinkedDuelSpawn2(arena.getDuelSpawn2());		
 			if (arena.getDuelPlayers1().size()<1) {
 				endGameDuel(arena,"Team2",GameEndReason.LOG_OFF);
 				return;
@@ -986,7 +1026,7 @@ public class GameManager {
 						return;
 					} else {
 						arena.setState(GameState.STARTING);
-						new ArenaStartingCountdownTask(arena,false);
+						new ArenaStartingCountdownTask(arena);
 					}
 				} else if (arena.getDuelPlayers2().contains(sp)) {
 					arena.setPoints1(arena.getPoints1()+1);
@@ -998,94 +1038,133 @@ public class GameManager {
 						return;
 					} else {
 						arena.setState(GameState.STARTING);
-						new ArenaStartingCountdownTask(arena,false);
+						new ArenaStartingCountdownTask(arena);
 					}
 				}	
 				
-				GameManager.getManager().resetArena(arena,true);
+				GameManager.getManager().resetArena(arena,true,false);
 		}
 		
 		
 		
-		public void arenaShrink(SpleefArena arena,boolean keepDeadPlayers) {
-			if (arena.getResetRound()<12) {
-			arena.setResetRound(arena.getResetRound()+1);
+		public void arenaShrink(SpleefArena arena) {
 			Location a = null;
 			Location b = null;
-			if (arena.getResetRound()==1) {
+			if (arena.getResetRound()>=1) {
+			if (arena.getResetRound()==12) {
 				//COSTADO 2
-			 a = new Location(arena.getArena1_1vs1().getWorld(),
-					arena.getArena1_1vs1().getX()+2,arena.getArena1_1vs1().getY(),arena.getArena1_1vs1().getZ());
-			 b = new Location(arena.getArena2_1vs1().getWorld(),
-					arena.getArena2_1vs1().getX()-2,arena.getArena2_1vs1().getY(),arena.getArena2_1vs1().getZ());
+			 a = new Location(arena.getShrinkedDuelArena1().getWorld(),
+					arena.getShrinkedDuelArena1().getX()+2,arena.getShrinkedDuelArena1().getY(),arena.getShrinkedDuelArena1().getZ());
+			 b = new Location(arena.getShrinkedDuelArena2().getWorld(),
+					arena.getShrinkedDuelArena2().getX()-2,arena.getShrinkedDuelArena2().getY(),arena.getShrinkedDuelArena2().getZ());
 			
 			
-			} else if (arena.getResetRound()==2) {
-				a = new Location(arena.getArena1_1vs1().getWorld(),
-						arena.getArena1_1vs1().getX()+1,arena.getArena1_1vs1().getY(),arena.getArena1_1vs1().getZ()+2);
-				 b = new Location(arena.getArena2_1vs1().getWorld(),
-						arena.getArena2_1vs1().getX()-1,arena.getArena2_1vs1().getY(),arena.getArena2_1vs1().getZ()-2);
+			} else if (arena.getResetRound()==11) {
+				a = new Location(arena.getShrinkedDuelArena1().getWorld(),
+						arena.getShrinkedDuelArena1().getX()+1,arena.getShrinkedDuelArena1().getY(),arena.getShrinkedDuelArena1().getZ()+2);
+				 b = new Location(arena.getShrinkedDuelArena2().getWorld(),
+						arena.getShrinkedDuelArena2().getX()-1,arena.getShrinkedDuelArena2().getY(),arena.getShrinkedDuelArena2().getZ()-2);
 				 
-					Location spawn1 = new Location(arena.getSpawn1_1vs1().getWorld(),
-							arena.getSpawn1_1vs1().getX(),arena.getSpawn1_1vs1().getY(),arena.getSpawn1_1vs1().getZ()+2);
+					Location spawn1 = new Location(arena.getShrinkedDuelSpawn1().getWorld(),
+							arena.getShrinkedDuelSpawn1().getX(),arena.getShrinkedDuelSpawn1().getY(),arena.getShrinkedDuelSpawn1().getZ()+2);
 					spawn1.setDirection(arena.getSpawn1().getDirection());
-					 Location spawn2  = new Location(arena.getSpawn2_1vs1().getWorld(),
-							arena.getSpawn2_1vs1().getX(),arena.getSpawn2_1vs1().getY(),arena.getSpawn2_1vs1().getZ()-2);
+					 Location spawn2  = new Location(arena.getShrinkedDuelSpawn2().getWorld(),
+							arena.getShrinkedDuelSpawn2().getX(),arena.getShrinkedDuelSpawn2().getY(),arena.getShrinkedDuelSpawn2().getZ()-2);
 					 spawn2.setDirection(arena.getSpawn2().getDirection());
-					 arena.setSpawn1_1vs1(spawn1);
-					 arena.setSpawn2_1vs1(spawn2);
+					 arena.setShrinkedDuelSpawn1(spawn1);
+					 arena.setShrinkedDuelSpawn2(spawn2);
 					 
 					 //VUELTA
-			} else if (arena.getResetRound()==3 || arena.getResetRound()==5|| arena.getResetRound()==7|| arena.getResetRound()==9) {
-				a = new Location(arena.getArena1_1vs1().getWorld(),
-						arena.getArena1_1vs1().getX()+1,arena.getArena1_1vs1().getY(),arena.getArena1_1vs1().getZ()+1);
-				 b = new Location(arena.getArena2_1vs1().getWorld(),
-						arena.getArena2_1vs1().getX()-1,arena.getArena2_1vs1().getY(),arena.getArena2_1vs1().getZ()-1);
+			} else if (arena.getResetRound()==10 || arena.getResetRound()==8|| arena.getResetRound()==6|| arena.getResetRound()==4 || arena.getResetRound()>12) {
+				a = new Location(arena.getShrinkedDuelArena1().getWorld(),
+						arena.getShrinkedDuelArena1().getX()+1,arena.getShrinkedDuelArena1().getY(),arena.getShrinkedDuelArena1().getZ()+1);
+				 b = new Location(arena.getShrinkedDuelArena2().getWorld(),
+						arena.getShrinkedDuelArena2().getX()-1,arena.getShrinkedDuelArena2().getY(),arena.getShrinkedDuelArena2().getZ()-1);
 				 
-					Location spawn1 = new Location(arena.getSpawn1_1vs1().getWorld(),
-							arena.getSpawn1_1vs1().getX(),arena.getSpawn1_1vs1().getY(),arena.getSpawn1_1vs1().getZ()+1);
+					Location spawn1 = new Location(arena.getShrinkedDuelSpawn1().getWorld(),
+							arena.getShrinkedDuelSpawn1().getX(),arena.getShrinkedDuelSpawn1().getY(),arena.getShrinkedDuelSpawn1().getZ()+1);
 					spawn1.setDirection(arena.getSpawn1().getDirection());
-					 Location spawn2  = new Location(arena.getSpawn2_1vs1().getWorld(),
-							arena.getSpawn2_1vs1().getX(),arena.getSpawn2_1vs1().getY(),arena.getSpawn2_1vs1().getZ()-1);
+					 Location spawn2  = new Location(arena.getShrinkedDuelSpawn2().getWorld(),
+							arena.getShrinkedDuelSpawn2().getX(),arena.getShrinkedDuelSpawn2().getY(),arena.getShrinkedDuelSpawn2().getZ()-1);
 					 spawn2.setDirection(arena.getSpawn2().getDirection());
 					 
-					 arena.setSpawn1_1vs1(spawn1);
-					 arena.setSpawn2_1vs1(spawn2);
-			} else if (arena.getResetRound()==11) {
+					 arena.setShrinkedDuelSpawn1(spawn1);
+					 arena.setShrinkedDuelSpawn2(spawn2);
+			} else if (arena.getResetRound()==2) {
 				//COSTADO 1
-				 a = new Location(arena.getArena1_1vs1().getWorld(),
-							arena.getArena1_1vs1().getX()+1,arena.getArena1_1vs1().getY(),arena.getArena1_1vs1().getZ());
-					 b = new Location(arena.getArena2_1vs1().getWorld(),
-							arena.getArena2_1vs1().getX()-1,arena.getArena2_1vs1().getY(),arena.getArena2_1vs1().getZ());
+				 a = new Location(arena.getShrinkedDuelArena1().getWorld(),
+							arena.getShrinkedDuelArena1().getX()+1,arena.getShrinkedDuelArena1().getY(),arena.getShrinkedDuelArena1().getZ());
+					 b = new Location(arena.getShrinkedDuelArena2().getWorld(),
+							arena.getShrinkedDuelArena2().getX()-1,arena.getShrinkedDuelArena2().getY(),arena.getShrinkedDuelArena2().getZ());
 					
 					//LARGO
 			}else {
-				 a = new Location(arena.getArena1_1vs1().getWorld(),
-							arena.getArena1_1vs1().getX(),arena.getArena1_1vs1().getY(),arena.getArena1_1vs1().getZ()+1);
-					 b = new Location(arena.getArena2_1vs1().getWorld(),
-							arena.getArena2_1vs1().getX(),arena.getArena2_1vs1().getY(),arena.getArena2_1vs1().getZ()-1);
+				 a = new Location(arena.getShrinkedDuelArena1().getWorld(),
+							arena.getShrinkedDuelArena1().getX(),arena.getShrinkedDuelArena1().getY(),arena.getShrinkedDuelArena1().getZ()+1);
+					 b = new Location(arena.getShrinkedDuelArena2().getWorld(),
+							arena.getShrinkedDuelArena2().getX(),arena.getShrinkedDuelArena2().getY(),arena.getShrinkedDuelArena2().getZ()-1);
 					 
-					 Location spawn1 = new Location(arena.getSpawn1_1vs1().getWorld(),
-								arena.getSpawn1_1vs1().getX(),arena.getSpawn1_1vs1().getY(),arena.getSpawn1_1vs1().getZ()+1);
+					 Location spawn1 = new Location(arena.getShrinkedDuelSpawn1().getWorld(),
+								arena.getShrinkedDuelSpawn1().getX(),arena.getShrinkedDuelSpawn1().getY(),arena.getShrinkedDuelSpawn1().getZ()+1);
 					 spawn1.setDirection(arena.getSpawn1().getDirection());
-						 Location spawn2  = new Location(arena.getSpawn2_1vs1().getWorld(),
-								arena.getSpawn2_1vs1().getX(),arena.getSpawn2_1vs1().getY(),arena.getSpawn2_1vs1().getZ()-1);
+						 Location spawn2  = new Location(arena.getShrinkedDuelSpawn2().getWorld(),
+								arena.getShrinkedDuelSpawn2().getX(),arena.getShrinkedDuelSpawn2().getY(),arena.getShrinkedDuelSpawn2().getZ()-1);
 						 spawn2.setDirection(arena.getSpawn2().getDirection());
-						 arena.setSpawn1_1vs1(spawn1);
-						 arena.setSpawn2_1vs1(spawn2);
+						 arena.setShrinkedDuelSpawn1(spawn1);
+						 arena.setShrinkedDuelSpawn2(spawn2);
 			}
 			
-			arena.setArena1_1vs1(a);
-			arena.setArena2_1vs1(b);
+			arena.setShrinkedDuelArena1(a);
+			arena.setShrinkedDuelArena2(b);
+			
+			if (arena.getResetRound()>=1) {
+			arena.setResetRound(arena.getResetRound()-1);
+			}
+			}
+			new ArenaStartingCountdownTask(arena);
+			resetArena(arena,false,false);
+		}
+		
+		
+		
+		public void expandArena(SpleefArena arena) {
+			Location a = null;
+			Location b = null;
+			
+			int size = arena.getPlayers().size()/2;
+			int i =0;
+			if (size<=arena.getMaxPlayersSize()) {
+				i = size-1;
+			} else {
+				i = arena.getMaxPlayersSize()-1;
+			}
+			
+			a = new Location(arena.getArena1().getWorld(),
+					arena.getArena1().getX()-i,arena.getArena1().getY(),arena.getArena1().getZ()-i);
+			 b = new Location(arena.getArena2().getWorld(),
+					arena.getArena2().getX()+i,arena.getArena2().getY(),arena.getArena2().getZ()+i);
+			 
+				Location spawn1 = new Location(arena.getSpawn1().getWorld(),
+						arena.getSpawn1().getX(),arena.getSpawn1().getY(),arena.getSpawn1().getZ()-i);
+				spawn1.setDirection(arena.getSpawn1().getDirection());
+				 Location spawn2  = new Location(arena.getSpawn2().getWorld(),
+						arena.getSpawn2().getX(),arena.getSpawn2().getY(),arena.getSpawn2().getZ()+i);
+				 spawn2.setDirection(arena.getSpawn2().getDirection());
+				 
+				 arena.resetResetRound();
+				 arena.setDuelSpawn1(spawn1);
+				 arena.setDuelSpawn2(spawn2);
+				 arena.setDuelArena1(a);
+				 arena.setDuelArena2(b);
+				 
+				 arena.setShrinkedDuelSpawn1(spawn1);
+				 arena.setShrinkedDuelSpawn2(spawn2);
+				 arena.setShrinkedDuelArena1(a);
+				 arena.setShrinkedDuelArena2(b);
+				 
 			
 		}
-			new ArenaStartingCountdownTask(arena,keepDeadPlayers);
-			resetArena(arena,true);
-		}
 		
-		
-		
-
 
 		public SpleefArena getArenaByName(String s) {
 			for (SpleefArena arena : DataManager.getManager().getArenas()) {

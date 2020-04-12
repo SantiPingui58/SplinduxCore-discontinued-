@@ -64,7 +64,7 @@ public class DuelCommand implements CommandExecutor{
 			return false;
 		}
 		
-		List<Player> players = new ArrayList<Player>();
+		List<String> players = new ArrayList<String>();
 		
 
 		if (Utils.getUtils().hasDuplicate(list)) {
@@ -77,7 +77,7 @@ public class DuelCommand implements CommandExecutor{
 		  Player op = Bukkit.getPlayer(s);
 		  if (Bukkit.getOnlinePlayers().contains(op)) {
 			  if (!op.equals(p)) {
-				  players.add(op);
+				  players.add(op.getName());
 					 SpleefPlayer dueled = SpleefPlayer.getSpleefPlayer(op);
 				  if (!sp.hasDueled(dueled)) {
 					  if (!GameManager.getManager().isInGame(dueled)) {

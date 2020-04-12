@@ -334,10 +334,10 @@ public class  DataManager {
 		 if (gametype.equals(GameType.FFA)) {
 		  a = new SpleefArena(name,mainspawn,lobby,arena1,arena2,spleeftype,gametype);
 		 } else if (gametype.equals(GameType.DUEL)) {
-			 a = new SpleefArena(name,spawn1,spawn2,lobby,arena1,arena2,spleeftype,gametype,item,0,0);
+			 a = new SpleefArena(name,spawn1,spawn2,arena1,arena2,spleeftype,gametype,item,min,max);
 		 }
         this.arenas.add(a);      
-        GameManager.getManager().resetArena(a,false);
+        GameManager.getManager().resetArena(a,false,true);
         return a;
     }
     
@@ -350,7 +350,7 @@ public class  DataManager {
     	
     		for (String b : arenas) {		
     			try {
-    				Location lobby = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".lobby"), false);	
+    			
         			Location arena1 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".arena1"), false);
         			Location arena2 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".arena2"), false);
     				String stype = Main.arenas.getConfig().getString("arenas."+b+".spleeftype");
@@ -361,16 +361,19 @@ public class  DataManager {
     				GameType gametype = GameType.valueOf(gtype);
     				
     				if (gametype.equals(GameType.FFA)) {
-    			Location mainspawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".mainspawn"), false);
-				DataManager.getManager().loadArena(b,mainspawn,null,null,lobby,arena1,arena2,spleeftype,gametype,null);
+    				Location lobby = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".lobby"), false);	
+    				Location mainspawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".mainspawn"), false);
+    				DataManager.getManager().loadArena(b,mainspawn,null,null,lobby,arena1,arena2,spleeftype,gametype,null,0,0);
     				} else if (gametype.equals(GameType.DUEL)) {
     					Location spawn1 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".spawn1"), true);
             			Location spawn2 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas." + b + ".spawn2"), true);
+            			int min = Main.arenas.getConfig().getInt("arenas."+b+".min_size");
+						int max = Main.arenas.getConfig().getInt("arenas."+b+".max_size");
             			String it = null;
             			 it = Main.arenas.getConfig().getString("arenas."+b+".item");
          				it = it.toUpperCase();
          				Material item = Material.valueOf(it);
-            			DataManager.getManager().loadArena(b,null,spawn1,spawn2,lobby,arena1,arena2,spleeftype,gametype, item);
+            			DataManager.getManager().loadArena(b,null,spawn1,spawn2,null,arena1,arena2,spleeftype,gametype,item,min,max);
     				}
 				arenasint++;
     			} catch (Exception e) {

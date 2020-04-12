@@ -148,15 +148,15 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 				}
 				
 				if (sp.getWeeklyFFAWins()>0) {
-					spleefffawinsranking_weekly.put(sp.getOfflinePlayer().getName(), sp.getMonthlyFFAWins());
+					spleefffawinsranking_weekly.put(sp.getOfflinePlayer().getName(), sp.getWeeklyFFAWins());
 				}
 					
 					if (sp.getWeeklyFFAKills()>0) {
-						spleefffakillsranking_weekly.put(sp.getOfflinePlayer().getName(), sp.getMonthlyFFAKills());
+						spleefffakillsranking_weekly.put(sp.getOfflinePlayer().getName(), sp.getWeeklyFFAKills());
 					}
 					
 					if (sp.getWeeklyFFAGames()>0) {
-						spleefffagamesranking_weekly.put(sp.getOfflinePlayer().getName(), sp.getMonthlyFFAGames());
+						spleefffagamesranking_weekly.put(sp.getOfflinePlayer().getName(), sp.getWeeklyFFAGames());
 					}
 					
 					if (sp.get1vs1Wins()>0) {

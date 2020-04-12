@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 
 import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.game.FFAEvent;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.death.BrokenBlock;
@@ -44,6 +45,11 @@ public class SpleefArena {
 	private Location spawn1_1vs1;
 	private Location spawn2_1vs1;
 	
+	private Location shrinked_arena1_1vs1;
+	private Location shrinked_arena2_1vs1;
+	private Location shrinked_spawn1_1vs1;
+	private Location shrinked_spawn2_1vs1;
+	
 	private Material item;
 	private int resetround;
 	private int points1;
@@ -57,6 +63,8 @@ public class SpleefArena {
 	private boolean isRecording;
 	private boolean recordingRequest;
 	private GameReplay replay;
+	
+	private FFAEvent event;
 	public SpleefArena(String name,Location mainspawn,Location lobby,Location arena1, Location arena2,SpleefType spleeftype,GameType gametype) {
 		this.name = name;
 		this.mainspawn = mainspawn;
@@ -71,26 +79,38 @@ public class SpleefArena {
 		
 	}
 
-	public SpleefArena(String name,Location spawn1,Location spawn2,Location lobby,Location arena1, Location arena2,SpleefType spleeftype, GameType gametype,Material item,int min,int max) {
+	public SpleefArena(String name,Location spawn1,Location spawn2,Location arena1, Location arena2,SpleefType spleeftype, GameType gametype,Material item,int min,int max) {
 		this.name = name;
 		this.spawn1 = spawn1;
 		this.spawn2 = spawn2;
-		this.lobby = lobby;
 		this.arena1 = arena1;
 		this.arena2 = arena2;
 		this.spleeftype = spleeftype;
 		this.gametype = gametype;
 		this.state = GameState.LOBBY;
 		this.time = 150;
-		this.resetround = 0;
+		this.resetround = 12;
 		this.arena1_1vs1 = this.arena1;
 		this.arena2_1vs1 = this.arena2;
 		this.spawn1_1vs1 = this.spawn1;
 		this.spawn2_1vs1 = this.spawn2;
+		this.shrinked_arena1_1vs1 = this.arena1;
+		this.shrinked_arena2_1vs1 = this.arena2;
+		this.shrinked_spawn1_1vs1 = this.spawn1;
+		this.shrinked_spawn2_1vs1 = this.spawn2;
 		this.playto = 7;
 		this.item= item;	
 		this.min = min;
 		this.max = max;
+	}
+	
+	
+	public FFAEvent getEvent() {
+		return this.event;
+	}
+	
+	public void setEvent(FFAEvent event) {
+		this.event = event;
 	}
 	
 	public int getMaxPlayersSize() {
@@ -183,42 +203,83 @@ public class SpleefArena {
 	}
 	
 	public void resetResetRound() {
-		this.resetround = 0;
+		int size = getPlayers().size()/2;
+		int i =0;
+		if (size<=this.max) {
+			i = size-1;
+		} else {
+			i = this.max-1;
+		}
+		this.resetround = 12+i;
 	}
-	public Location getArena1_1vs1() {
+	public Location getDuelArena1() {
 		return this.arena1_1vs1;
 	}
 	
 	
-	public void setArena1_1vs1(Location l) {
+	public void setDuelArena1(Location l) {
 		this.arena1_1vs1 = l;
 	}
 	
-	public Location getArena2_1vs1() {
+	public Location getDuelArena2() {
 		return this.arena2_1vs1;
 	}
 	
-	public void setArena2_1vs1(Location l) {
+	public void setDuelArena2(Location l) {
 		this.arena2_1vs1 = l;
 	}
 	
-	public Location getSpawn1_1vs1() {
+	public Location getDuelSpawn1() {
 		return this.spawn1_1vs1;
 	}
 	
-	public void setSpawn1_1vs1(Location l) {
+	public void setDuelSpawn1(Location l) {
 		this.spawn1_1vs1 = l;
 	}
 	
 	
-	public Location getSpawn2_1vs1() {
+	public Location getDuelSpawn2() {
 		return this.spawn2_1vs1;
 	}
 	
-	public void setSpawn2_1vs1(Location l) {
+	public void setDuelSpawn2(Location l) {
 		this.spawn2_1vs1 = l;
 	}
 
+	public Location getShrinkedDuelArena1() {
+		return this.shrinked_arena1_1vs1;
+	}
+	
+	
+	public void setShrinkedDuelArena1(Location l) {
+		this.shrinked_arena1_1vs1 = l;
+	}
+	
+	public Location getShrinkedDuelArena2() {
+		return this.shrinked_arena2_1vs1;
+	}
+	
+	public void setShrinkedDuelArena2(Location l) {
+		this.shrinked_arena2_1vs1 = l;
+	}
+	
+	public Location getShrinkedDuelSpawn1() {
+		return this.shrinked_spawn1_1vs1;
+	}
+	
+	public void setShrinkedDuelSpawn1(Location l) {
+		this.shrinked_spawn1_1vs1 = l;
+	}
+	
+	
+	public Location getShrinkedDuelSpawn2() {
+		return this.shrinked_spawn2_1vs1;
+	}
+	
+	public void setShrinkedDuelSpawn2(Location l) {
+		this.shrinked_spawn2_1vs1 = l;
+	}
+	
 	public int getPoints1() {
 		return this.points1;
 	}
@@ -273,34 +334,30 @@ public class SpleefArena {
 		if (this.gametype.equals(GameType.FFA)) {
 		this.time = 150;
 		} else if (this.gametype.equals(GameType.DUEL)) {
-			if (this.resetround==0) {
+			if (this.resetround>=12) {
 				this.time = 180;
-			} else if (this.resetround==1){
+			} else if (this.resetround==11){
 				this.time=165;
-			}else if (this.resetround==2){
+			}else if (this.resetround==10){
 				this.time=150;
-			}else if (this.resetround==3){
+			}else if (this.resetround==9){
 				this.time=135;
-			}else if (this.resetround==4){
+			}else if (this.resetround==8){
 				this.time=120;
-			}else if (this.resetround==5){
+			}else if (this.resetround==7){
 				this.time=105;
 			}else if (this.resetround==6){
 				this.time=90;
-			}else if (this.resetround==7){
+			}else if (this.resetround==5){
 				this.time=75;
-			}else if (this.resetround==8){
+			}else if (this.resetround==4){
 				this.time=60;
-			}else if (this.resetround==9){
+			}else if (this.resetround==3){
 				this.time=45;
-			}else if (this.resetround==10){
+			}else if (this.resetround==2){
 				this.time=30;
-			}else if (this.resetround==11){
+			}else if (this.resetround==1){
 				this.time=30;
-			}else if (this.resetround==12){
-				this.time=15;
-			}else if (this.resetround==13){
-				this.time=15;
 			}
 			
 		}

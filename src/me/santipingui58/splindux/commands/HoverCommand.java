@@ -130,8 +130,9 @@ public class HoverCommand implements CommandExecutor {
 				SpleefDuel duel = sp.getDuelByUUID(UUID.fromString(args[1]));		
 						if (duel!=null) {
 							for (SpleefPlayer dueled : duel.getDueledPlayers()) {
-								dueled.getPlayer().sendMessage("§b" + sp.getPlayer().getName() + "§c has cancelled the request.");
+								dueled.getPlayer().sendMessage("§b" + sp.getPlayer().getName() + "§c has cancelled the duel request.");
 							}
+							duel.getChallenger().getPlayer().sendMessage("§cYou have cancelled the duel request.");
 							duel.getChallenger().getDuels().remove(duel);
 							} else {
 								p.sendMessage("§cThis duel request has expired.");

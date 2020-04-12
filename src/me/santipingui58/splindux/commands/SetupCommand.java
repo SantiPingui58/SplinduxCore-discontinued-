@@ -71,7 +71,39 @@ public class SetupCommand implements CommandExecutor {
 				} else {
 					
 				}
-			}  else if (args[0].equalsIgnoreCase("setlobby")) {
+			}else if (args[0].equalsIgnoreCase("setmin")) {
+				if (args.length==3) {
+					int min = 0;
+					try {
+						min = Integer.parseInt(args[2]);			
+					} catch (Exception e) {
+						p.sendMessage("§a"+ args[2]+ " §cisnt a valid number.");
+						return false;
+					}
+					
+					p.sendMessage("§aYou have set the the min amount of players on arena §b"+ args[1]);
+					Main.arenas.getConfig().set("arenas."+args[1]+".min", min);
+					Main.arenas.saveConfig();
+				} else {
+					
+				}
+			}else if (args[0].equalsIgnoreCase("setmax")) {
+				if (args.length==3) {
+					int max = 0;
+					try {
+						max = Integer.parseInt(args[2]);			
+					} catch (Exception e) {
+						p.sendMessage("§a"+ args[2]+ " §cisnt a valid number.");
+						return false;
+					}
+					
+					p.sendMessage("§aYou have set the the max amount of players on arena §b"+ args[1]);
+					Main.arenas.getConfig().set("arenas."+args[1]+".max", max);
+					Main.arenas.saveConfig();
+				} else {
+					
+				}
+			}    else if (args[0].equalsIgnoreCase("setlobby")) {
 				if (args.length==2) {
 					p.sendMessage("§aYou have set the the location of Lobby on arena §b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".lobby", Utils.getUtils().setLoc(p.getLocation(), false));
@@ -123,25 +155,55 @@ public class SetupCommand implements CommandExecutor {
 				}
 			}else if (args[0].equalsIgnoreCase("create")) {
 				if (args.length == 2) {
-					if (Main.arenas.getConfig().contains("arenas."+args[1]+".arena1") && 
-							Main.arenas.getConfig().contains("arenas."+args[1]+".arena2") &&
-							Main.arenas.getConfig().contains("arenas."+args[1]+".item") &&
-							Main.arenas.getConfig().contains("arenas."+args[1]+".gametype") &&
-							Main.arenas.getConfig().contains("arenas."+args[1]+".spleeftype")) {
-						
-						Location arena1 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".arena1"));
-						Location arena2 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".arena2"));		
-						Material item = Material.valueOf(Main.arenas.getConfig().getString("arenas."+args[1]+".item"));
-						SpleefType spleeftype = SpleefType.valueOf(Main.arenas.getConfig().getString("arenas."+args[1]+".spleeftype"));
+					if (Main.arenas.getConfig().contains("arenas."+args[1]+".gametype")) {
 						GameType gametype = GameType.valueOf(Main.arenas.getConfig().getString("arenas."+args[1]+".gametype"));
+						
+						
+						if (gametype.equals(GameType.DUEL)) {
+							if (!Main.arenas.getConfig().contains("arenas."+args[1]+".arena1") 
+								|| !Main.arenas.getConfig().contains("arenas."+args[1]+".arena2") 
+								|| !Main.arenas.getConfig().contains("arenas."+args[1]+".item") 
+								|| !Main.arenas.getConfig().contains("arenas."+args[1]+".spleeftype")
+								|| !Main.arenas.getConfig().contains("arenas."+args[1]+".min")
+								|| !Main.arenas.getConfig().contains("arenas."+args[1]+".max")
+								){
+								p.sendMessage("§cThe arena §b" + args[1] + " §cdoesnt have all locations set.");
+								return false;
+							} else {}
+							
+						} 
+						
+						
+						if (gametype.equals(GameType.FFA)) {
+							if (!Main.arenas.getConfig().contains("arenas."+args[1]+".arena1") 
+									|| !Main.arenas.getConfig().contains("arenas."+args[1]+".arena2") 
+									|| !Main.arenas.getConfig().contains("arenas."+args[1]+".gametype")
+									|| !Main.arenas.getConfig().contains("arenas."+args[1]+".spleeftype")
+									|| !Main.arenas.getConfig().contains("arenas."+args[1]+".lobby")
+									|| !Main.arenas.getConfig().contains("arenas."+args[1]+".mainspawn")
+									){
+								p.sendMessage("§cThe arena §b" + args[1] + " §cdoesnt have all locations set.");
+								return false;
+							}
+						}
+						
+						
+						SpleefType spleeftype = SpleefType.valueOf(Main.arenas.getConfig().getString("arenas."+args[1]+".spleeftype"));
+						Location arena1 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".arena1"));
+						Location arena2 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".arena2"));	
+						
+					
 						if (gametype.equals(GameType.FFA)) {
 							Location lobby = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".lobby"));
 							Location mainspawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".mainspawn"));
-						DataManager.getManager().loadArena(args[1], mainspawn,null,null, lobby, arena1, arena2,spleeftype,gametype,null);
+						DataManager.getManager().loadArena(args[1], mainspawn,null,null, lobby, arena1, arena2,spleeftype,gametype,null,0,0);
 						} else if (gametype.equals(GameType.DUEL)) {
+							Material item = Material.valueOf(Main.arenas.getConfig().getString("arenas."+args[1]+".item"));
 							Location spawn1 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".spawn1"));
 							Location spawn2 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("arenas."+args[1]+".spawn2"));
-							DataManager.getManager().loadArena(args[1], null,spawn1,spawn2, Main.lobby, arena1, arena2,spleeftype,gametype,item);
+							int min = Main.arenas.getConfig().getInt("arenas."+args[1]+".spawn1");
+							int max = Main.arenas.getConfig().getInt("arenas."+args[1]+".spawn2");
+							DataManager.getManager().loadArena(args[1], null,spawn1,spawn2, Main.lobby, arena1, arena2,spleeftype,gametype,item,min,max);
 						}
 						
 						p.sendMessage("§aThe arena §b" + args[1] + " §ahas been created succesfully!.");
@@ -149,8 +211,8 @@ public class SetupCommand implements CommandExecutor {
 						p.sendMessage("§cThe arena §b" + args[1] + " §cdoesnt have all locations set.");
 					}
 				} else {
-					
-				}
+					p.sendMessage("§cThe arena §b" + args[1] + " §cdoesnt have all locations set.");
+				}				
 			}
 				
 		}

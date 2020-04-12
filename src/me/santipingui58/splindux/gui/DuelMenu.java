@@ -43,10 +43,10 @@ public class DuelMenu extends MenuBuilder {
 	
 	
 	public DuelMenu(SpleefPlayer sp,List<SpleefPlayer> sp2,SpleefType type) {
-		super("§aDuel request to: §b" + getDuelTo(sp2),3);
+		super("§aDuel request to: §b" + getDuelTo(sp2),4);
 		if (sp.getDuelPage()==0) {
-		
-		int x = 0;
+		int size = sp2.size()+1;
+		int x = 1;
 		List<String> main_arena = new ArrayList<String>();
 		
 		 
@@ -61,6 +61,8 @@ public class DuelMenu extends MenuBuilder {
 		
 		java.util.Collections.sort(alph);
 		
+		List<SpleefArena> suggestedArenas = new ArrayList<SpleefArena>();
+		List<SpleefArena> allArenas = new ArrayList<SpleefArena>();
 		for (String s : alph) {
 			SpleefArena arena = GameManager.getManager().getArenaByName(s);
 			if (arena.getSpleefType().equals(type)) {
@@ -68,30 +70,83 @@ public class DuelMenu extends MenuBuilder {
 				n = n.replaceAll("\\d","");
 				if (!Utils.getUtils().containsIgnoreCase(main_arena, n)) {
 					
-					main_arena.add(arena.getName());
-					int amount = GameManager.getManager().getAvailableArenasFor(arena.getName());
-					String name = arena.getName().replaceAll("\\d","");
-					name = name.toLowerCase();
-					name = name.substring(0, 1).toUpperCase() + name.substring(1);
-					if (amount==0) {
-						List<String> lore = new ArrayList<String>();
-						lore.add("§8"+type.toString());
-						for (SpleefPlayer sp_2 : sp2) {
-							lore.add("§8"+sp_2.getOfflinePlayer().getName());
-						}
-						ItemStack item = new ItemBuilder(arena.getItem()).setTitle("§6"+name).build();
-						ItemMeta meta = item.getItemMeta();
-						meta.setLore(lore);
-						item.setItemMeta(meta);
-					s(x,item);			
-					} else {
-						s(x,new ItemBuilder(Material.BARRIER).setTitle("§c"+name).addLore("§cNo available arenas for this map").build());
-					}
-					x++;
-					
-				}
-			} 
+					main_arena.add(arena.getName());				
+			if (arena.getMaxPlayersSize()>=size) {
+				suggestedArenas.add(arena);
+			} else {
+				Bukkit.broadcastMessage(""+size);
+				allArenas.add(arena);
+			}
 		}
+		
+			}
+		}
+		
+		s(0,new ItemBuilder(Material.PAPER).setTitle("§aSuggested arenas for " + size+ "VS"+size).build());
+		
+		for (SpleefArena arena : suggestedArenas) {
+			
+			int amount = GameManager.getManager().getAvailableArenasFor(arena.getName());
+			String name = arena.getName().replaceAll("\\d","");
+			name = name.toLowerCase();
+			name = name.substring(0, 1).toUpperCase() + name.substring(1);
+			if (amount==0) {
+				List<String> lore = new ArrayList<String>();
+				lore.add("§8"+type.toString());
+				for (SpleefPlayer sp_2 : sp2) {
+					lore.add("§8"+sp_2.getOfflinePlayer().getName());
+				}
+				ItemStack item = new ItemBuilder(arena.getItem()).setTitle("§6"+name).build();
+				ItemMeta meta = item.getItemMeta();
+				meta.setLore(lore);
+				item.setItemMeta(meta);
+			s(x,item);			
+			} else {
+				s(x,new ItemBuilder(Material.BARRIER).setTitle("§c"+name).addLore("§cNo available arenas for this map").build());
+			}
+			x++;
+		}
+		
+		
+		if (allArenas.size()>0) {
+		if (x<=8) {
+			x = 9;
+		} else if (x<=17) {
+			x= 18;
+		}else if (x<=26) {
+			x= 27;
+		}
+		
+		
+		s(x,new ItemBuilder(Material.PAPER).setTitle("§aRest of arenas").build());
+		x++;		
+		}
+		
+		for (SpleefArena arena : allArenas) {
+			
+			int amount = GameManager.getManager().getAvailableArenasFor(arena.getName());
+			String name = arena.getName().replaceAll("\\d","");
+			name = name.toLowerCase();
+			name = name.substring(0, 1).toUpperCase() + name.substring(1);
+			if (amount==0) {
+				List<String> lore = new ArrayList<String>();
+				lore.add("§8"+type.toString());
+				for (SpleefPlayer sp_2 : sp2) {
+					lore.add("§8"+sp_2.getOfflinePlayer().getName());
+				}
+				ItemStack item = new ItemBuilder(arena.getItem()).setTitle("§6"+name).build();
+				ItemMeta meta = item.getItemMeta();
+				meta.setLore(lore);
+				item.setItemMeta(meta);
+			s(x,item);			
+			} else {
+				s(x,new ItemBuilder(Material.BARRIER).setTitle("§c"+name).addLore("§cNo available arenas for this map").build());
+			}
+			x++;
+		}
+		
+		
+		
 		
 		ItemStack random = Utils.getUtils().getSkull("http://textures.minecraft.net/texture/d34e063cafb467a5c8de43ec78619399f369f4a52434da8017a983cdd92516a0");
 		ItemMeta meta = random.getItemMeta();
@@ -104,7 +159,17 @@ public class DuelMenu extends MenuBuilder {
 		
 		meta.setLore(lore);
 		random.setItemMeta(meta);
-		s(x+1,random);
+		
+		if (x<=8) {
+			x = 9;
+		} else if (x<=17) {
+			x= 18;
+		}else if (x<=26) {
+			x= 27;
+		}else if (x<=35) {
+			x= 36;
+		}
+		s(x,random);
 		}
 	}
 	
@@ -185,6 +250,7 @@ public class DuelMenu extends MenuBuilder {
 		if (sp2.contains(sp)) sp2.remove(sp);
 		
 		if (sp2.size()==1) {
+			sp.getPlayer().sendMessage("§aYou have sent a duel request to §b" + sp2.get(0).getOfflinePlayer().getName()+ "§a!");
 		sp2.get(0).getPlayer().sendMessage("§aThe Player §b" + sp.getPlayer().getName() + " §ahas sent you a duel request for "+ type.toString() + "! §7(This request expires in 1 minute.)");
 		sp2.get(0).getPlayer().spigot().sendMessage(getInvitation(sp));	
 	
@@ -199,7 +265,6 @@ public class DuelMenu extends MenuBuilder {
 			}
 		}
 		
-		sp.getPlayer().sendMessage("§aYou have sent a duel request to §b" + sp2.get(0).getOfflinePlayer().getName()+ "§a!");
 		TextComponent msg1 = new TextComponent("[CANCEL DUEL]");
 		msg1.setColor(net.md_5.bungee.api.ChatColor.RED );
 		msg1.setBold( true );

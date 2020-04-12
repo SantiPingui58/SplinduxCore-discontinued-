@@ -67,13 +67,13 @@ public class OnMoveTask {
 		    			if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) {
 		    				List<SpleefPlayer> alive = new ArrayList<SpleefPlayer>();
 		    				for (SpleefPlayer players : arena.getPlayers()) {
-		    					if (!arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {
+		    					if (!arena.getDeadPlayers1().contains(players) && !arena.getDeadPlayers2().contains(players)) {
 		    						alive.add(players);
 		    					}
 		    				}
 		    				
 		    				for (SpleefPlayer a : alive) {
-		    					if (a.getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 40) {
+		    					if (a.getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 30) {
 		    						sp.getPlayer().teleport(a.getPlayer());
 		    						break;
 		    					}
@@ -143,9 +143,9 @@ public class OnMoveTask {
 		    			}else  {
 		    				if (arena.getGameType().equals(GameType.DUEL)) {
 		    					if (arena.getDuelPlayers2().contains(sp)) {
-		    						sp.getPlayer().teleport(arena.getSpawn2_1vs1());
+		    						sp.getPlayer().teleport(arena.getShrinkedDuelSpawn2());
 		    					} else {
-		    						sp.getPlayer().teleport(arena.getSpawn1_1vs1());
+		    						sp.getPlayer().teleport(arena.getShrinkedDuelSpawn1());
 		    					}
 		    				}
 		    			}
