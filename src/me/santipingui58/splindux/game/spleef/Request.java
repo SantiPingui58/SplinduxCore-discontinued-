@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.utils.Utils;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -46,7 +45,7 @@ public class Request {
 	}
 	
 	public void sendMessage() {
-		SpleefArena arena = GameManager.getManager().getArenaByPlayer(challenger);
+		SpleefArena arena = challenger.getArena();
 		List<SpleefPlayer> list = new ArrayList<SpleefPlayer>();		
 		
 		for (SpleefPlayer splayer : arena.getPlayers()) {

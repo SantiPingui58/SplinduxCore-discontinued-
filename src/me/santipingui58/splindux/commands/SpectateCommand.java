@@ -33,8 +33,8 @@ public class SpectateCommand implements CommandExecutor {
 				Player spect = Bukkit.getPlayer(args[0]);
 				if (Bukkit.getOnlinePlayers().contains(spect)) {
 					SpleefPlayer sp2 = SpleefPlayer.getSpleefPlayer(spect);
-					if (GameManager.getManager().isInGame(sp2)) {
-						if (GameManager.getManager().getArenaByPlayer(sp2).getGameType().equals(GameType.DUEL)) {
+					if (sp2.isInGame()) {
+						if (sp2.getArena().getGameType().equals(GameType.DUEL)) {
 						GameManager.getManager().spectate(sp,sp2);
 						} else {
 							sender.sendMessage("§cThe player §b" + args[0] + "§c is not in a 1vs1 game.");

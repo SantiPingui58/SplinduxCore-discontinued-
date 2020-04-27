@@ -19,6 +19,10 @@ import org.bukkit.potion.Potion;
 @SuppressWarnings("deprecation")
 public class ItemBuilder {
 
+	
+	//Util and easy to use builder for items.
+	
+	
     private Material mat;
     private int amount;
     private final short data;

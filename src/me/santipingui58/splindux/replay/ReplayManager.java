@@ -16,6 +16,10 @@ public class ReplayManager {
 	        return manager;
 	    }
 	 
+	 
+	 //Manager to handle the Replay System.
+	 //Not being developed yet
+	 
 	public String getName(SpleefArena arena) {
 		 Date now = new Date();
 			SimpleDateFormat format = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");

@@ -4,8 +4,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.Request;
@@ -26,8 +24,8 @@ public class PlaytoCommand implements CommandExecutor {
 			Player p = (Player) sender;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			
-			if (GameManager.getManager().isInGame(sp)) {
-				SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+			if (sp.isInGame()) {
+				SpleefArena arena = sp.getArena();
 				if (arena.getGameType().equals(GameType.DUEL)) {
 					if (arena.getPlayToRequest()==null) {
 					if (args.length==0) {

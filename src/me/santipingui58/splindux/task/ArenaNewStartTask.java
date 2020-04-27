@@ -3,7 +3,6 @@ package me.santipingui58.splindux.task;
 import org.bukkit.Bukkit;
 
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.GameType;
@@ -17,7 +16,11 @@ public class ArenaNewStartTask {
 	private int time;
 	public ArenaNewStartTask(SpleefArena arena) {
 		task();
+		if (arena.isInEvent()) {
+			this.time = 15;
+		} else {
 		this.time = 5;
+		}
 		this.arena = arena;
 	}
 	
@@ -35,7 +38,7 @@ public class ArenaNewStartTask {
             	   if (arena.getQueue().size()>=size) {
             		   
             	   if (time==0) {
-                   GameManager.getManager().startGame(arena);
+                  arena.startGame();
                	Bukkit.getScheduler().cancelTask(task);
             	   } 
             	   time--;

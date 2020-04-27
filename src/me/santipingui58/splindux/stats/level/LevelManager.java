@@ -19,7 +19,7 @@ public class LevelManager {
 	        return manager;
 	    }
 	
-	 
+	 //Returns the rank of a Player
 	 public SpleefRank getRank(SpleefPlayer sp) {
 		 SpleefRank rank = null;
 		 for (SpleefRank sr : SpleefRank.values()) {
@@ -31,10 +31,14 @@ public class LevelManager {
 				 }
 			 }
 		 }
+		
+		 
 		 return rank;
+		 
+		 
 	 }
 	 
-	 
+	 //Check if the player has more EXP than requiered to level up
 	 public void checkLevel(SpleefPlayer sp, SpleefRank rank ) {
 		 if (rank.getNextRank()!=null) {
 		 if (sp.getLevel()>=rank.getNextRank().getRequiredLevel()) {
@@ -131,7 +135,7 @@ public class LevelManager {
 		  
 	  }
 	 
-	 
+	 //Returns a percentage of progress to the next level.
 	 public String getPercentage(SpleefPlayer sp) {
 		SpleefRank rank = LevelManager.getManager().getRank(sp);
 		 int current = sp.getLevel()-rank.getRequiredLevel();

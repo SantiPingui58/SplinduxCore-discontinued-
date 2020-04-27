@@ -3,6 +3,7 @@ package me.santipingui58.splindux.task;
 import org.bukkit.Bukkit;
 
 import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.npc.NPCManager;
 import me.santipingui58.splindux.scoreboard.PinguiScoreboard;
 
 
@@ -24,7 +25,7 @@ public class TabTask {
                public void run() {
             	   
             	   PinguiScoreboard.getScoreboard().setTags();
-            	   
+            	   NPCManager.getManager().updateNPCs();
             	   
                }
 		 }, 10, 60L);

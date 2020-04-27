@@ -1,7 +1,7 @@
 package me.santipingui58.splindux.task;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -29,41 +29,47 @@ public class OnMoveTask {
 			
 		    public void run() {
 		    			  
-
-		    	
 		    	for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
+		    		
+		    		//Check if an admin is already logged in to move.
+		    		//Not used.
 		  		  if (sp.needsAdminLoginQuestionmark() && !sp.isLogged()) {
 		    			sp.getPlayer().teleport(Main.lobby);
 				 }
 		    		
+		  		  
+		  		  //To prevent spectators to get away from players on the game, if they are 40 blocks away from the player they are spectating, they get teleported to them.
 		    		if (sp.isSpectating()) {
 		    			if (sp.getSpectating().getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 40) {
 		    				sp.getPlayer().teleport(sp.getSpectating().getLocation());
 		    			}
 		    		}
-		    		
-		    		
-		    		
-		    	
-		    		
+		    		//Set the old player location
 		    		if (sp.getLocation()==null) {
 		    			if (sp.getPlayer().isOnline()) {
 		    			sp.setLocation(sp.getPlayer().getLocation());
 		    			}
 		    		}
 		    		
+		    		//World named world is where the Lobby is
 		    		if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("world")) {
-
 		    			Location spawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true);
-		    			
+		    			//Check if the player is in a 200 blocks radio or in positive Y value, otherwise teleport them to the spawn.
 		    			if (sp.getPlayer().getLocation().getY() < 0  || sp.getPlayer().getLocation().distance(spawn)>200) {
 		    				sp.getPlayer().teleport(spawn);
+		    			}
+		    			if (sp.getPlayer().getLocation().getY()<115 && sp.isFlying() && !sp.getPlayer().hasPermission("splindux.admin")) {
+		    			sp.stopfly();
 		    			}
 		    			
 		    		}
 		    		
-		    		if (GameManager.getManager().isInGame(sp)) {
-		    			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+		    		
+		    		
+		    		//To prevent dead players to go away from alive players, if they are 30 blocks away from any player alive, they get teleported to the closest one.
+		    		//Can get glitched if  alive players are more than 30 blocks away from each other.
+		    		if (sp.isInGame()) {
+		    			SpleefArena arena = sp.getArena();
 		    			if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) {
 		    				List<SpleefPlayer> alive = new ArrayList<SpleefPlayer>();
 		    				for (SpleefPlayer players : arena.getPlayers()) {
@@ -73,7 +79,7 @@ public class OnMoveTask {
 		    				}
 		    				
 		    				for (SpleefPlayer a : alive) {
-		    					if (a.getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 30) {
+		    					if (a.getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 40) {
 		    						sp.getPlayer().teleport(a.getPlayer());
 		    						break;
 		    					}
@@ -81,7 +87,7 @@ public class OnMoveTask {
 		    			}
 		    		}
 		    		
-		    		
+		    		//AFK System
 		    		if (sp.isAfk()) {
 		    			if (!sp.getLocation().equals(sp.getPlayer().getLocation())) {
 		    			sp.back();
@@ -108,16 +114,18 @@ public class OnMoveTask {
 		    		}
 		    		
 		    		
-		    	
+		    		//Remove fire at any moment
 		    		sp.getPlayer().setFireTicks(0);
 		    		
-		    		if (GameManager.getManager().isInGame(sp) || GameManager.getManager().isInQueue(sp)) {
-		    			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+		    		
+		    		//Check if the player in FFA is AFK, currently not being developed.
+		    		if (sp.isInGame() || sp.isInQueue()) {
+		    			SpleefArena arena = sp.getArena();
 		    			if (arena.getGameType().equals(GameType.FFA)) {
 		    			if (sp.getLocation().getYaw()==sp.getPlayer().getLocation().getYaw() && sp.getLocation().getPitch()==sp.getPlayer().getLocation().getPitch()) {
 			    			sp.addGameAFKTimer();
 			    			if (sp.getGameAFKTimer()>1600) {		    				
-			    				GameManager.getManager().leaveQueue(sp, arena);
+			    				sp.leaveQueue(arena,true);
 			    				sp.getPlayer().sendMessage("§cYou got off from the game because you were afk too long!");
 			    			}
 			    		} else {
@@ -127,14 +135,17 @@ public class OnMoveTask {
 		    		}
 		    		sp.setLocation(sp.getPlayer().getLocation());
 		    		
-		    		if (GameManager.getManager().isInGame(sp)) {
-		    			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+		    		
+		    		
+		    		//Check if the player fell, by checking if their Y value is lower than the arena Y value.
+		    		if (sp.isInGame()) {
+		    			SpleefArena arena = sp.getArena();
 		    			if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) continue;
 		    			
 		    			if (sp.getPlayer().getLocation().getBlockY()<arena.getArena1().getBlockY()) {	 
 		    				if (arena.getState().equals(GameState.GAME)) {
 		    					
-		    					HashMap<DeathReason, SpleefPlayer> reason = new HashMap<DeathReason,SpleefPlayer>();
+		    					LinkedHashMap<DeathReason, SpleefPlayer> reason = new LinkedHashMap<DeathReason,SpleefPlayer>();
 		    					if (arena.getGameType().equals(GameType.FFA)) {
 		    						 reason = GameManager.getManager().getDeathReason(sp);
 		    					}
@@ -153,6 +164,6 @@ public class OnMoveTask {
 		    		}
 		    	}
 		    }
-		    }, 20, 2L);
+		    }, 20, 4L);
 	}
 }

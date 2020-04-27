@@ -32,8 +32,8 @@ public class EndGameCommand implements CommandExecutor {
 		if(cmd.getName().equalsIgnoreCase("endgame")){
 			Player p = (Player) sender;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-			if (GameManager.getManager().isInGame(sp)) {
-				SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp); 
+			if (sp.isInGame()) {
+				SpleefArena arena =sp.getArena(); 
 				if (arena.getGameType().equals(GameType.DUEL)) {
 					if (!arena.getEndGameRequest().contains(sp)) {
 						arena.getEndGameRequest().add(sp);

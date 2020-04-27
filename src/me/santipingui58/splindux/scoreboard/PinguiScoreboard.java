@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import com.nametagedit.plugin.NametagEdit;
 
 import me.santipingui58.splindux.DataManager;
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
@@ -54,7 +53,7 @@ public class PinguiScoreboard {
 					cache.add("   §7mc.splindux.net");
 					
 				} else if (sp.getScoreboard().equals(ScoreboardType.FFAGAME_LOBBY) || sp.getScoreboard().equals(ScoreboardType.FFAGAME_GAME)) {
-					SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+					SpleefArena arena = sp.getArena();
 					cache.add(displayname);
 					cache.add("§f");
 					cache.add("§2Players left: §a" + arena.getFFAPlayers().size());
@@ -82,9 +81,9 @@ public class PinguiScoreboard {
 				} else if (sp.getScoreboard().equals(ScoreboardType._1VS1GAME)) {
 					SpleefArena arena = null;
 					if (sp.isSpectating()) {
-						arena = GameManager.getManager().getArenaByPlayer(sp.getSpectating());
+						arena = sp.getSpectating().getArena();
 					} else {
-					 arena = GameManager.getManager().getArenaByPlayer(sp);
+					 arena = sp.getArena();
 					}
 					
 					cache.add(displayname);

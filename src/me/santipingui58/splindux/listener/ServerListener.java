@@ -4,6 +4,8 @@ package me.santipingui58.splindux.listener;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -15,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -34,16 +37,15 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import com.yapzhenyie.GadgetsMenu.api.GadgetsMenuAPI;
-
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.death.BreakReason;
 import me.santipingui58.splindux.game.death.BrokenBlock;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefType;
+import me.santipingui58.splindux.gui.MutationTokenMenu;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import net.apcat.simplesit.SimpleSitPlayer;
 import net.apcat.simplesit.events.PlayerSitEvent;
@@ -53,6 +55,17 @@ import net.apcat.simplesit.events.PlayerStopSittingEvent;
 public class ServerListener implements Listener {
 
 	private List<SpleefPlayer> spleggDelay = new ArrayList<SpleefPlayer>();
+	
+	
+	@EventHandler
+	public void onSign(SignChangeEvent e) {		
+			for (int i = 0; i < 4; i++) {
+	            String line = e.getLine(i);
+	            if (line != null && !line.equals("")) {
+	                e.setLine(i, ChatColor.translateAlternateColorCodes('&', line));
+	            }
+			}
+	}
 	
 	@EventHandler
 	public void onSmelt(BlockFadeEvent e) {
@@ -71,7 +84,7 @@ public class ServerListener implements Listener {
 		if (entity instanceof Player) {
 			Player p = (Player) entity;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-			if (GameManager.getManager().isInGame(sp)) {
+			if (sp.isInGame()) {
 				return;
 			}
 		}
@@ -86,7 +99,7 @@ public class ServerListener implements Listener {
 		if (entity instanceof Player) {
 			Player p = (Player) entity;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-			if (GameManager.getManager().isInGame(sp)) {
+			if (sp.isInGame()) {
 				return;
 			}
 		}
@@ -155,9 +168,29 @@ public class ServerListener implements Listener {
 		                                                          
 		                                                         
 	    if (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+	    	
+	    	
+	    	if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+	    	if (!p.hasPermission("splindux.admin") && !p.getGameMode().equals(GameMode.CREATIVE)) {
+	    		if (e.getClickedBlock().getType().equals(Material.CHEST) 
+	    			|| e.getClickedBlock().getType().equals(Material.HOPPER) 
+	    			|| e.getClickedBlock().getType().equals(Material.ENDER_CHEST) 
+	    			|| e.getClickedBlock().getType().equals(Material.DROPPER) 
+	    			|| e.getClickedBlock().getType().equals(Material.FURNACE) 
+	    			|| e.getClickedBlock().getType().equals(Material.DISPENSER) 
+	    			|| e.getClickedBlock().getType().equals(Material.TRAPPED_CHEST) 
+	    			|| e.getClickedBlock().getType().equals(Material.WORKBENCH) 
+	    			|| e.getClickedBlock().getType().equals(Material.ENCHANTMENT_TABLE)
+	    			|| e.getClickedBlock().getType().equals(Material.ANVIL) 	    	
+	    				) {
+	    			e.setCancelled(true);
+	    		}
+	    	}
+	    	}
+	    	
 	    	if (p.getItemInHand().isSimilar(DataManager.getManager().gameitems()[9])) {
-	    		if (GameManager.getManager().isInGame(sp)) {
-	    			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+	    		if (sp.isInGame()) {
+	    			SpleefArena arena = sp.getArena();
 	    			if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) return;
 	    		if (!spleggDelay.contains(sp)) {
 		    		Vector speed = p.getLocation().getDirection().multiply(1.4);
@@ -175,10 +208,16 @@ public class ServerListener implements Listener {
 		    		}
 	    	}
 	    	} else if (p.getItemInHand().equals(DataManager.getManager().queueitems()[1])) {
-	    			GameManager.getManager().leaveQueue(sp, GameManager.getManager().getArenaByPlayer(sp));    		
+	    			sp.leaveQueue(sp.getArena(),true); 		
 	    	} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[1])) {
 	    		GadgetsMenuAPI.goBackToMainMenu(p);
+	    	} else if (p.getItemInHand().equals(DataManager.getManager().queueitems()[0])) {
+	    		if (sp.getMutationTokens()>0) {
+	    		new MutationTokenMenu(sp).o(p);
+	    	} else {
+	    		p.sendMessage("§cYou dont have any §dMutation Token §cat the moment.");
 	    	} 
+	    		}
 	    		
 	    	
 	    }
@@ -226,8 +265,8 @@ public class ServerListener implements Listener {
 		if (e.getEntity().getShooter() instanceof Player) {
 	    Player p = (Player)e.getEntity().getShooter();
 	    SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-	    if (GameManager.getManager().isInGame(sp)) {
-	    	if (GameManager.getManager().getArenaByPlayer(sp).getState().equals(GameState.GAME)) {
+	    if (sp.isInGame()) {
+	    	if (sp.getArena().getState().equals(GameState.GAME)) {
 	    BlockIterator iterator = new BlockIterator(e.getEntity().getWorld(), e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0.0D, 4);
 	    Block hitblock = null;
 	    while (iterator.hasNext()) {
@@ -242,33 +281,20 @@ public class ServerListener implements Listener {
 	    {
 	      p.playSound(hitblock.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5F, 2.0F);
 	      hitblock.setType(Material.AIR);
-	      SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+	      SpleefArena arena = sp.getArena();
 	      BrokenBlock kill = new BrokenBlock(sp,hitblock.getLocation(),BreakReason.SNOWBALL);
-			arena.getBrokenBlocks().add(kill);
-			
-			new BukkitRunnable() {
-		    	 public void run() {
-		    		 arena.getBrokenBlocks().remove(kill);
-		    	 }
-		     }.runTaskLaterAsynchronously(Main.get(), 20L*10);
-	      
+			arena.getBrokenBlocks().add(kill);   
 	    }
 	    
 	    
-	    if (hitblock.getTypeId()==159 && GameManager.getManager().getArenaByPlayer(sp).getSpleefType().equals(SpleefType.SPLEGG))
+	    if (hitblock.getTypeId()==159 && sp.getArena().getSpleefType().equals(SpleefType.SPLEGG))
 	    {
 	      p.playSound(hitblock.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5F, 2.0F);
 	      hitblock.setType(Material.AIR);
-	      SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+	      SpleefArena arena = sp.getArena();
 	      BrokenBlock kill = new BrokenBlock(sp,hitblock.getLocation(),BreakReason.SHOVEL);
 			arena.getBrokenBlocks().add(kill);
-			
-			new BukkitRunnable() {
-		    	 public void run() {
-		    		 arena.getBrokenBlocks().remove(kill);
-		    	 }
-		     }.runTaskLaterAsynchronously(Main.get(), 20L*10);
-	      
+			      
 	    }
 	    
 	    	}
@@ -296,7 +322,7 @@ public class ServerListener implements Listener {
 		    		   
 				       if (e.getPlayer().hasPermission("splindux.sit")) {
 				    	  
-				    	   if (!GameManager.getManager().isInGame(sp)) {
+				    	   if (!sp.isInGame()) {
 				    	   SimpleSitPlayer player = new SimpleSitPlayer(p);
 				    	    if (player.isSitting()) {
 				    	      player.setSitting(false);
@@ -321,7 +347,7 @@ public class ServerListener implements Listener {
 						        e.setCancelled(true);
 				        
 				      } else if (args[0].equalsIgnoreCase("/d") || args[0].equalsIgnoreCase("/disguise")) {
-				    		if (GameManager.getManager().isInGame(sp)) {
+				    		if (sp.isInGame()) {
 				    			e.setCancelled(true);
 									p.sendMessage("§cYou can't execute this command while playing a match.");
 								

@@ -34,6 +34,7 @@ public class HoverCommand implements CommandExecutor {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
+		
 		if(!(sender instanceof Player)) {
 			
 			sender.sendMessage("Solo los jugadores pueden hacer esto!");
@@ -51,15 +52,15 @@ public class HoverCommand implements CommandExecutor {
 					 SpleefPlayer challenger = SpleefPlayer.getSpleefPlayer(p2);
 					if (challenger.hasDueled(sp)) {
 						SpleefDuel duel = challenger.getDuelByDueledPlayer(sp);
-						if (!GameManager.getManager().isInGame(sp)) {
-							if (!GameManager.getManager().isInGame(challenger)) {
+						if (!sp.isInGame()) {
+							if (!challenger.isInGame()) {
 								if (duel.getAcceptedPlayers().contains(sp)) {
 									p.sendMessage("§cYou already accepted this request.");	
 									return false;
 								}
 								duel.getAcceptedPlayers().add(sp);
 								if (duel.getAcceptedPlayers().size()>=duel.getDueledPlayers().size()) {
-								GameManager.getManager().duelGame(challenger, duel.getDueledPlayers(), duel.getArena(),duel.getType());
+								GameManager.getManager().duelGame(challenger, duel.getDueledPlayers(), duel.getArena(),duel.getType(),duel.getAllPlayers().size()/2);
 								} else {
 									List<SpleefPlayer> list = new ArrayList<SpleefPlayer>();		
 									List<SpleefPlayer> leftToAccept = new ArrayList<SpleefPlayer>();		
@@ -141,8 +142,8 @@ public class HoverCommand implements CommandExecutor {
 				
 						
 			} else if (args[0].equalsIgnoreCase("record")) {
-				if (GameManager.getManager().isInGame(sp)) {
-					SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+				if (sp.isInGame()) {
+					SpleefArena arena = sp.getArena();
 						if (arena.getRecordingRequest()) {
 							arena.record();
 							arena.cancelRecordingRequest();
@@ -161,8 +162,8 @@ public class HoverCommand implements CommandExecutor {
 					
 				}
 			}  else if (args[0].equalsIgnoreCase("crumblecancel")) {
-				if (GameManager.getManager().isInGame(sp)) {
-					SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+				if (sp.isInGame()) {
+					SpleefArena arena = sp.getArena();
 				Request request = arena.getCrumbleRequest();		
 				if (request!=null) {
 					if (request.getChallenger().equals(sp)) {
@@ -180,8 +181,8 @@ public class HoverCommand implements CommandExecutor {
 				p.sendMessage("§cThis crumble request has expired.");
 			}
 				} else if (args[0].equalsIgnoreCase("crumbledeny")) {
-					if (GameManager.getManager().isInGame(sp)) {
-						SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+					if (sp.isInGame()) {
+						SpleefArena arena = sp.getArena();
 						if (arena.getCrumbleRequest()!=null) {
 						for (SpleefPlayer dueled : arena.getPlayers()) {
 							dueled.getPlayer().sendMessage("§cThe player §b" + sp.getPlayer().getName() + "§c has denied the request! Crumble cancelled.");
@@ -196,8 +197,8 @@ public class HoverCommand implements CommandExecutor {
 						p.sendMessage("§cThis crumble request has expired.");
 					}
 				} else if (args[0].equalsIgnoreCase("crumbleaccept")) {
-					if (GameManager.getManager().isInGame(sp)) {
-						SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+					if (sp.isInGame()) {
+						SpleefArena arena = sp.getArena();
 						if (!arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {
 						if (arena.getCrumbleRequest()!=null) {
 							Request request = arena.getCrumbleRequest();
@@ -257,8 +258,8 @@ public class HoverCommand implements CommandExecutor {
 						p.sendMessage("§cThis crumble request has expired.");
 					}
 						} else if (args[0].equalsIgnoreCase("playtocancel")) {
-							if (GameManager.getManager().isInGame(sp)) {
-								SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+							if (sp.isInGame()) {
+								SpleefArena arena = sp.getArena();
 							Request request = arena.getPlayToRequest();		
 							if (request!=null) {
 								if (request.getChallenger().equals(sp)) {
@@ -276,8 +277,8 @@ public class HoverCommand implements CommandExecutor {
 							p.sendMessage("§cThis crumble request has expired.");
 						}
 							} else if (args[0].equalsIgnoreCase("playtodeny")) {
-								if (GameManager.getManager().isInGame(sp)) {
-									SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+								if (sp.isInGame()) {
+									SpleefArena arena = sp.getArena();
 									if (arena.getPlayToRequest()!=null) {
 									for (SpleefPlayer dueled : arena.getPlayers()) {
 										dueled.getPlayer().sendMessage("§cThe player §b" + sp.getPlayer().getName() + "§c has denied the request! Playto cancelled.");
@@ -292,8 +293,8 @@ public class HoverCommand implements CommandExecutor {
 									p.sendMessage("§cThis crumble request has expired.");
 								}
 							} else if (args[0].equalsIgnoreCase("playtoaccept")) {
-								if (GameManager.getManager().isInGame(sp)) {
-									SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+								if (sp.isInGame()) {
+									SpleefArena arena = sp.getArena();
 									if (arena.getPlayToRequest()!=null) {
 										Request request = arena.getPlayToRequest();
 										if (!request.getAcceptedPlayers().contains(sp)) {

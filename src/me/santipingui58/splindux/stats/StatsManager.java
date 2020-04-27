@@ -42,7 +42,11 @@ public class StatsManager {
 	        return manager;
 	    }
 	
+	 
+	 //Get the player position in any Ranking
 	public int getRankingPosition(RankingType type,SpleefPlayer sp) {
+		
+		//Gets ranking based on the type
 		HashMap<String,Integer> ranking = getRanking(type);
 		  Iterator<Entry<String, Integer>> it = ranking.entrySet().iterator();
 		  int i = 1;
@@ -58,6 +62,8 @@ public class StatsManager {
 		  return i;
 	}
 	
+	
+	//Method used for /stats ffaspleef. This method let you see an specific page, every page has 10 players.
 	public void sendRanking(SpleefPlayer sp,int page,RankingType type) {
 		
 		HashMap<String,Integer> hashmap = getHashMapByType(type);
@@ -84,7 +90,8 @@ public class StatsManager {
 		    }	
 		   
 	}
-	
+	//Duplicated method to send rankings with doubles instead of integers, for example for K/G 
+	//Not used
 public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 		
 		HashMap<String,Double> hashmap = getHashMapByTypeDouble(type);
@@ -113,6 +120,8 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 	
 	}
 	
+
+	//Method to update all rankings by putting all the data again, should be optimized in a future with more amount of players.
 	public void updateRankings() {
 		for (SpleefPlayer sp : DataManager.getManager().getPlayers()) {
 			
@@ -174,6 +183,8 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 					}
 		}
 		
+		
+		//Sorts the rankings 
 		spleefffawinsranking = sortByValue(spleefffawinsranking);
 		spleefffakillsranking = sortByValue(spleefffakillsranking);
 		spleefffagamesranking = sortByValue(spleefffagamesranking);
@@ -196,7 +207,7 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 	}
 	
 	
-	
+	//Returns the Ranking HashMap based on their RankingType
 	public HashMap<String,Integer> getRanking(RankingType type) {
 		HashMap<String,Integer> hashmap = new HashMap<String,Integer>();
 		if (type.equals(RankingType.SPLEEFFFA_WINS)) {

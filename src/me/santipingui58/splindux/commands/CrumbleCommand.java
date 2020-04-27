@@ -4,7 +4,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.Request;
@@ -27,8 +26,8 @@ public class CrumbleCommand implements CommandExecutor {
 			Player p = (Player) sender;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			
-			if (GameManager.getManager().isInGame(sp)) {
-				SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+			if (sp.isInGame()) {
+				SpleefArena arena = sp.getArena();
 				if (arena.getGameType().equals(GameType.DUEL)) {
 					if (arena.getCrumbleRequest()==null) {
 					if (!arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {

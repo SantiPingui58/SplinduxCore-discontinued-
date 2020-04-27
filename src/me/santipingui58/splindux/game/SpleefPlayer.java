@@ -6,14 +6,23 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import me.santipingui58.splindux.DataManager;
+import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.game.mutation.GameMutation;
+import me.santipingui58.splindux.game.spleef.GameType;
+import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefDuel;
+import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.utils.GetCountry;
+import me.santipingui58.splindux.utils.Utils;
 
 public class SpleefPlayer {
 
@@ -67,7 +76,7 @@ public class SpleefPlayer {
 	private boolean register;
 	
 	private int level;
-	
+	private int mutationTokens;
 	private int duelpage;
 	
 	private PlayerOptions options;
@@ -84,6 +93,13 @@ public class SpleefPlayer {
 		return this.options;
 	}
 	
+	public int getMutationTokens() {
+		return this.mutationTokens;
+	}
+	
+	public void setMutationTokens(int i) {
+		this.mutationTokens = i;
+	}
 	public void setOptions(PlayerOptions l) {
 		this.options = l;
 	}
@@ -150,6 +166,159 @@ public class SpleefPlayer {
 		return null;
 	}
 	}
+	
+	
+	 public boolean isInGame() {
+		 for (SpleefArena arena : DataManager.getManager().getArenas()) {
+			 if (arena.getPlayers().contains(this)) {
+				 return true;
+			 }
+		 }
+		 return false;
+	 }
+	 
+	 public boolean isInArena() {
+		 if (isInGame()) {
+			 return true;
+		 }
+		 if (isInQueue()) {
+			 return true;
+		 }
+		 return false;
+	 }
+	 
+	 public boolean isInQueue() {
+		 for (SpleefArena arena : DataManager.getManager().getArenas()) {
+			 if (arena.getQueue().contains(this)) {
+				 return true;
+			 }
+		 }
+		 return false;
+	 }
+	 
+	 public SpleefArena getArena() {
+		 for (SpleefArena arena : DataManager.getManager().getArenas()) {
+			 if (arena.getPlayers().contains(this) || arena.getQueue().contains(this)) {
+				 return arena;
+			 }
+		 }
+		 return null;
+	 }
+	 
+	 public void leave(boolean teleport) {
+		 getPlayer().setGameMode(GameMode.ADVENTURE);
+		leaveSpectate(teleport);
+		leaveQueue(getArena(),teleport);    	
+	 }
+	 
+		public void leaveQueue(SpleefArena arena,boolean teleport) {
+			giveLobbyItems();
+			if (isInArena()) {
+			if (getPlayer().isOnline() && teleport) {
+				if (Main.arenas.getConfig().contains("mainlobby")) {
+					getPlayer().teleport(Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true));
+				}				
+			getPlayer().sendMessage("§aYou have left the queue.");		
+			setScoreboard(ScoreboardType.LOBBY);
+			}
+			if (arena.getPlayers().contains(this)) {
+				if (!arena.getResetRequest().isEmpty()) {
+				List<SpleefPlayer> resetRequest = GameManager.getManager().leftPlayersToSomething(arena.getResetRequest(), arena,false);
+				if (resetRequest.contains(this)) {
+					if (arena.getResetRequest().size()<=1) {
+						GameManager.getManager().resetArenaWithCommand(arena);
+					} else {
+						arena.getResetRequest().remove(this);
+					}
+				}
+				}
+				if (!arena.getEndGameRequest().isEmpty()) {
+				List<SpleefPlayer> endGameRequest = GameManager.getManager().leftPlayersToSomething(arena.getEndGameRequest(), arena,true);
+				if (endGameRequest.contains(this)) {
+					if (arena.getEndGameRequest().size()<=1) {
+						GameManager.getManager().endGameDuel(arena, null,GameEndReason.ENDGAME);
+					} else {
+						arena.getEndGameRequest().remove(this);
+					}
+				}
+				}
+				if (arena.getGameType().equals(GameType.FFA) && teleport) {
+				getPlayer().teleport(arena.getLobby());
+				}
+				if (arena.getGameType().equals(GameType.DUEL)) {
+					if (arena.getDuelPlayers1().contains(this)) {
+						List<SpleefPlayer> alive = new ArrayList<SpleefPlayer>();
+						for (SpleefPlayer s : arena.getDuelPlayers1()) {
+							if (!arena.getDeadPlayers1().contains(s)) {
+								alive.add(s);
+							}
+						}
+						if (alive.contains(this)) {
+						if (alive.size()<=1) arena.point(this);
+						}
+						
+						if (arena.getDuelPlayers1().size()<=1) {
+							GameManager.getManager().endGameDuel(arena,"Team2",GameEndReason.LOG_OFF);
+						}
+					} else if (arena.getDuelPlayers2().contains(this)) {
+							List<SpleefPlayer> alive = new ArrayList<SpleefPlayer>();
+							for (SpleefPlayer s : arena.getDuelPlayers2()) {
+								if (!arena.getDeadPlayers2().contains(s)) {
+									alive.add(s);
+								}
+							}					
+							if (alive.contains(this)) {
+							if (alive.size()<=1) arena.point(this);
+							} 
+							if (arena.getDuelPlayers2().size()<=1) {
+								GameManager.getManager().endGameDuel(arena,"Team1",GameEndReason.LOG_OFF);
+							}						
+					}
+					arena.getDeadPlayers1().remove(this);
+					arena.getDeadPlayers2().remove(this);
+					arena.getDuelPlayers1().remove(this);
+					arena.getDuelPlayers2().remove(this);
+					
+					if (arena.getPlayToRequest()!=null) {
+						
+						if (arena.getPlayToRequest().getAcceptedPlayers().size()+1>=arena.getPlayers().size()-1) {
+							GameManager.getManager().playToWithCommand(arena, arena.getPlayToRequest().getAmount());
+						}		
+				}
+					
+				if (arena.getCrumbleRequest()!=null) {
+					if (arena.getCrumbleRequest().getAcceptedPlayers().size()+1>=arena.getPlayers().size()-1-arena.getDeadPlayers1().size()-arena.getDeadPlayers2().size()) {
+						GameManager.getManager().crumbleWithCommand(arena, arena.getCrumbleRequest().getAmount());
+					}		
+			}
+				
+				} else if (arena.getGameType().equals(GameType.FFA)) {
+					List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
+					arena.getFFAPlayers().remove(this);				
+					players.addAll(arena.getFFAPlayers());
+					
+					if (players.size()<=1) {
+						if (arena.getGameType().equals(GameType.FFA)) {
+							GameManager.getManager().endGameFFA(arena, GameEndReason.WINNER);
+						}					
+						} 
+				}
+				
+				
+			} 
+				arena.getQueue().remove(this);
+				
+		}
+		}
+	 
+	 public void leaveSpectate(boolean teleport) {
+		 setSpectate(null);
+		 setScoreboard(ScoreboardType.LOBBY);
+		 if (getOfflinePlayer().isOnline() && teleport) {
+ 		 getPlayer().teleport(Main.lobby);
+		 getPlayer().setGameMode(GameMode.ADVENTURE);
+	 }
+	 }
 	public boolean needsToRegisterQuestionmark() {
 		return this.register;
 	}
@@ -206,9 +375,9 @@ public class SpleefPlayer {
 	}
 	
 	public boolean isGameDead() {
-		if (GameManager.getManager().isInGame(this)) {
-		if (GameManager.getManager().getArenaByPlayer(this).getDeadPlayers1().contains(this) ||
-				GameManager.getManager().getArenaByPlayer(this).getDeadPlayers2().contains(this)) return true;
+		if (isInGame()) {
+		if (getArena().getDeadPlayers1().contains(this) ||
+				getArena().getDeadPlayers2().contains(this)) return true;
 	}	
 		return false;
 	}
@@ -368,7 +537,7 @@ public class SpleefPlayer {
 	public void splinboxPoints() {
 		if (this.isafk) {
 			return;
-		} else if (GameManager.getManager().isInGame(this)) {
+		} else if (isInGame()) {
 			this.splinboxpoints = this.splinboxpoints+15;
 		} else {
 			this.splinboxpoints = this.splinboxpoints+10;
@@ -556,4 +725,70 @@ public class SpleefPlayer {
 	public void setCoins(int i) {
 		this.coins = i;
 	}
+	
+	
+	public void giveGameItems() {
+		getPlayer().getInventory().clear();
+		SpleefArena arena = getArena();
+		if (arena.getSpleefType().equals(SpleefType.SPLEEF)) {
+		if (getPlayer().hasPermission("splindux.diamondshovel")) {
+			getPlayer().getInventory().setItem(0, DataManager.getManager().gameitems()[1]);
+		} else {
+			getPlayer().getInventory().setItem(0, DataManager.getManager().gameitems()[0]);
+		}
+		} else if (arena.getSpleefType().equals(SpleefType.SPLEGG)) {
+			getPlayer().getInventory().setItem(0, DataManager.getManager().gameitems()[9]);
+		}
+		
+		if (arena.getGameType().equals(GameType.FFA) && arena.getSpleefType().equals(SpleefType.SPLEEF)) {
+			if (!arena.isInEvent()) {
+		if (getPlayer().hasPermission("splindux.x10snowballs")) {
+			getPlayer().getInventory().setItem(1, DataManager.getManager().gameitems()[6]);
+		} else if (getPlayer().hasPermission("splindux.x8snowballs")) {
+			getPlayer().getInventory().setItem(1, DataManager.getManager().gameitems()[5]);
+		}else if (getPlayer().hasPermission("splindux.x6snowballs")) {
+			getPlayer().getInventory().setItem(1, DataManager.getManager().gameitems()[4]);
+		}else if (getPlayer().hasPermission("splindux.x4snowballs")) {
+			getPlayer().getInventory().setItem(1, DataManager.getManager().gameitems()[3]);
+		} else {
+			getPlayer().getInventory().setItem(1, DataManager.getManager().gameitems()[2]);
+		}
+			} else {
+				getPlayer().getInventory().setItem(1, DataManager.getManager().gameitems()[2]);
+			}
+			
+			for (GameMutation mutation : arena.getInGameMutations()) {
+				mutation.giveMutationItems(this);
+			}
+		} else if (arena.getGameType().equals(GameType.DUEL) && arena.getDuelPlayers1().size()>=2 && arena.getDuelPlayers2().size()>=2) {
+
+			if (arena.getDuelPlayers1().contains(this)) {
+				getPlayer().getInventory().setHelmet(DataManager.getManager().gameitems()[7]);
+				getPlayer().getInventory().setItem(8, new ItemStack(Material.INK_SACK,1,(byte) 4));
+			} else if (arena.getDuelPlayers2().contains(this)) {
+				getPlayer().getInventory().setHelmet(DataManager.getManager().gameitems()[8]);
+				getPlayer().getInventory().setItem(8, new ItemStack(Material.INK_SACK,1,(byte) 1));
+			}
+		
+		}
+		
+		
+	}
+	
+	public void giveLobbyItems() {
+		
+		getPlayer().setGameMode(GameMode.ADVENTURE);
+		getPlayer().getInventory().clear();
+		getPlayer().getInventory().setItem(4, DataManager.getManager().lobbyitems()[0]);	
+		getPlayer().getInventory().setItem(5, DataManager.getManager().lobbyitems()[1]);
+	}
+	
+	public void giveQueueItems() {
+		getPlayer().setGameMode(GameMode.ADVENTURE);
+		getPlayer().getInventory().clear();
+		getPlayer().getInventory().setItem(7, DataManager.getManager().queueitems()[0]);	
+		getPlayer().getInventory().setItem(8, DataManager.getManager().queueitems()[1]);
+	}
+	
+	
 }

@@ -17,6 +17,7 @@ import me.santipingui58.splindux.game.SpleefPlayer;
 public class GetCountry {
 
 
+	//Here we can get the country of the player based on their IP adress, using the ip-api.com API. 
 	public GetCountry (SpleefPlayer sp) {
 		 String jsonS = "";
 	        URL url = null;

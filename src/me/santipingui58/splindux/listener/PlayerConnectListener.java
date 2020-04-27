@@ -15,7 +15,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.security.SecurityManager;
 import me.santipingui58.splindux.stats.level.LevelManager;
@@ -49,7 +48,7 @@ public class PlayerConnectListener implements Listener {
 		SecurityManager.getManager().adminLogin(sp);
 		sp.setScoreboard(ScoreboardType.LOBBY);
 		LevelManager.getManager().setExp(sp);
-		DataManager.getManager().giveLobbyItems(sp);
+		sp.giveLobbyItems();
 		if (e.getPlayer().hasPermission("splindux.join")) {
 			for (Player o : Bukkit.getOnlinePlayers()) {	
 				String prefix = ChatColor.translateAlternateColorCodes('&', PermissionsEx.getUser(e.getPlayer()).getPrefix());
@@ -81,14 +80,16 @@ public class PlayerConnectListener implements Listener {
 		if (sp==null) return;
 		
 	
-		if (GameManager.getManager().isInGame(sp)) {
-			SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
-			GameManager.getManager().leaveQueue(sp, arena);
+		if (sp.isInGame()) {
+			SpleefArena arena = sp.getArena();
+			sp.leaveQueue(arena,false);
 				for (SpleefPlayer s : arena.getViewers()) {
 					s.getPlayer().sendMessage(ChatColor.GOLD + e.getPlayer().getName() + " §chas left the server!");
 				}
 			}	
-
+		for (SpleefPlayer spect : sp.getSpectators()) {
+			spect.leaveSpectate(true);
+		}
 
 		
 		for (SpleefPlayer online : DataManager.getManager().getOnlinePlayers()) {
@@ -103,7 +104,7 @@ public class PlayerConnectListener implements Listener {
 			}
 		}
 		
-		GameManager.getManager().leave(sp);
+		sp.leave(false);
 		DataManager.getManager().saveData(sp);
 		}
 	

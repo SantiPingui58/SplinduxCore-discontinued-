@@ -9,7 +9,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.gui.DuelMenu;
@@ -31,7 +30,6 @@ public class DuelCommand implements CommandExecutor{
 } else if(cmd.getName().equalsIgnoreCase("duel")){
 	final Player p = (Player) sender;
 	 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-	
 	if (args.length==0) {
 		sender.sendMessage("§aUse of command: /duel Spleef/Splegg <Players>");
 	} else {
@@ -80,7 +78,7 @@ public class DuelCommand implements CommandExecutor{
 				  players.add(op.getName());
 					 SpleefPlayer dueled = SpleefPlayer.getSpleefPlayer(op);
 				  if (!sp.hasDueled(dueled)) {
-					  if (!GameManager.getManager().isInGame(dueled)) {
+					  if (!dueled.isInGame()) {
 						  sp2.add(dueled);
 				  } else {
 						sender.sendMessage("§cThis player §b"+ op.getName() +" is already in game.");

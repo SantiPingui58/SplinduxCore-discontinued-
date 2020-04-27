@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -24,7 +23,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
@@ -39,6 +37,9 @@ import me.santipingui58.splindux.utils.Utils;
 import me.santipingui58.translate.Language;
 
 
+
+
+//In DataManager class is handled everything related to the Data of the Server, such as arenas, players, load of data and save of data, etc.
 
 public class  DataManager {
 	private static DataManager manager;	
@@ -78,6 +79,8 @@ public class  DataManager {
 	 public HashMap<OfflinePlayer,SpleefPlayer> getPlayersCache() {
 		 return this.playershashmap;
 	 }
+	 
+	 
 	 
 		public void createSpleefPlayer(Player p) {
 			Main.data.getConfig().set("players."+p.getUniqueId()+".stats.ELO",1000);
@@ -230,7 +233,7 @@ public class  DataManager {
 				 
 				 this.players.add(sp);
 				 if (sp.getOfflinePlayer().isOnline()) {
-					 DataManager.getManager().giveLobbyItems(sp);
+					sp.giveLobbyItems();
 				 }
 				 
 			 }
@@ -337,7 +340,7 @@ public class  DataManager {
 			 a = new SpleefArena(name,spawn1,spawn2,arena1,arena2,spleeftype,gametype,item,min,max);
 		 }
         this.arenas.add(a);      
-        GameManager.getManager().resetArena(a,false,true);
+       a.reset(false,true);
         return a;
     }
     
@@ -460,65 +463,7 @@ public class  DataManager {
     	
     	
     }
-    
-	
-	public void giveGameItems(SpleefPlayer sp) {
-		sp.getPlayer().getInventory().clear();
-		SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
-		if (arena.getSpleefType().equals(SpleefType.SPLEEF)) {
-		if (sp.getPlayer().hasPermission("splindux.diamondshovel")) {
-			sp.getPlayer().getInventory().setItem(0, gameitems()[1]);
-		} else {
-			sp.getPlayer().getInventory().setItem(0, gameitems()[0]);
-		}
-		} else if (arena.getSpleefType().equals(SpleefType.SPLEGG)) {
-			sp.getPlayer().getInventory().setItem(0, gameitems()[9]);
-		}
-		
-		if (arena.getGameType().equals(GameType.FFA) && arena.getSpleefType().equals(SpleefType.SPLEEF)) {
-		if (sp.getPlayer().hasPermission("splindux.x10snowballs")) {
-			sp.getPlayer().getInventory().setItem(1, gameitems()[6]);
-		} else if (sp.getPlayer().hasPermission("splindux.x8snowballs")) {
-			sp.getPlayer().getInventory().setItem(1, gameitems()[5]);
-		}else if (sp.getPlayer().hasPermission("splindux.x6snowballs")) {
-			sp.getPlayer().getInventory().setItem(1, gameitems()[4]);
-		}else if (sp.getPlayer().hasPermission("splindux.x4snowballs")) {
-			sp.getPlayer().getInventory().setItem(1, gameitems()[3]);
-		} else {
-			sp.getPlayer().getInventory().setItem(1, gameitems()[2]);
-		}
-		
-		} else if (arena.getGameType().equals(GameType.DUEL) && arena.getDuelPlayers1().size()>=2 && arena.getDuelPlayers2().size()>=2) {
-
-			if (arena.getDuelPlayers1().contains(sp)) {
-				sp.getPlayer().getInventory().setHelmet(gameitems()[7]);
-				sp.getPlayer().getInventory().setItem(8, new ItemStack(Material.INK_SACK,1,(byte) 4));
-			} else if (arena.getDuelPlayers2().contains(sp)) {
-				sp.getPlayer().getInventory().setHelmet(gameitems()[8]);
-				sp.getPlayer().getInventory().setItem(8, new ItemStack(Material.INK_SACK,1,(byte) 1));
-			}
-		
-		}
-		
-		
-	}
-	
-	public void giveLobbyItems(SpleefPlayer sp) {
-		
-		sp.getPlayer().setGameMode(GameMode.ADVENTURE);
-		sp.getPlayer().getInventory().clear();
-		sp.getPlayer().getInventory().setItem(4, lobbyitems()[0]);	
-		sp.getPlayer().getInventory().setItem(5, lobbyitems()[1]);
-	}
-	
-	public void giveQueueItems(SpleefPlayer sp) {
-		sp.getPlayer().setGameMode(GameMode.ADVENTURE);
-		sp.getPlayer().getInventory().clear();
-		sp.getPlayer().getInventory().setItem(7, queueitems()[0]);	
-		sp.getPlayer().getInventory().setItem(8, queueitems()[1]);
-	}
-	
-	public ItemStack[] gameitems() {
+    public ItemStack[] gameitems() {
 		ItemStack iron_shovel = new ItemStack(Material.IRON_SPADE);
 		ItemMeta ironMeta = iron_shovel.getItemMeta();
 		ironMeta.setUnbreakable(true);
@@ -552,7 +497,7 @@ public class  DataManager {
 		ItemStack[] items = {iron_shovel, diamond_shovel, x2snowball,x4snowball,x6snowball,x8snowball,x10snowball,blueflag,redflag,golden_shovel};
 		return items;
 	}
-	
+    
 	public ItemStack[] lobbyitems() {
 		
 		ItemStack gadgets = new ItemBuilder(Material.CHEST).setTitle("§6§lGadgets").build();

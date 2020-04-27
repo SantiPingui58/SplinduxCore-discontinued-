@@ -7,7 +7,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
 
 public class RideCommand implements CommandExecutor {
@@ -28,14 +27,14 @@ public class RideCommand implements CommandExecutor {
 			if (p.hasPermission("splindux.ride")) {
 				if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
 					SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-			if (!GameManager.getManager().isInGame(sp) && !sp.isSpectating()) {
+			if (!sp.isInGame() && !sp.isSpectating()) {
 			if (args.length == 1) {
 				final Player pa = Bukkit.getServer().getPlayer(args[0]);
 				
 				if (Bukkit.getOnlinePlayers().contains(pa)) {
 					if (!pa.equals(p)) {
 						SpleefPlayer sp2 = SpleefPlayer.getSpleefPlayer(pa);
-						if (!GameManager.getManager().isInGame(sp2) && !sp2.isSpectating()) {						
+						if (!sp2.isInGame() && !sp2.isSpectating()) {						
 							pa.setPassenger(p);
 						} else {
 								p.sendMessage("§cYou cannot ride this player right now.");							

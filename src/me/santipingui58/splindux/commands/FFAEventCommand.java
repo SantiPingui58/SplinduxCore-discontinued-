@@ -1,22 +1,14 @@
 package me.santipingui58.splindux.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.FFAEvent;
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefType;
-import me.santipingui58.splindux.gui.DuelMenu;
 
 
 
@@ -39,10 +31,10 @@ public class FFAEventCommand implements CommandExecutor{
 					
 				} else if (args[0].equalsIgnoreCase("start")) {
 					if (p.hasPermission("splindux.admin")) {
-						if (GameManager.getManager().isInGame(sp)) {
-							SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp);
+						if (sp.isInArena()) {
+							SpleefArena arena = sp.getArena();
 							if (arena.getGameType().equals(GameType.FFA)) {
-								FFAEvent event = new FFAEvent(Integer.valueOf(args[1]));
+								FFAEvent event = new FFAEvent(Integer.valueOf(args[1]),true);
 								arena.setEvent(event);
 								event.sendBroadcast();
 							}

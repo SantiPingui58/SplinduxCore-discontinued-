@@ -52,19 +52,19 @@ public class EconomyManager extends GEconomyProvider {
 				   
 				  
 				  if (sp.getPlayer().hasPermission("splinudux.extreme")) {
-					  if (r<75) {
+					  if (r<55) {
 						  luck =true;
 					  }
 				  } else if (sp.getPlayer().hasPermission("splinudux.epic")) {
-					  if (r<70) {
+					  if (r<50) {
 						  luck =true;
 					  }
 				  }else if (sp.getPlayer().hasPermission("splinudux.vip")) {
-					  if (r<65) {
+					  if (r<45) {
 						  luck =true;
 					  }
 				  }else {
-					  if (r<60) {
+					  if (r<40) {
 						  luck =true;
 					  } 
 				  }

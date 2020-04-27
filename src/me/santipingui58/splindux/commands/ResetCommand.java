@@ -31,8 +31,8 @@ public class ResetCommand implements CommandExecutor {
 		if(cmd.getName().equalsIgnoreCase("reset")){
 			Player p = (Player) sender;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-			if (GameManager.getManager().isInGame(sp)) {
-				SpleefArena arena = GameManager.getManager().getArenaByPlayer(sp); 
+			if (sp.isInGame()) {
+				SpleefArena arena = sp.getArena(); 
 				if (arena.getGameType().equals(GameType.DUEL)) {
 					if (!arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {
 					if (!arena.getResetRequest().contains(sp)) {

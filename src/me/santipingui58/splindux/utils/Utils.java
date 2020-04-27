@@ -14,15 +14,24 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionType;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
+import net.minecraft.server.v1_12_R1.IChatBaseComponent;
+import net.minecraft.server.v1_12_R1.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_12_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_12_R1.PacketPlayOutTitle.EnumTitleAction;
 
 
 public class Utils {
@@ -34,7 +43,42 @@ public class Utils {
 	        return manager;
 	    }
 	
+	 
+	 public void sendTitles(Player player, String titletext,String subtitletext,int fadeIn, int stay, int fadeOut) {
+			IChatBaseComponent chatTitle = ChatSerializer.a("{\"text\": \"" + titletext + "\"}");
+			IChatBaseComponent chatSubtitle = ChatSerializer.a("{\"text\": \"" + subtitletext + "\"}");
+			
+			PacketPlayOutTitle title = new PacketPlayOutTitle(EnumTitleAction.TITLE, chatTitle);
+			PacketPlayOutTitle subtitle = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, chatSubtitle);
+			
+			PacketPlayOutTitle length = new PacketPlayOutTitle(fadeIn,stay,fadeOut);
+			((CraftPlayer) player).getHandle().playerConnection.sendPacket(title);
+	        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subtitle);
+			((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
+	    
+	}
+	 
+	 //Put the specific title and lore to an item
+	 public ItemStack doTitleAndLore(ItemStack item,String title, List<String> lore) {
+		 ItemMeta meta = item.getItemMeta();
+		 meta.setDisplayName(title);
+		 meta.setLore(lore);
+		 return item;
+	 }
+	 
+	 
+	 //Create an tipped arrow based on its PotionType and amount. Used for Mutation Tokens GUI
+	 public ItemStack getTippedArrow(PotionType type, int amount) {
+		 ItemStack item = new ItemStack(Material.TIPPED_ARROW);
+		 PotionMeta meta = (PotionMeta) item.getItemMeta();
+		 meta.setBasePotionData(new PotionData(type));
+		 item.setItemMeta(meta);
+		 item.setAmount(amount);
+		 return item;
+	 }
+	 
 
+	 //Check if a set has duplicate values on it
 	 public <T> boolean hasDuplicate(Iterable<T> all) {
 		    Set<T> set = new HashSet<T>();
 		    // Set#add returns false if the set does not change, which
@@ -44,6 +88,8 @@ public class Utils {
 		}
 	 
 	 
+	 
+	 //Gets nearest player to another player. Used for FFA Kills system
 	 public SpleefPlayer getNearestPlayer(SpleefPlayer sp) {
 		 SpleefPlayer nearest = null;
 		 for (SpleefPlayer online : DataManager.getManager().getOnlinePlayers()) {
@@ -64,6 +110,7 @@ public class Utils {
 	 }
 	 
 	 
+	 //Useful to send a list of names from a list of SpleefPlayer
 	public String getPlayerNamesFromList(List<SpleefPlayer> list) {		 
 		 String p = "";
 		 for (SpleefPlayer sp : list) {
@@ -77,6 +124,8 @@ public class Utils {
 		return p;
 	}
 	 
+	//Method to save a Location in a string.
+	// pitch is used to save or not the direction the player looks, for example, to teleport to an spawn.
 	  public  String setLoc(Location loc, boolean pitch)
 	  {
 	    if (pitch) {
@@ -124,13 +173,13 @@ public class Utils {
 		  p.sendMessage(s);
 	  }
 	  
-
+	  //Return the difference between 2 dates, in miliseconds
 	  public long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
 		    long diffInMillies = date2.getTime() - date1.getTime();
 		    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
 		}
 	  
-	  
+	  //Check if a list contains the String b, with ignore case
 	  public boolean containsIgnoreCase(List<String> list, String b) {
 		  
 		  for (String o : list) {
@@ -142,7 +191,7 @@ public class Utils {
 		  
 	  }
 	  
-	  
+	  //Check if the String fullStr has inside of it the String serachStr, with ignore case
 	  public boolean containsIgnoreCase(String fullStr, String searchStr)   {
 		    if(fullStr == null || searchStr == null) return false;
 
@@ -157,6 +206,8 @@ public class Utils {
 		    return false;
 		}
 	  
+	  
+	  //Get center of a location
 	  public Location getCenter(Location loc) {
 		    return new Location(loc.getWorld(),
 		        getRelativeCoord(loc.getBlockX()),
@@ -170,6 +221,12 @@ public class Utils {
 		    return d;
 		}
 		
+		
+		
+		
+		
+		
+		//Convert seconds to mm:ss
 		public String time(int s) {
 			
 			int minutes = s / 60;
@@ -178,6 +235,10 @@ public class Utils {
 			return String.format("%02d:%02d",  minutes, seconds);
 		  }
 		
+		
+		
+		
+		//Method to generate a list of Locations that look like a circle. Used to teleport players in a round on FFA
 		public List<Location> getCircle(Location center, double radius, int amount) {
 		    List<Location> locations = new ArrayList<>();
 		    World world = center.getWorld();
@@ -190,6 +251,8 @@ public class Utils {
 		    }
 		    return locations;
 		}
+		
+		
 		
 		public Location lookAt(Location loc, Location lookat) {
 	        //Clone the loc to prevent applied changes to the input loc
@@ -226,6 +289,9 @@ public class Utils {
 	        return loc;
 	    }
 		
+		
+		//Minecraft saves all skins, even if they aren't being used by a player. That way we can get custom heads with a weird code (Base64). This method converts Base64 urls to the Head Item.
+		//It was used before for the ranking per countries.
 		public ItemStack getSkull(String url) {
 	        ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
 	        if(url.isEmpty())return head;
@@ -249,6 +315,8 @@ public class Utils {
 	    }
 		
 		
+		
+		//Converts seconds to days,hours,minutes and seconds. Used in the /stats command
 		 public String secondsToDate(int i) {	 
 			 int days = (i % 604800) / 86400;
 			 int hours = ((i % 604800) % 86400) / 3600;
@@ -265,6 +333,8 @@ public class Utils {
 			}
 		 }
 		 
+		 
+		//Converts seconds to years,months,weeks days, and hours. Used in the Online time Ranking
 		public String minutesToDate(int i) {
 			int years =  i / 525600;
 			int months = (i % 525600) / 43800;

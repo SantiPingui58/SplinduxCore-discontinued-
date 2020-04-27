@@ -19,7 +19,7 @@ public class RankCommand implements CommandExecutor {
 		@Override
 		public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 			
-			//rank SantiPingui58 donator
+			//rank add SantiPingui58 donator
 			if(cmd.getName().equalsIgnoreCase("rank")) {
 			if(!(sender instanceof Player)) {
 				if (args[0].equalsIgnoreCase("add")) {
@@ -53,8 +53,8 @@ public class RankCommand implements CommandExecutor {
 		 if (rank.equalsIgnoreCase("vip")) {
 				return "§a§l[VIP]";
 			} else if (rank.equalsIgnoreCase("epic")) {
-				return "§2§l[Epic]";
-			} else if (rank.equalsIgnoreCase("legend")) {
+				return "§1§l[Epic]";
+			} else if (rank.equalsIgnoreCase("extreme")) {
 				return "§5§l[Extreme]";
 			}
 			return null;

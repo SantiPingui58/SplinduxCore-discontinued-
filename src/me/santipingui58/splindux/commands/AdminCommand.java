@@ -7,9 +7,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.npc.NPCManager;
 
 
 public class AdminCommand implements CommandExecutor {
@@ -57,9 +61,10 @@ public class AdminCommand implements CommandExecutor {
 					World world = Bukkit.getWorld(args[1]);
 					p.teleport(world.getSpawnLocation());
 				} else if (args[0].equalsIgnoreCase("test")) {
-					SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-					sp.getOptions().translate(true);
-					
+					for (Hologram h : HologramsAPI.getHolograms(Main.get())) {
+						h.delete();
+					}
+					NPCManager.getManager().updateNPCs();
 				} else if (args[0].equalsIgnoreCase("pvp")) {
 					Main.pvp = !Main.pvp;
 				}

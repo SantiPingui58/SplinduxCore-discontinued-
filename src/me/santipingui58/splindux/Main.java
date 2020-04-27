@@ -15,6 +15,7 @@ import me.santipingui58.splindux.commands.AdminCommand;
 import me.santipingui58.splindux.commands.CrumbleCommand;
 import me.santipingui58.splindux.commands.DuelCommand;
 import me.santipingui58.splindux.commands.EndGameCommand;
+import me.santipingui58.splindux.commands.FFAEventCommand;
 import me.santipingui58.splindux.commands.FlyCommand;
 import me.santipingui58.splindux.commands.HelpCommand;
 import me.santipingui58.splindux.commands.HologramCommand;
@@ -22,6 +23,7 @@ import me.santipingui58.splindux.commands.HoverCommand;
 import me.santipingui58.splindux.commands.LevelCommand;
 import me.santipingui58.splindux.commands.MatchesCommand;
 import me.santipingui58.splindux.commands.MsgCommand;
+import me.santipingui58.splindux.commands.MutationTokenCommand;
 import me.santipingui58.splindux.commands.PingCommand;
 import me.santipingui58.splindux.commands.PlaytoCommand;
 import me.santipingui58.splindux.commands.RankCommand;
@@ -33,6 +35,7 @@ import me.santipingui58.splindux.commands.SpawnCommand;
 import me.santipingui58.splindux.commands.SpectateCommand;
 import me.santipingui58.splindux.commands.SplinduxLoginCommand;
 import me.santipingui58.splindux.commands.SplinduxRegisterCommand;
+import me.santipingui58.splindux.commands.StaffChatCommand;
 import me.santipingui58.splindux.commands.StatsCommand;
 import me.santipingui58.splindux.commands.TranslateCommand;
 import me.santipingui58.splindux.economy.EconomyManager;
@@ -43,6 +46,8 @@ import me.santipingui58.splindux.listener.PlayerChat;
 import me.santipingui58.splindux.listener.PlayerConnectListener;
 import me.santipingui58.splindux.listener.PlayerListener;
 import me.santipingui58.splindux.listener.ServerListener;
+import me.santipingui58.splindux.npc.NPCManager;
+import me.santipingui58.splindux.placeholdersapi.SplinduxExpansion;
 import me.santipingui58.splindux.reino.ReinoManager;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import me.santipingui58.splindux.task.ArenaTimeTask;
@@ -57,21 +62,36 @@ import me.santipingui58.splindux.utils.Utils;
 
 
 //Agregar 3 arenas por mapa  2.2.1.0
-//Cambiar el tamaño de las arenas según cantidad de jugadores
-//En el menú de duel, que te ordene los mapas según el tamaño recomendable de la arena
 
-//Powerups 2.3.0.0
+//Mutations 2.3.0.0
 //FFA Event
 
-//Votar NameMC 2.4.0.0
+
+//Implement stuff from Store 2.4.0.0
+//Delayed messages on login
+//Announcements & Ads
+//Optiones menu NIGHT VISION, ADS, DEFAULT COLOR IN CHAT
+
+//Votar NameMC 2.5.0.0
 //Join Discord
 //Votifier
+//Discord reward for invite 
+//Twitter Youtube 
 
-//Ranked 2.5.0.0
-//Friends
+//In game helmets && particles 2.6.0.0
+//Youtubers & Streamers, foros Amino Reddit Facebook Twitter 
+//Staffs
+
+//Nuevo Lobby 2.7.0.0
+//Quests
+//Interactive Lobby
+
+//Friends 2.8.0.0
 //LootBoxes
+//Ranked 2.7.0.0
 
-//Test Arena 2.6.0.0
+
+//Test Arena 2.9.0.0
 //Spleef KotH
 //Spleef Mobs
 
@@ -87,6 +107,8 @@ import me.santipingui58.splindux.utils.Utils;
 
 public class Main extends JavaPlugin {
 
+	
+	//Static variables used around the plugin
 	public static Plugin pl;
 	public static String prefix;
 	public static boolean prefix_enabled;
@@ -102,29 +124,51 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		pl = this;
 		
+		
+		//PlaceholdersAPI expansions to use commands on DiscordSRV
+		 if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+             new SplinduxExpansion(this).register();
+       }
+		 
+		//A bug causes player to corrupt when the plugin reloads, to prevent this, the players get kicked when the plugin starts.
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			p.kickPlayer("§cSplinduxCore restarting, please re join!");
 		}
 		
+		
+		//API for GadgetsMenu
 		GEconomyProvider.setMysteryDustStorage(new EconomyManager(this, "Splindux"));	
+		
+		//Creation of .yml files
 		config = new Configuration("config.yml",this);
 		data = new Configuration("data.yml",this);
 		arenas = new Configuration("arenas.yml",this);	
 		recordings = new Configuration("recordings.yml",this);	
+		
+		//Load of players and holograms data
 		DataManager.getManager().loadPlayers();
 		HologramManager.getManager().loadHolograms();
+		
+		
+		//Default spawn of the Server
 		lobby = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true);
+		
+		
+		
+		
 		
 		registerTasks();
 		registerEvents();
 		registerCommands();
 		
+		
+		//Load worlds
 		new BukkitRunnable() {
 
 			@Override
 			public void run() {
 				new WorldCreator("arenas").createWorld();
-				new WorldCreator("construccion").createWorld();
+				//new WorldCreator("construccion").createWorld();
 				
 			}
 			
@@ -143,6 +187,8 @@ public class Main extends JavaPlugin {
 	new BukkitRunnable() {
 		public void run() {
 			HologramManager.getManager().updateHolograms();
+			//Load NPCs
+			NPCManager.getManager().loadNPCs();
 
 		}
 		
@@ -207,6 +253,8 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {	
+		NPCManager.getManager().removeNPCs();
+		//Save Data
 		for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
 			 HologramManager.getManager().removeHolograms(sp);
 		}
@@ -252,6 +300,9 @@ public class Main extends JavaPlugin {
 		getCommand("crumble").setExecutor(new CrumbleCommand());
 		getCommand("translate").setExecutor(new TranslateCommand());
 		getCommand("help").setExecutor(new HelpCommand());
+		getCommand("ffaevent").setExecutor(new FFAEventCommand());
+		getCommand("staffchat").setExecutor(new StaffChatCommand());
+		getCommand("mutationtoken").setExecutor(new MutationTokenCommand());
 	}
 	
 	

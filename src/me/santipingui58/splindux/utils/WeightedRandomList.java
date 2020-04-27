@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+
+//Used to create lists with certain percentage/weight, and be able to choose a random item based on it. 
 public class WeightedRandomList<T extends Object> {
 
     private class Entry {

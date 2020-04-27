@@ -21,7 +21,8 @@ public class SecurityManager {
 	        return manager;
 	    }
 	 
-	 
+	 //This Manager handles an incomplete system for admins to have to register and login in Spigot Server, if somehow we get UUID Spoofed.
+	 //Not being used
 	 
 	public void adminLogin(SpleefPlayer sp) {
 		boolean a = true;

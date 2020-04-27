@@ -5,8 +5,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.SpleefPlayer;
 
 public class FlyCommand implements CommandExecutor {
@@ -26,11 +24,18 @@ public class FlyCommand implements CommandExecutor {
 			Player p = (Player) sender;
 			if (p.hasPermission("splindux.fly")) {
 				 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-				 if (!GameManager.getManager().isInGame(sp)) {
+				 if (!sp.isInGame()) {
 				if (sp.isFlying()) {
 					sp.stopfly();
 					p.sendMessage("§cFly is now disabled!");
 				} else {
+					if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("world")) {
+					if (sp.getPlayer().getLocation().getY()<115 && !sp.getPlayer().hasPermission("splindux.admin")) {
+						 p.sendMessage("§cFly is not allowed here.");		
+						 return false;
+		    			}
+					}
+					
 					sp.fly();			
 					p.sendMessage("§aFly is now enabled!");
 				}

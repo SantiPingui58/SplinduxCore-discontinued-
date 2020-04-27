@@ -46,6 +46,7 @@ public class DuelMenu extends MenuBuilder {
 		super("§aDuel request to: §b" + getDuelTo(sp2),4);
 		if (sp.getDuelPage()==0) {
 		int size = sp2.size()+1;
+		size = size/2;
 		int x = 1;
 		List<String> main_arena = new ArrayList<String>();
 		
@@ -70,11 +71,11 @@ public class DuelMenu extends MenuBuilder {
 				n = n.replaceAll("\\d","");
 				if (!Utils.getUtils().containsIgnoreCase(main_arena, n)) {
 					
-					main_arena.add(arena.getName());				
-			if (arena.getMaxPlayersSize()>=size) {
+					main_arena.add(arena.getName());		
+				
+			if (arena.getMaxPlayersSize()>=size && arena.getMinPlayersSize()<=size) {
 				suggestedArenas.add(arena);
 			} else {
-				Bukkit.broadcastMessage(""+size);
 				allArenas.add(arena);
 			}
 		}
@@ -195,7 +196,7 @@ public class DuelMenu extends MenuBuilder {
 			Player p = Bukkit.getPlayer(s);
 			if (Bukkit.getOnlinePlayers().contains(p)) {
 				SpleefPlayer sp_2 = SpleefPlayer.getSpleefPlayer(p);
-				if (GameManager.getManager().isInGame(sp_2)) {
+				if (sp_2.isInGame()) {
 					
 					sp.getPlayer().closeInventory();
 					sp.getPlayer().sendMessage("§cThis player is already in game.");
@@ -215,6 +216,7 @@ public class DuelMenu extends MenuBuilder {
 		if (stack.getItemMeta().getDisplayName().equalsIgnoreCase("§aRandom Arena")) {
 			SpleefDuel sduel = new SpleefDuel(sp, dueled, null,type);
 			sp.getDuels().add(sduel);
+			
 			new BukkitRunnable() {
 				public void run() {
 					sp.getDuels().remove(sduel);
@@ -250,17 +252,17 @@ public class DuelMenu extends MenuBuilder {
 		if (sp2.contains(sp)) sp2.remove(sp);
 		
 		if (sp2.size()==1) {
-			sp.getPlayer().sendMessage("§aYou have sent a duel request to §b" + sp2.get(0).getOfflinePlayer().getName()+ "§a!");
-		sp2.get(0).getPlayer().sendMessage("§aThe Player §b" + sp.getPlayer().getName() + " §ahas sent you a duel request for "+ type.toString() + "! §7(This request expires in 1 minute.)");
+			sp.getPlayer().sendMessage("§aYou have sent a duel request to §b" + sp2.get(0).getOfflinePlayer().getName()+ "§a for " + type.toString() + " in map " + duel.getArena()+"!");
+		sp2.get(0).getPlayer().sendMessage("§aThe Player §b" + sp.getPlayer().getName() + " §ahas sent you a duel request for "+ type.toString() + " in map " + duel.getArena()+ "! §7(This request expires in 1 minute.)");
 		sp2.get(0).getPlayer().spigot().sendMessage(getInvitation(sp));	
 	
 		} else {
 			int size = (sp2.size()+1)/2; 
 			String mode = size+"VS"+size;
-			sp.getPlayer().sendMessage("§aYou have sent a duel request to multiple players for " + mode +"!");
+			sp.getPlayer().sendMessage("§aYou have sent a duel request to multiple players for " + mode + " in map " + duel.getArena()+"!");
 			
 			for (SpleefPlayer sp_2 : sp2) {
-				sp_2.getPlayer().sendMessage("§aThe Player §b" + sp.getPlayer().getName() + " §ahas sent you a duel request for " + mode + " "+ type.toString() + "! §7(This request expires in 1 minute.)");
+				sp_2.getPlayer().sendMessage("§aThe Player §b" + sp.getPlayer().getName() + " §ahas sent you a duel request for " + mode + " "+ type.toString() + " in map " + duel.getArena()+"! §7(This request expires in 1 minute.)");
 				sp_2.getPlayer().spigot().sendMessage(getInvitation(sp));	
 			}
 		}
