@@ -21,7 +21,8 @@ public class FlyCommand implements CommandExecutor {
 				return true;
 				
 			} else {
-			Player p = (Player) sender;
+            Player p = (Player) sender;
+            p.getName();
 			if (p.hasPermission("splindux.fly")) {
 				 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 				 if (!sp.isInGame()) {

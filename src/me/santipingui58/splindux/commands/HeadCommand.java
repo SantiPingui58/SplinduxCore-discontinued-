@@ -31,7 +31,7 @@ public class HeadCommand implements CommandExecutor {
 				        headMeta.setOwningPlayer(p);
 				        head.setItemMeta(headMeta);
 				        p.getInventory().setHelmet(head);
-				       				        	p.sendMessage("§aNow you are wearing the head of §6 " + p.getName());
+                                                   p.sendMessage("ï¿½aNow you are wearing the head of ï¿½6 " + p.getName());
 				 
 				        
 				} else {
@@ -45,9 +45,9 @@ public class HeadCommand implements CommandExecutor {
 			        head.setItemMeta(headMeta);
 			        p.getInventory().setHelmet(head);
 			        
-			        	p.sendMessage("§aNow you are wearing the head of §6 " + args[0]);		        
+			        	p.sendMessage("ï¿½aNow you are wearing the head of ï¿½6 " + args[0]);		        
 					} else {
-				        	p.sendMessage("§cThat name is too long");			        
+				        	p.sendMessage("ï¿½cThat name is too long");			        
 					}
 					}
 				}
@@ -55,9 +55,9 @@ public class HeadCommand implements CommandExecutor {
 				
 				
 			}  else {
-					p.sendMessage("§cYou don't have permission to execute this command.");
-					p.sendMessage("§aYou need a rank "
-							+ "§5§l[Extreme] §ato use this, visit the store for more info: §bhttp://splinduxstore.buycraft.net/");
+					p.sendMessage("ï¿½cYou don't have permission to execute this command.");
+					p.sendMessage("ï¿½aYou need a rank "
+							+ "ï¿½5ï¿½l[Extreme] ï¿½ato use this, visit the store for more info: ï¿½bhttp://splinduxstore.buycraft.net/");
 
 			} 
 		}
