@@ -20,6 +20,7 @@ public class MutationTokenCommand implements CommandExecutor {
 			
 			if(cmd.getName().equalsIgnoreCase("mutationtoken")) {
 			Player p = (Player) sender;
+			if (!p.hasPermission("splindux.admin")) return false;
 				if (args.length==0) {
 					p.sendMessage("§aUse of command: /mutationtoken give <player> <amount>");
 				} else if (args[0].equalsIgnoreCase("give")) {
