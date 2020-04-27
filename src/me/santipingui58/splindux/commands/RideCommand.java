@@ -37,27 +37,27 @@ public class RideCommand implements CommandExecutor {
 						if (!sp2.isInGame() && !sp2.isSpectating()) {						
 							pa.setPassenger(p);
 						} else {
-								p.sendMessage("§cYou cannot ride this player right now.");							
+								p.sendMessage("ï¿½cYou cannot ride this player right now.");							
 						}
 					} else {
-							p.sendMessage("§cYou cannot ride yourself..");						
+							p.sendMessage("ï¿½cYou cannot ride yourself..");						
 					}
 				} else {
-						p.sendMessage("§cThe player §b" + args[0] + "§cdoesn't exists or is not online.");
+						p.sendMessage("ï¿½cThe player ï¿½b" + args[0] + "ï¿½cdoesn't exists or is not online.");
 					
 				}
 			}
 			} else {
-					p.sendMessage("§cYou can't execute this command while playing a match.");				
+					p.sendMessage("ï¿½cYou can't execute this command while playing a match.");				
 			}
 		} else {
-				p.sendMessage("§cYou can't execute this command in spectator mode.");
+				p.sendMessage("ï¿½cYou can't execute this command in spectator mode.");
 			
 		}
 				} else {
-				p.sendMessage("§cYou don't have permission to execute this command.");
-				p.sendMessage("§aYou need a rank "
-						+ "§5§l[Extreme] §ato use this, visit the store for more info: §bhttp://splinduxstore.buycraft.net/");
+				p.sendMessage("ï¿½cYou don't have permission to execute this command.");
+				p.sendMessage("ï¿½aYou need a rank "
+						+ "ï¿½5ï¿½l[Extreme] ï¿½ato use this, visit the store for more info: ï¿½bhttp://store.splindux.net/");
 			
 			
 		}

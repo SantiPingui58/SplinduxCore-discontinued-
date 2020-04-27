@@ -29,15 +29,14 @@ public class AFKCommand implements CommandExecutor {
 			if (p.hasPermission("splindux.afk")) {
 				if (sp.isAfk()) {
 					sp.back();
-					p.sendMessage("§7You are not longer AFK");				
+					p.sendMessage("Â§7You are not longer AFK");				
 				} else {
 					sp.afk();
-					p.sendMessage("§7You are now AFK");
+					p.sendMessage("Â§7You are now AFK");
 				}
 			} else {
-					p.sendMessage("§cYou don't have permission to execute this command.");
-					p.sendMessage("§aYou need a rank "
-							+ "§a[VIP] §aor higher to use this, visit the store for more info: §bhttp://jhspleef.buycraft.net/");			
+					p.sendMessage("Â§cYou don't have permission to execute this command.");
+					p.sendMessage("Â§aYou need a Â§aÂ§l[VIP] Â§arank or higher to use this, visit the store for more info: Â§bhttp://store.splindux.net/");			
 				}
 			}
 			

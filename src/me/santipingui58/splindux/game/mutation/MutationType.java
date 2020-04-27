@@ -15,7 +15,7 @@ public enum MutationType {
 	//VIP 1/1
 	//Epic 2/3
 	//Extreme 3/5
-	//Valor de voto/Mutations por día	
+	//Valor de voto/Mutations por dÂ§a	
 	SPEED_I, //5
 	SPEED_II, //7
 	SPEED_V, //10
@@ -119,7 +119,7 @@ public enum MutationType {
 		meta.setDisplayName(getTitle());
 		List<String> lore = getDescription();
 		lore.add("");
-		lore.add("§aRequiered votes to add mutation: §b" + getRequiredVotes());
+		lore.add("Â§aRequiered votes to add mutation: Â§b" + getRequiredVotes());
 		meta.setLore(getDescription());
 		item.setItemMeta(meta);
 		return item;
@@ -169,45 +169,45 @@ public enum MutationType {
 	public List<String> getDescription() {
 		List<String> list = new ArrayList<String>();		
 		switch(this) {		
-		case SPEED_I: list.add("§7Gives §bSpeed I §7effect to all players on the Arena"); return list;
-		case SPEED_II:list.add("§7Gives §bSpeed II §7effect to all players on the Arena");return list;
-		case SPEED_V:list.add("§7Gives §bSpeed V §7effect to all players on the Arena");return list;
-		case SPEED_X:list.add("§7Gives §bSpeed X §7effect to all players on the Arena");return list;
-		case INVISIBILITY:list.add("§7Gives §8Invisibility §7effect to all players on the Arena");return list;
-		case JUMP_I: list.add("§7Gives §aJump I §7effect to all players on the Arena");return list;
-		case JUMP_II:list.add("§7Gives §aJump II §7effect to all players on the Arena");return list;
-		case JUMP_V:list.add("§7Gives §aJump V §7effect to all players on the Arena");return list;
-		case JUMP_X:list.add("§7Gives §aJump X §7effect to all players on the Arena");return list;
-		case SLOWNESS_I: list.add("§7Gives §8Slowness I §7effect to all players on the Arena");return list;
-		case SLOWNESS_II:list.add("§7Gives §8Slowness II §7effect to all players on the Arena");return list;
-		case SLOWNESS_V:list.add("§7Gives §8Slowness V §7effect to all players on the Arena");return list;
-		case SLOWNESS_X:list.add("§7Gives §8Slowness X §7effect to all players on the Arena");return list;
-		case BLINDNESS:list.add("§7Gives §8Slowness §7effect to all players on the Arena");return list;
+		case SPEED_I: list.add("Â§7Gives Â§bSpeed I Â§7effect to all players on the Arena"); return list;
+		case SPEED_II:list.add("Â§7Gives Â§bSpeed II Â§7effect to all players on the Arena");return list;
+		case SPEED_V:list.add("Â§7Gives Â§bSpeed V Â§7effect to all players on the Arena");return list;
+		case SPEED_X:list.add("Â§7Gives Â§bSpeed X Â§7effect to all players on the Arena");return list;
+		case INVISIBILITY:list.add("Â§7Gives Â§8Invisibility Â§7effect to all players on the Arena");return list;
+		case JUMP_I: list.add("Â§7Gives Â§aJump I Â§7effect to all players on the Arena");return list;
+		case JUMP_II:list.add("Â§7Gives Â§aJump II Â§7effect to all players on the Arena");return list;
+		case JUMP_V:list.add("Â§7Gives Â§aJump V Â§7effect to all players on the Arena");return list;
+		case JUMP_X:list.add("Â§7Gives Â§aJump X Â§7effect to all players on the Arena");return list;
+		case SLOWNESS_I: list.add("Â§7Gives Â§8Slowness I Â§7effect to all players on the Arena");return list;
+		case SLOWNESS_II:list.add("Â§7Gives Â§8Slowness II Â§7effect to all players on the Arena");return list;
+		case SLOWNESS_V:list.add("Â§7Gives Â§8Slowness V Â§7effect to all players on the Arena");return list;
+		case SLOWNESS_X:list.add("Â§7Gives Â§8Slowness X Â§7effect to all players on the Arena");return list;
+		case BLINDNESS:list.add("Â§7Gives Â§8Slowness Â§7effect to all players on the Arena");return list;
 		case LEVITATION_I: 
-			list.add("§7Gives §fLevitation I §7effect for 3 seconds");
-						   list.add("§7every 10 seconds to all players on the Arena");return list;
+			list.add("Â§7Gives Â§fLevitation I Â§7effect for 3 seconds");
+						   list.add("Â§7every 10 seconds to all players on the Arena");return list;
 		case LEVITATION_II: 
-			list.add("§7Gives §fLevitation II §7effect for 3 seconds");
-		   list.add("§7every 10 seconds to all players on the Arena");return list;
-		case LEVITATION_V: list.add("§7Gives §fLevitation V §7effect for 3 seconds");
-		   list.add("§7every 10 seconds to all players on the Arena");return list;
-		case LEVITATION_X: list.add("§7Gives §fLevitation X §7effect for 3 seconds");
-		   list.add("§7every 10 seconds to all players on the Arena");return list;
-		case TNT_SPLEEF:list.add("§7Tnt blocks will explode the arena.");return list;
-		case GLOWING:list.add("§7Gives §eGlowing §7effect to all players on the Arena");return list;
-		case NAUSEA:list.add("§7Gives §8Nausea §7effect to all players on the Arena");return list;
-		case SPLEFF:list.add("§7No Shovel - Gives snowballs to all players");return list;
-		case SNOW_RUN:list.add("§7Snow melts when you walk on it");return list;
-		case FISHING_ROD:list.add("§7Fishing Rod instead of Shovel");return list;
-		case ENDER_SPLEEF:list.add("§7Ender Pearls instead of Shovel");return list;
-		case BOW_SPLEEF:list.add("§7Bow and Arrows instead of Shovel");return list;
-		case EXPERIENCE_SPLEEF:list.add("§7EXP Bottles instead of Shovel");return list;
-		case POT_SPLEEF:list.add("§7Potions instead of Shovel");return list;
-		case MINI_SPLEEF:list.add("§7No Shovel, smaller arena");return list;
-		case CRUMBLE_SPLEEF:list.add("§7Crumbled Arena");return list;
-		case KOHI_SPLEEF:list.add("§7Snow blocks drop snowballs, and they do knockback");return list;
-		case JUMP_SPLEEF:list.add("§7Jump Boost VII effect and arena crumbled");return list;
-		case CREEPY_SPLEEF:list.add("§7Blindness and Invisibility effects, all players have Herobrina head, while Disc 11 is played");return list;
+			list.add("Â§7Gives Â§fLevitation II Â§7effect for 3 seconds");
+		   list.add("Â§7every 10 seconds to all players on the Arena");return list;
+		case LEVITATION_V: list.add("Â§7Gives Â§fLevitation V Â§7effect for 3 seconds");
+		   list.add("Â§7every 10 seconds to all players on the Arena");return list;
+		case LEVITATION_X: list.add("Â§7Gives Â§fLevitation X Â§7effect for 3 seconds");
+		   list.add("Â§7every 10 seconds to all players on the Arena");return list;
+		case TNT_SPLEEF:list.add("Â§7Tnt blocks will explode the arena.");return list;
+		case GLOWING:list.add("Â§7Gives Â§eGlowing Â§7effect to all players on the Arena");return list;
+		case NAUSEA:list.add("Â§7Gives Â§8Nausea Â§7effect to all players on the Arena");return list;
+		case SPLEFF:list.add("Â§7No Shovel - Gives snowballs to all players");return list;
+		case SNOW_RUN:list.add("Â§7Snow melts when you walk on it");return list;
+		case FISHING_ROD:list.add("Â§7Fishing Rod instead of Shovel");return list;
+		case ENDER_SPLEEF:list.add("Â§7Ender Pearls instead of Shovel");return list;
+		case BOW_SPLEEF:list.add("Â§7Bow and Arrows instead of Shovel");return list;
+		case EXPERIENCE_SPLEEF:list.add("Â§7EXP Bottles instead of Shovel");return list;
+		case POT_SPLEEF:list.add("Â§7Potions instead of Shovel");return list;
+		case MINI_SPLEEF:list.add("Â§7No Shovel, smaller arena");return list;
+		case CRUMBLE_SPLEEF:list.add("Â§7Crumbled Arena");return list;
+		case KOHI_SPLEEF:list.add("Â§7Snow blocks drop snowballs, and they do knockback");return list;
+		case JUMP_SPLEEF:list.add("Â§7Jump Boost VII effect and arena crumbled");return list;
+		case CREEPY_SPLEEF:list.add("Â§7Blindness and Invisibility effects, all players have Herobrina head, while Disc 11 is played");return list;
 		default: break;
 		
 		}
@@ -219,7 +219,7 @@ public enum MutationType {
 	
 	public String getTitle() {
 		if (this.equals(SPEED_I)) {
-			return "§bSpeed I Mutation";
+			return "Â§bSpeed I Mutation";
 		}
 		return null;
 	}
