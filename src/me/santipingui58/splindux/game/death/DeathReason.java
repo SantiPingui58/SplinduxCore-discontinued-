@@ -9,15 +9,15 @@ THEMSELF,SPLEEFED,SNOWBALLED, PK_FAILED, PLAYING_FAILED;
 	
 	public String getDeathMessage(SpleefPlayer killer, SpleefPlayer killed,SpleefArena arena) {
 		if (this.equals(THEMSELF)) {
-			return "§6"+ killed.getPlayer().getName() + " §bspleefed themself! §a" + arena.getFFAPlayers().size()+" §bplayers left!";
+			return "Â§6"+ killed.getPlayer().getName() + " Â§bspleefed themself! Â§a" + arena.getFFAPlayers().size()+" Â§bplayers left!";
 		} else if (this.equals(SPLEEFED)) {
-			return "§6"+ killed.getPlayer().getName() + "§b was spleefed by §6"+ killer.getPlayer().getName() + "§b! §a" + arena.getFFAPlayers().size()+" §bplayers left!";
+			return "Â§6"+ killed.getPlayer().getName() + "Â§b was spleefed by Â§6"+ killer.getPlayer().getName() + "Â§b! Â§a" + arena.getFFAPlayers().size()+" Â§bplayers left!";
 		} else if (this.equals(SNOWBALLED)) {
-			return "§6"+ killed.getPlayer().getName() + "§b was snowballed by §6"+ killer.getPlayer().getName() + "§b! §a" + arena.getFFAPlayers().size()+" §bplayers left!";
+			return "Â§6"+ killed.getPlayer().getName() + "Â§b was snowballed by Â§6"+ killer.getPlayer().getName() + "Â§b! Â§a" + arena.getFFAPlayers().size()+" Â§bplayers left!";
 		} else if (this.equals(PK_FAILED)) {
-			return "§6"+ killed.getPlayer().getName() + " §bfailed! §a" + arena.getFFAPlayers().size()+" §bplayers left!";
+			return "Â§6"+ killed.getPlayer().getName() + " Â§bfailed! Â§a" + arena.getFFAPlayers().size()+" Â§bplayers left!";
 		} else if (this.equals(PLAYING_FAILED)) {
-			return "§6"+ killed.getPlayer().getName() + " §bhas fell while playing against §6"+ killer.getPlayer().getName() + "§b! §a" + arena.getFFAPlayers().size()+" §bplayers left!";
+			return "Â§6"+ killed.getPlayer().getName() + " Â§bhas fell while playing against Â§6"+ killer.getPlayer().getName() + "Â§b! Â§a" + arena.getFFAPlayers().size()+" Â§bplayers left!";
 		}
 		return null;
 	}

@@ -81,7 +81,7 @@ public class StatsManager {
 		        int wins = pair.getValue();
 		        if (i<=fin) {
 		        	if (i>=inicio) {
-		        sp.getPlayer().sendMessage("ง6"+i +". งa"+name+"ง7: งb" + wins + " " + getAmountByType(type));
+		        sp.getPlayer().sendMessage("ยง6"+i +". ยงa"+name+"ยง7: ยงb" + wins + " " + getAmountByType(type));
 		        	}
 		        i++;
 		    }  else {
@@ -110,7 +110,7 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 		        
 		        if (i<=fin) {
 		        	if (i>=inicio) {
-		        sp.getPlayer().sendMessage("ง6"+i +". งa"+name+"ง7: งb" + String.format("%.00f", wins) + " " + getAmountByType(type));
+		        sp.getPlayer().sendMessage("ยง6"+i +". ยงa"+name+"ยง7: ยงb" + String.format("%.00f", wins) + " " + getAmountByType(type));
 		        	}
 		        i++;
 		    }  else {
@@ -323,10 +323,10 @@ public void sendRankingDouble(SpleefPlayer sp,int page,RankingType type) {
 	
 	  public  HashMap<String, Integer> sortByValue(HashMap<String,Integer> hm) { 
 		  if (hm.size()<10) {
-				String s = "งf";
+				String s = "ยงf";
 				while (hm.size()<10) {				
 					hm.put("NO_PLAYER"+s, 0);
-					s = s+"งf";
+					s = s+"ยงf";
 				}
 			}
 	        // Create a list from elements of HashMap 

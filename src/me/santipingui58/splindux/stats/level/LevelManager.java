@@ -75,7 +75,7 @@ public class LevelManager {
 		 OfflinePlayer p = sp.getOfflinePlayer();
 		 if (getRank(sp).getMainRank().equals(getRank(sp))) {
 			 for (Player pa : Bukkit.getOnlinePlayers()) {
-						 pa.sendMessage("§e§lSplin§b§ldux  §aCongratulations to §b"+ p.getName() +"§a for level up to " +getRank(sp).getRankName()+ "§a!");
+						 pa.sendMessage("Â§eÂ§lSplinÂ§bÂ§ldux  Â§aCongratulations to Â§b"+ p.getName() +"Â§a for level up to " +getRank(sp).getRankName()+ "Â§a!");
 					 
 		 } 
 		 }
@@ -84,11 +84,11 @@ public class LevelManager {
 					@Override
 					public void run() {
 						if (p.isOnline()) {
-			 	p.getPlayer().sendMessage("§d§m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+			 	p.getPlayer().sendMessage("Â§dÂ§m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
 			    p.getPlayer().sendMessage("");
-			    p.getPlayer().sendMessage("    §aCongratulations! You have leved up to " + getRank(sp).getRankName() +"§a!");
+			    p.getPlayer().sendMessage("    Â§aCongratulations! You have leved up to " + getRank(sp).getRankName() +"Â§a!");
 			    p.getPlayer().sendMessage("");
-				p.getPlayer().sendMessage("§d§m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+				p.getPlayer().sendMessage("Â§dÂ§m-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
 					}
 					}
 				}.runTaskLater(Main.get(), 5L);	

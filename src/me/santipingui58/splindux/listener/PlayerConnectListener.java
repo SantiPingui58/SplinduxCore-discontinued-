@@ -52,7 +52,7 @@ public class PlayerConnectListener implements Listener {
 		if (e.getPlayer().hasPermission("splindux.join")) {
 			for (Player o : Bukkit.getOnlinePlayers()) {	
 				String prefix = ChatColor.translateAlternateColorCodes('&', PermissionsEx.getUser(e.getPlayer()).getPrefix());
-				o.sendMessage(prefix+  e.getPlayer().getName() + " §ahas joined the server!");
+				o.sendMessage(prefix+  e.getPlayer().getName() + " Â§ahas joined the server!");
 			}
 		}
 		if (Main.arenas.getConfig().contains("mainlobby")) {
@@ -84,7 +84,7 @@ public class PlayerConnectListener implements Listener {
 			SpleefArena arena = sp.getArena();
 			sp.leaveQueue(arena,false);
 				for (SpleefPlayer s : arena.getViewers()) {
-					s.getPlayer().sendMessage(ChatColor.GOLD + e.getPlayer().getName() + " §chas left the server!");
+					s.getPlayer().sendMessage(ChatColor.GOLD + e.getPlayer().getName() + " Â§chas left the server!");
 				}
 			}	
 		for (SpleefPlayer spect : sp.getSpectators()) {
@@ -97,7 +97,7 @@ public class PlayerConnectListener implements Listener {
 				SpleefDuel duel = online.getDuelByDueledPlayer(sp);
 				if (duel.getDueledPlayers().contains(sp)) {
 					for (SpleefPlayer dueled : duel.getDueledPlayers()) {
-					dueled.getPlayer().sendMessage("§cThe player §b" + sp.getPlayer().getName() + "§c has left the Server! Duel cancelled.");
+					dueled.getPlayer().sendMessage("Â§cThe player Â§b" + sp.getPlayer().getName() + "Â§c has left the Server! Duel cancelled.");
 					}
 					duel.getChallenger().getDuels().remove(duel);
 				}

@@ -55,7 +55,7 @@ public class HoverCommand implements CommandExecutor {
 						if (!sp.isInGame()) {
 							if (!challenger.isInGame()) {
 								if (duel.getAcceptedPlayers().contains(sp)) {
-									p.sendMessage("§cYou already accepted this request.");	
+									p.sendMessage("Â§cYou already accepted this request.");	
 									return false;
 								}
 								duel.getAcceptedPlayers().add(sp);
@@ -76,19 +76,19 @@ public class HoverCommand implements CommandExecutor {
 									msg1.setColor(net.md_5.bungee.api.ChatColor.GREEN );
 									msg1.setBold( true );
 									msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover duelaccept " + challenger.getPlayer().getName()));		
-									msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aAccept duel request").create()));
+									msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§aAccept duel request").create()));
 									TextComponent msg2 = new TextComponent("[DENY]");
 									msg2.setColor( net.md_5.bungee.api.ChatColor.RED );
 									msg2.setBold( true );
 									msg2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover dueldeny "  + challenger.getPlayer().getName()));
-									msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cDeny duel request").create()));
+									msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§cDeny duel request").create()));
 									
 									ComponentBuilder cb = new ComponentBuilder(msg1);
 									cb.append(" ");
 									cb.append(msg2);
 									BaseComponent[] bc =  cb.create();						
 									for (SpleefPlayer dueled : list) {										
-										dueled.getPlayer().sendMessage("§6"+sp.getOfflinePlayer().getName() + " §ahas accepted the request! §7(Left to accept: " + 
+										dueled.getPlayer().sendMessage("Â§6"+sp.getOfflinePlayer().getName() + " Â§ahas accepted the request! Â§7(Left to accept: " + 
 										Utils.getUtils().getPlayerNamesFromList(leftToAccept) + ")");
 										if (dueled!=duel.getChallenger()) {
 											if (!duel.getAcceptedPlayers().contains(dueled))
@@ -97,16 +97,16 @@ public class HoverCommand implements CommandExecutor {
 									}
 								}
 								} else {
-								p.sendMessage("§cThis player is already in game!");	
+								p.sendMessage("Â§cThis player is already in game!");	
 							}
 						} else {
-							p.sendMessage("§cYou can not execute this command here.");	
+							p.sendMessage("Â§cYou can not execute this command here.");	
 						}
 					} else {
-						p.sendMessage("§cThis duel request has expired or the player didn't send you a duel request!");
+						p.sendMessage("Â§cThis duel request has expired or the player didn't send you a duel request!");
 					}
 				} else {
-					p.sendMessage("§cThis duel request has ended since the player isnt online!");
+					p.sendMessage("Â§cThis duel request has ended since the player isnt online!");
 				}
 			} else if (args[0].equalsIgnoreCase("dueldeny")) {
 				Player p2 = Bukkit.getPlayer(args[1]);
@@ -114,29 +114,29 @@ public class HoverCommand implements CommandExecutor {
 					 SpleefPlayer challenger = SpleefPlayer.getSpleefPlayer(p2);
 					if (challenger.hasDueled(sp)) {
 						SpleefDuel duel = challenger.getDuelByDueledPlayer(sp);
-						sp.getPlayer().sendMessage("§cYou have denied the duel request from §b" + challenger.getPlayer().getName() + "§c!");
+						sp.getPlayer().sendMessage("Â§cYou have denied the duel request from Â§b" + challenger.getPlayer().getName() + "Â§c!");
 						
 						for (SpleefPlayer dueled : duel.getAllPlayers()) {
 							if (dueled!=sp)
-								dueled.getPlayer().sendMessage("§cThe player §b" + sp.getPlayer().getName() + "§c has denied the request! Duel cancelled.");
+								dueled.getPlayer().sendMessage("Â§cThe player Â§b" + sp.getPlayer().getName() + "Â§c has denied the request! Duel cancelled.");
 						}
 						challenger.getDuels().remove(duel);
 					} else {
-						p.sendMessage("§cThis duel request has expired or the player didn't send you a duel request!");
+						p.sendMessage("Â§cThis duel request has expired or the player didn't send you a duel request!");
 					}
 					} else {
-						p.sendMessage("§cThis duel request has ended since the player isnt online!");
+						p.sendMessage("Â§cThis duel request has ended since the player isnt online!");
 					}
 			} else if (args[0].equalsIgnoreCase("duelcancel")) {				
 				SpleefDuel duel = sp.getDuelByUUID(UUID.fromString(args[1]));		
 						if (duel!=null) {
 							for (SpleefPlayer dueled : duel.getDueledPlayers()) {
-								dueled.getPlayer().sendMessage("§b" + sp.getPlayer().getName() + "§c has cancelled the duel request.");
+								dueled.getPlayer().sendMessage("Â§b" + sp.getPlayer().getName() + "Â§c has cancelled the duel request.");
 							}
-							duel.getChallenger().getPlayer().sendMessage("§cYou have cancelled the duel request.");
+							duel.getChallenger().getPlayer().sendMessage("Â§cYou have cancelled the duel request.");
 							duel.getChallenger().getDuels().remove(duel);
 							} else {
-								p.sendMessage("§cThis duel request has expired.");
+								p.sendMessage("Â§cThis duel request has expired.");
 							}
 					
 				
@@ -157,7 +157,7 @@ public class HoverCommand implements CommandExecutor {
 							 Player[] myArray = new Player[list.size()];
 							 GameReplay replay = ReplayManager.getManager().createReplay(ReplayManager.getManager().getName(arena));
 							ReplayAPI.getInstance().recordReplay(replay.getName(), sender,  list.toArray(myArray));
-							sp.getPlayer().sendMessage("§aYou are now recording this game!");
+							sp.getPlayer().sendMessage("Â§aYou are now recording this game!");
 						}
 					
 				}
@@ -168,33 +168,33 @@ public class HoverCommand implements CommandExecutor {
 				if (request!=null) {
 					if (request.getChallenger().equals(sp)) {
 				for (SpleefPlayer dueled : arena.getViewers()) {
-					dueled.getPlayer().sendMessage("§b" + sp.getPlayer().getName() + "§c has cancelled the  crumble request.");
+					dueled.getPlayer().sendMessage("Â§b" + sp.getPlayer().getName() + "Â§c has cancelled the  crumble request.");
 				}
 				arena.setCrumbleRequest(null);
 					} else {
-						p.sendMessage("§cThis duel request has expired.");
+						p.sendMessage("Â§cThis duel request has expired.");
 					}
 				} else {
-					p.sendMessage("§cThis duel request has expired.");
+					p.sendMessage("Â§cThis duel request has expired.");
 				}
 			} else {
-				p.sendMessage("§cThis crumble request has expired.");
+				p.sendMessage("Â§cThis crumble request has expired.");
 			}
 				} else if (args[0].equalsIgnoreCase("crumbledeny")) {
 					if (sp.isInGame()) {
 						SpleefArena arena = sp.getArena();
 						if (arena.getCrumbleRequest()!=null) {
 						for (SpleefPlayer dueled : arena.getPlayers()) {
-							dueled.getPlayer().sendMessage("§cThe player §b" + sp.getPlayer().getName() + "§c has denied the request! Crumble cancelled.");
+							dueled.getPlayer().sendMessage("Â§cThe player Â§b" + sp.getPlayer().getName() + "Â§c has denied the request! Crumble cancelled.");
 						}
 						
 						arena.setCrumbleRequest(null);
 						
 						} else {
-							p.sendMessage("§cThis crumble request has expired.");
+							p.sendMessage("Â§cThis crumble request has expired.");
 						}
 					} else {
-						p.sendMessage("§cThis crumble request has expired.");
+						p.sendMessage("Â§cThis crumble request has expired.");
 					}
 				} else if (args[0].equalsIgnoreCase("crumbleaccept")) {
 					if (sp.isInGame()) {
@@ -220,12 +220,12 @@ public class HoverCommand implements CommandExecutor {
 									msg1.setColor(net.md_5.bungee.api.ChatColor.GREEN );
 									msg1.setBold( true );
 									msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover crumbleaccept "));		
-									msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aAccept crumble request").create()));
+									msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§aAccept crumble request").create()));
 									TextComponent msg2 = new TextComponent("[DENY CRUMBLE]");
 									msg2.setColor( net.md_5.bungee.api.ChatColor.RED );
 									msg2.setBold( true );
 									msg2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover crumbledeny"));
-									msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cDeny crumble request").create()));
+									msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§cDeny crumble request").create()));
 									
 									ComponentBuilder cb = new ComponentBuilder(msg1);
 									cb.append(" ");
@@ -236,7 +236,7 @@ public class HoverCommand implements CommandExecutor {
 										return true;
 									} 
 									for (SpleefPlayer dueled : arena.getPlayers()) {										
-										dueled.getPlayer().sendMessage("§6"+sp.getOfflinePlayer().getName() + " §ahas accepted the request! §7(Left to accept: " + 
+										dueled.getPlayer().sendMessage("Â§6"+sp.getOfflinePlayer().getName() + " Â§ahas accepted the request! Â§7(Left to accept: " + 
 										Utils.getUtils().getPlayerNamesFromList(leftToAccept) + ")");
 										if (dueled!=request.getChallenger()) {
 											if (!request.getAcceptedPlayers().contains(dueled) && !arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp))
@@ -246,16 +246,16 @@ public class HoverCommand implements CommandExecutor {
 								}
 								
 							} else {
-								p.sendMessage("§cYou already accepted this request.");
+								p.sendMessage("Â§cYou already accepted this request.");
 							}
 						}else {
-							p.sendMessage("§cThis crumble request has expired.");
+							p.sendMessage("Â§cThis crumble request has expired.");
 						}
 				} else {
-					p.sendMessage("§cOnly alive players can execute this command.");
+					p.sendMessage("Â§cOnly alive players can execute this command.");
 				}
 					} else {
-						p.sendMessage("§cThis crumble request has expired.");
+						p.sendMessage("Â§cThis crumble request has expired.");
 					}
 						} else if (args[0].equalsIgnoreCase("playtocancel")) {
 							if (sp.isInGame()) {
@@ -264,33 +264,33 @@ public class HoverCommand implements CommandExecutor {
 							if (request!=null) {
 								if (request.getChallenger().equals(sp)) {
 							for (SpleefPlayer dueled : arena.getViewers()) {
-								dueled.getPlayer().sendMessage("§b" + sp.getPlayer().getName() + "§c has cancelled the  playto request.");
+								dueled.getPlayer().sendMessage("Â§b" + sp.getPlayer().getName() + "Â§c has cancelled the  playto request.");
 							}
 							arena.setPlayToRequest(null);
 								} else {
-									p.sendMessage("§cThis duel request has expired.");
+									p.sendMessage("Â§cThis duel request has expired.");
 								}
 							} else {
-								p.sendMessage("§cThis duel request has expired.");
+								p.sendMessage("Â§cThis duel request has expired.");
 							}
 						} else {
-							p.sendMessage("§cThis crumble request has expired.");
+							p.sendMessage("Â§cThis crumble request has expired.");
 						}
 							} else if (args[0].equalsIgnoreCase("playtodeny")) {
 								if (sp.isInGame()) {
 									SpleefArena arena = sp.getArena();
 									if (arena.getPlayToRequest()!=null) {
 									for (SpleefPlayer dueled : arena.getPlayers()) {
-										dueled.getPlayer().sendMessage("§cThe player §b" + sp.getPlayer().getName() + "§c has denied the request! Playto cancelled.");
+										dueled.getPlayer().sendMessage("Â§cThe player Â§b" + sp.getPlayer().getName() + "Â§c has denied the request! Playto cancelled.");
 									}
 									
 									arena.setPlayToRequest(null);
 									
 									} else {
-										p.sendMessage("§cThis crumble request has expired.");
+										p.sendMessage("Â§cThis crumble request has expired.");
 									}
 								} else {
-									p.sendMessage("§cThis crumble request has expired.");
+									p.sendMessage("Â§cThis crumble request has expired.");
 								}
 							} else if (args[0].equalsIgnoreCase("playtoaccept")) {
 								if (sp.isInGame()) {
@@ -314,14 +314,14 @@ public class HoverCommand implements CommandExecutor {
 												msg1.setColor(net.md_5.bungee.api.ChatColor.GREEN );
 												msg1.setBold( true );
 												msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover playtoaccept "));	
-												msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aAccept play to request").create()));
+												msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§aAccept play to request").create()));
 												
 												TextComponent msg2 = new TextComponent("[DENY PLAYTO]");
 												
 												msg2.setColor( net.md_5.bungee.api.ChatColor.RED );
 												msg2.setBold( true );
 												msg2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover playtodeny"));
-												msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cDeny play to request").create()));
+												msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§cDeny play to request").create()));
 												ComponentBuilder cb = new ComponentBuilder(msg1);
 												cb.append(" ");
 												cb.append(msg2);
@@ -331,7 +331,7 @@ public class HoverCommand implements CommandExecutor {
 													return true;
 												} 
 												for (SpleefPlayer dueled : arena.getPlayers()) {										
-													dueled.getPlayer().sendMessage("§6"+sp.getOfflinePlayer().getName() + " §ahas accepted the request! §7(Left to accept: " + 
+													dueled.getPlayer().sendMessage("Â§6"+sp.getOfflinePlayer().getName() + " Â§ahas accepted the request! Â§7(Left to accept: " + 
 													Utils.getUtils().getPlayerNamesFromList(leftToAccept) + ")");
 													if (dueled!=request.getChallenger()) {
 														if (!request.getAcceptedPlayers().contains(dueled))
@@ -341,14 +341,14 @@ public class HoverCommand implements CommandExecutor {
 											}
 											
 										} else {
-											p.sendMessage("§cYou already accepted this request.");
+											p.sendMessage("Â§cYou already accepted this request.");
 										}
 									}else {
-										p.sendMessage("§cThis crumble request has expired.");
+										p.sendMessage("Â§cThis crumble request has expired.");
 									}
 							
 								} else {
-									p.sendMessage("§cThis crumble request has expired.");
+									p.sendMessage("Â§cThis crumble request has expired.");
 								}
 									} 
 			} 

@@ -32,9 +32,9 @@ public class ArenaTimeTask {
 		    				arena.time();
 		    				if (arena.getGameType().equals(GameType.DUEL)) {
 		    					if (arena.getTime()==10) {
-		    						for (SpleefPlayer sp : arena.getViewers()) sp.getPlayer().sendMessage("§bAutomatic reset of the arena in 10 seconds.");
+		    						for (SpleefPlayer sp : arena.getViewers()) sp.getPlayer().sendMessage("Â§bAutomatic reset of the arena in 10 seconds.");
 		    					} else if (arena.getTime()==3 || arena.getTime()==2 || arena.getTime()==1) {
-		    						for (SpleefPlayer sp : arena.getViewers()) sp.getPlayer().sendMessage("§bAutomatic reset of the arena in " +arena.getTime() +"!");
+		    						for (SpleefPlayer sp : arena.getViewers()) sp.getPlayer().sendMessage("Â§bAutomatic reset of the arena in " +arena.getTime() +"!");
 		    					}
 		    				}
 		    			}

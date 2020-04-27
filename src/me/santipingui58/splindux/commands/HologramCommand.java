@@ -26,9 +26,9 @@ public class HologramCommand implements CommandExecutor {
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 				if (p.isOp()) {
 					if (args.length==0) {
-					p.sendMessage("§aUse of command: /hologram create");
-					p.sendMessage("§aUse of command: /hologram delete");
-					p.sendMessage("§aUse of command: /hologram list");
+					p.sendMessage("Â§aUse of command: /hologram create");
+					p.sendMessage("Â§aUse of command: /hologram delete");
+					p.sendMessage("Â§aUse of command: /hologram list");
 				} else if (args[0].equalsIgnoreCase("create")) {
 						if (args[1].equalsIgnoreCase("spleefranking")) {
 						HologramManager.getManager().createHologram(sp,HologramType.SPLEEFRANKING); 
@@ -36,11 +36,11 @@ public class HologramCommand implements CommandExecutor {
 							HologramManager.getManager().createHologram(sp,HologramType.ONLINETIME); 
 						}
 						
-						p.sendMessage("§aHologram created!");
+						p.sendMessage("Â§aHologram created!");
 					
 				} else if (args[0].equalsIgnoreCase("delete")) {
 					HologramManager.getManager().deleteHologram(sp);
-					p.sendMessage("§cHologram deleted!");
+					p.sendMessage("Â§cHologram deleted!");
 				} 
 					
 				}

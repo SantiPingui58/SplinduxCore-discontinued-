@@ -46,7 +46,7 @@ public class HologramManager {
 			 this.holograms.remove(hologram);
 			 
 		 } else {
-			 sp.getPlayer().sendMessage("§cCouldnt find an hologram in 10 blocks.");
+			 sp.getPlayer().sendMessage("Â§cCouldnt find an hologram in 10 blocks.");
 		 }
 	 }
 	 
@@ -102,13 +102,13 @@ public class HologramManager {
 		 
 		 if (hologram.getChangeType().get(sp).equals(SpleefRankingType.WINS)) {
 			 hologram.getChangeType().put(sp, SpleefRankingType.KILLS);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA KILLS");
+			 sp.getPlayer().sendMessage("Â§aChanged to: Â§bSpleefFFA KILLS");
 		 } else  if (hologram.getChangeType().get(sp).equals(SpleefRankingType.KILLS)) {
 			 hologram.getChangeType().put(sp, SpleefRankingType.GAMES);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA GAMES");
+			 sp.getPlayer().sendMessage("Â§aChanged to: Â§bSpleefFFA GAMES");
 		 } else  if (hologram.getChangeType().get(sp).equals(SpleefRankingType.GAMES)) {
 			 hologram.getChangeType().put(sp, SpleefRankingType.WINS);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA WINS");
+			 sp.getPlayer().sendMessage("Â§aChanged to: Â§bSpleefFFA WINS");
 		 } 
 		 sendHolograms(sp);
 	 }
@@ -119,13 +119,13 @@ public class HologramManager {
 		 
 		 if (hologram.getChangePeriod().get(sp).equals(SpleefRankingPeriod.ALL_TIME)) {
 			 hologram.getChangePeriod().put(sp, SpleefRankingPeriod.MONTHLY);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA MONTHLY");
+			 sp.getPlayer().sendMessage("Â§aChanged to: Â§bSpleefFFA MONTHLY");
 		 } else  if (hologram.getChangePeriod().get(sp).equals(SpleefRankingPeriod.MONTHLY)) {
 			 hologram.getChangePeriod().put(sp, SpleefRankingPeriod.WEEKLY);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA WEEKLY");
+			 sp.getPlayer().sendMessage("Â§aChanged to: Â§bSpleefFFA WEEKLY");
 		 } else  if (hologram.getChangePeriod().get(sp).equals(SpleefRankingPeriod.WEEKLY)) {
 			 hologram.getChangePeriod().put(sp, SpleefRankingPeriod.ALL_TIME);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA ALL TIME");
+			 sp.getPlayer().sendMessage("Â§aChanged to: Â§bSpleefFFA ALL TIME");
 		 } 
 		 sendHolograms(sp);
 	 }

@@ -110,7 +110,7 @@ public class  DataManager {
 			
 			loadPlayer(p.getUniqueId().toString());
 			
-			p.kickPlayer("§cPlayerData created, please join again!");
+			p.kickPlayer("Â§cPlayerData created, please join again!");
 			
 			
 			
@@ -500,15 +500,15 @@ public class  DataManager {
     
 	public ItemStack[] lobbyitems() {
 		
-		ItemStack gadgets = new ItemBuilder(Material.CHEST).setTitle("§6§lGadgets").build();
-		ItemStack ranked = new ItemBuilder(Material.NETHER_STAR).setTitle("§a§lRanked").addLore("§cComing Soon").build();
+		ItemStack gadgets = new ItemBuilder(Material.CHEST).setTitle("Â§6Â§lGadgets").build();
+		ItemStack ranked = new ItemBuilder(Material.NETHER_STAR).setTitle("Â§aÂ§lRanked").addLore("Â§cComing Soon").build();
 		ItemStack[] items = {ranked,gadgets};
 		return items;
 	}
 	
 	public ItemStack[] queueitems() {
-		ItemStack powerups = new ItemBuilder(Material.ENDER_CHEST).setTitle("§d§lPowerUps").addLore("§cComing Soon").build();
-		ItemStack leave = new ItemBuilder(Material.REDSTONE_TORCH_ON).setTitle("§c§lLeave").build();
+		ItemStack powerups = new ItemBuilder(Material.ENDER_CHEST).setTitle("Â§dÂ§lPowerUps").addLore("Â§cComing Soon").build();
+		ItemStack leave = new ItemBuilder(Material.REDSTONE_TORCH_ON).setTitle("Â§cÂ§lLeave").build();
 		ItemStack[] items = {powerups, leave};
 		return items;
 	}

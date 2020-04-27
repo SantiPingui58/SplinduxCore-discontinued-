@@ -24,8 +24,8 @@ public class NPCListener implements Listener {
 		Player p = e.getClicker();
 		 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 		
-		 if (ChatColor.getLastColors(npc.getName()).equalsIgnoreCase("§c")) {
-			p.sendMessage("§cComing soon..."); 
+		 if (ChatColor.getLastColors(npc.getName()).equalsIgnoreCase("Â§c")) {
+			p.sendMessage("Â§cComing soon..."); 
 			return;
 		 }
 		 

@@ -107,12 +107,12 @@ public class Configuration {
 		if (item.getItemMeta().getDisplayName() == null) {
 			fileConfig.set(path + ".Name", item.getType().toString());
 		} else {
-			fileConfig.set(path + ".Name", item.getItemMeta().getDisplayName().replace("ง", "&"));
+			fileConfig.set(path + ".Name", item.getItemMeta().getDisplayName().replace("ยง", "&"));
 		}
 		List<String> lore = new ArrayList<String>();
 		if (item.getItemMeta().getLore() != null) {
 			for (String l : item.getItemMeta().getLore()) {
-				lore.add(l.replace("ง", "&"));
+				lore.add(l.replace("ยง", "&"));
 			}
 		}
 		fileConfig.set(path + ".Lore", lore);
@@ -150,7 +150,7 @@ public class Configuration {
 		}
 		List<String> lore = new ArrayList<String>();
 		for (String l : fileConfig.getStringList(path + ".Lore")) {
-			lore.add(l.replace("&", "ง"));
+			lore.add(l.replace("&", "ยง"));
 		}
 		if (item.getType().equals(Material.POTION) || item.getType().equals(Material.LINGERING_POTION) || item.getType().equals(Material.SPLASH_POTION) || item.getType().equals(Material.TIPPED_ARROW)) {
 			PotionMeta meta = (PotionMeta) item.getItemMeta();
@@ -175,10 +175,10 @@ public class Configuration {
 				}
 			}
 		}
-		if (fileConfig.getString(path + ".Name").replace("&", "ง").equals(item.getType().toString())) {
+		if (fileConfig.getString(path + ".Name").replace("&", "ยง").equals(item.getType().toString())) {
 			ItemManager.setLore(item, lore);
 		} else {
-			ItemManager.setNameAndLore(item, fileConfig.getString(path + ".Name").replace("&", "ง"), lore);
+			ItemManager.setNameAndLore(item, fileConfig.getString(path + ".Name").replace("&", "ยง"), lore);
 		}
 		return item;
 	}

@@ -35,8 +35,8 @@ public class SecurityManager {
 				sp.needsAdminLogin();
 				new BukkitRunnable() {
 					public void run() {
-						sp.getPlayer().sendMessage("§c§l[SplinduxLogin] §cTo join the server you need to register with: §b/splinduxregister <password>");
-						sp.getPlayer().sendMessage("§7(Remember to make a different password from the §9[Auth] §7one.)");				
+						sp.getPlayer().sendMessage("Â§cÂ§l[SplinduxLogin] Â§cTo join the server you need to register with: Â§b/splinduxregister <password>");
+						sp.getPlayer().sendMessage("Â§7(Remember to make a different password from the Â§9[Auth] Â§7one.)");				
 					}
 				}.runTaskLater(Main.get(), 80L);
 				
@@ -46,7 +46,7 @@ public class SecurityManager {
 				sp.needsAdminLogin();		
 				new BukkitRunnable() {
 					public void run() {
-						sp.getPlayer().sendMessage("§c§l[SplinduxLogin] §cTo join the server you need login with: §b/splinduxlogin <password>");
+						sp.getPlayer().sendMessage("Â§cÂ§l[SplinduxLogin] Â§cTo join the server you need login with: Â§b/splinduxlogin <password>");
 					}
 				}.runTaskLater(Main.get(), 80L);
 				
@@ -55,7 +55,7 @@ public class SecurityManager {
 				sp.needsAdminLogin();
 				new BukkitRunnable() {
 					public void run() {
-						sp.getPlayer().sendMessage("§c§l[SplinduxLogin] §cTo join the server you need login with: §b/splinduxlogin <password>");
+						sp.getPlayer().sendMessage("Â§cÂ§l[SplinduxLogin] Â§cTo join the server you need login with: Â§b/splinduxlogin <password>");
 					}
 				}.runTaskLater(Main.get(), 80L);
 			}		

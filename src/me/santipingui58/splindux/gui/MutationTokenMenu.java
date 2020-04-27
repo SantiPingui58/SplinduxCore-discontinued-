@@ -24,14 +24,14 @@ public class MutationTokenMenu extends MenuBuilder {
 	
 	
 	public MutationTokenMenu(SpleefPlayer sp) {
-		super("§5Select a Mutation:",6);
+		super("Â§5Select a Mutation:",6);
 		for (MutationType type : MutationType.values()) {
 			s(type.getSlot(), type.getItem());
 		}
 		
 		ItemStack item = Utils.getUtils().getSkull("http://textures.minecraft.net/texture/35b116dc769d6d5726f12a24f3f186f839427321e82f4138775a4c40367a49");
 		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName("§aYou have §5§l" + sp.getMutationTokens() + " §aMutation Tokens!");
+		meta.setDisplayName("Â§aYou have Â§5Â§l" + sp.getMutationTokens() + " Â§aMutation Tokens!");
 		item.setItemMeta(meta);
 		s(53,item);
 	}
@@ -54,7 +54,7 @@ public class MutationTokenMenu extends MenuBuilder {
 			}
 		} else {
 			sp.getPlayer().closeInventory();
-			sp.getPlayer().sendMessage("§cYou need to be in a FFA game to do this!");
+			sp.getPlayer().sendMessage("Â§cYou need to be in a FFA game to do this!");
 		}
 		
 	}

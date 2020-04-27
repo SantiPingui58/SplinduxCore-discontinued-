@@ -28,8 +28,8 @@ public class LevelCommand implements CommandExecutor {
 			Player p = (Player) sender;
 			if (p.hasPermission("splindux.admin")) {
 				if (args.length==0) {
-					p.sendMessage("§aUse of command: /level add <player> <amount>");
-					p.sendMessage("§aUse of command: /level set <player> <amount>");
+					p.sendMessage("Â§aUse of command: /level add <player> <amount>");
+					p.sendMessage("Â§aUse of command: /level set <player> <amount>");
 				} else if (args[0].equalsIgnoreCase("add")) {
 					if (args.length==3) {
 						@SuppressWarnings("deprecation")
@@ -40,16 +40,16 @@ public class LevelCommand implements CommandExecutor {
 						try {
 							level = Integer.parseInt(args[2]);
 						} catch (Exception e) {
-							p.sendMessage("§a"+ args[3]+ " §cisnt a valid number.");
+							p.sendMessage("Â§a"+ args[3]+ " Â§cisnt a valid number.");
 							return false;
 						}
 						
 						LevelManager.getManager().addLevel(splayer, level);
 						} else {
-							p.sendMessage("§cThis player doesn't exist");
+							p.sendMessage("Â§cThis player doesn't exist");
 						}
 					} else {
-						p.sendMessage("§aUse of command: /level add <player>");
+						p.sendMessage("Â§aUse of command: /level add <player>");
 					}
 				} 
 			}

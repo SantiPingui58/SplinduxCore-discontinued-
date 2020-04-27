@@ -28,23 +28,23 @@ public class FlyCommand implements CommandExecutor {
 				 if (!sp.isInGame()) {
 				if (sp.isFlying()) {
 					sp.stopfly();
-					p.sendMessage("�cFly is now disabled!");
+					p.sendMessage("§cFly is now disabled!");
 				} else {
 					if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("world")) {
 					if (sp.getPlayer().getLocation().getY()<115 && !sp.getPlayer().hasPermission("splindux.admin")) {
-						 p.sendMessage("�cFly is not allowed here.");		
+						 p.sendMessage("§cFly is not allowed here.");		
 						 return false;
 		    			}
 					}
 					
 					sp.fly();			
-					p.sendMessage("�aFly is now enabled!");
+					p.sendMessage("§aFly is now enabled!");
 				}
 				 } else {
-					 p.sendMessage("�cYou can not execute this command here.");		
+					 p.sendMessage("§cYou can not execute this command here.");		
 				 }
 			} else {
-                p.sendMessage("�cYou do not have permission to execute this command.");
+                p.sendMessage("§cYou do not have permission to execute this command.");
                 p.sendMessage("§aYou need a §1§l[Epic] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.net/");	
 			}
 			}

@@ -36,7 +36,7 @@ public class PlayerChat implements Listener {
 		  
 		if (!p.hasPermission("splindux.chatcooldown")) {
 			if (cooldown.contains(p)) {
-					p.sendMessage("งcWait 2 seconds between messages.");
+					p.sendMessage("ยงcWait 2 seconds between messages.");
 					e.setCancelled(true);
 					return;
 				}
@@ -47,7 +47,7 @@ public class PlayerChat implements Listener {
 			sp.setAFKTimer(0);
 			if (sp.isAfk()) {
 				sp.back();			
-				sp.getPlayer().sendMessage("ง7You are not longer AFK");	
+				sp.getPlayer().sendMessage("ยง7You are not longer AFK");	
 			} 
 		}
 		
@@ -58,7 +58,7 @@ public class PlayerChat implements Listener {
 		if (p.hasPermission("splindux.vip")) {
 			c = ChatColor.DARK_AQUA;
 		}
-		prefix = prefix + "ง7["+ level+"ง7] "+c;
+		prefix = prefix + "ยง7["+ level+"ยง7] "+c;
 		String msg = e.getMessage();
 
 		 msg = e.getMessage().replaceAll("%", "%%");
@@ -87,12 +87,12 @@ public class PlayerChat implements Listener {
 				 
 				 if (p.hasPermission("splindux.staff")) {
 					 output = ChatColor.translateAlternateColorCodes('&', output);
-					 r.sendMessage(prefix +p.getName() +"ง8: งb"+output );
+					 r.sendMessage(prefix +p.getName() +"ยง8: ยงb"+output );
 				} else if (p.hasPermission("splindux.donatorchat")) {
 					output = ChatColor.translateAlternateColorCodes('&', output);
-					r.sendMessage(prefix +p.getName() +"ง8: งf"+output);
+					r.sendMessage(prefix +p.getName() +"ยง8: ยงf"+output);
 				} else {
-					r.sendMessage(prefix +" "+p.getName() +"ง8: ง7"+ output );
+					r.sendMessage(prefix +" "+p.getName() +"ยง8: ยง7"+ output );
 				}
 			 }
 		 }
@@ -103,12 +103,12 @@ public class PlayerChat implements Listener {
 		 		
 		if (p.hasPermission("splindux.staff")) {
 			 msg = ChatColor.translateAlternateColorCodes('&', msg);
-			e.setFormat(prefix +p.getName() +"ง8: งb"+msg );
+			e.setFormat(prefix +p.getName() +"ยง8: ยงb"+msg );
 		} else if (p.hasPermission("splindux.donatorchat")) {
 			 msg = ChatColor.translateAlternateColorCodes('&', msg);
-			e.setFormat(prefix +p.getName() +"ง8: งf"+msg);
+			e.setFormat(prefix +p.getName() +"ยง8: ยงf"+msg);
 		} else {
-			e.setFormat(prefix +" "+p.getName() +"ง8: ง7"+ msg );
+			e.setFormat(prefix +" "+p.getName() +"ยง8: ยง7"+ msg );
 		}
 		
 		cooldown.add(p);

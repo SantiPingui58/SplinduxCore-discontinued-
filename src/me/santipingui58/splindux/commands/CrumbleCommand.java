@@ -32,8 +32,8 @@ public class CrumbleCommand implements CommandExecutor {
 					if (arena.getCrumbleRequest()==null) {
 					if (!arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {
 					if (args.length==0) {
-						p.sendMessage("§aUse of command: /crumble <percentage>");
-						p.sendMessage("§7(The percentage must be between 10 and 90, the higher will be the less snow in the arena)");
+						p.sendMessage("Â§aUse of command: /crumble <percentage>");
+						p.sendMessage("Â§7(The percentage must be between 10 and 90, the higher will be the less snow in the arena)");
 					} else {
 						int crumble = 0;
 						try {
@@ -44,29 +44,29 @@ public class CrumbleCommand implements CommandExecutor {
 								arena.setCrumbleRequest(request);
 								request.sendMessage();
 							} else {
-								p.sendMessage("§cThe percentage must be a number between 10 and 90.");
+								p.sendMessage("Â§cThe percentage must be a number between 10 and 90.");
 								return false;
 							}
 						} catch (Exception e) {
-							p.sendMessage("§a"+ args[0]+ " §cisnt a valid number.");
+							p.sendMessage("Â§a"+ args[0]+ " Â§cisnt a valid number.");
 							return false;
 						}
 							
 						}
 						
 				} else {
-					p.sendMessage("§cOnly alive players can request a /crumble.");	
+					p.sendMessage("Â§cOnly alive players can request a /crumble.");	
 				}
 				} else {
-					p.sendMessage("§cThere is a crumble request at the moment, cancel it or deny it to make a new one.");	
+					p.sendMessage("Â§cThere is a crumble request at the moment, cancel it or deny it to make a new one.");	
 				}
 				}else {
-					p.sendMessage("§cYou need to be in a 1v1 game to execute this command.");	
+					p.sendMessage("Â§cYou need to be in a 1v1 game to execute this command.");	
 				} 
 			
 							
 			} else {
-				p.sendMessage("§cYou can not execute this command here.");		
+				p.sendMessage("Â§cYou can not execute this command here.");		
 			}
 		} 
 		

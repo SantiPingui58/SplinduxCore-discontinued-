@@ -26,7 +26,7 @@ public class RankCommand implements CommandExecutor {
 			String name = args[1];
 			String rank = args[2];
 				for (Player p : Bukkit.getOnlinePlayers()) {
-					p.sendMessage("§e§lSplin§b§ldux §eCongratulations to §b§l" + name + " §efor bought " + 	getRank(rank) + " §erank!");
+					p.sendMessage("Â§eÂ§lSplinÂ§bÂ§ldux Â§eCongratulations to Â§bÂ§l" + name + " Â§efor bought " + 	getRank(rank) + " Â§erank!");
 				}
 			
 			if (!PermissionsEx.getUser(name).has("splindux.staff")) {
@@ -39,7 +39,7 @@ public class RankCommand implements CommandExecutor {
 					PermissionsEx.getUser(name).removeGroup(rank);
 				} 
 			} else {
-				sender.sendMessage("§cYou are not allowed to execute this command.");
+				sender.sendMessage("Â§cYou are not allowed to execute this command.");
 			}
 		
 			
@@ -51,11 +51,11 @@ public class RankCommand implements CommandExecutor {
 		
 		private String getRank(String rank) {
 		 if (rank.equalsIgnoreCase("vip")) {
-				return "§a§l[VIP]";
+				return "Â§aÂ§l[VIP]";
 			} else if (rank.equalsIgnoreCase("epic")) {
-				return "§1§l[Epic]";
+				return "Â§1Â§l[Epic]";
 			} else if (rank.equalsIgnoreCase("extreme")) {
-				return "§5§l[Extreme]";
+				return "Â§5Â§l[Extreme]";
 			}
 			return null;
 		}

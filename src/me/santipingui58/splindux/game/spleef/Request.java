@@ -63,13 +63,13 @@ public class Request {
 		for (SpleefPlayer players : arena.getViewers()) {
 			if (this.type.equals(RequestType.CRUMBLE)) {
 				if (players!=this.challenger) {
-			players.getPlayer().sendMessage("§b"+challenger.getOfflinePlayer().getName() + "§6 has requested to crumble the field with " + this.amount+"%. §7(Left to accept: " 
+			players.getPlayer().sendMessage("Â§b"+challenger.getOfflinePlayer().getName() + "Â§6 has requested to crumble the field with " + this.amount+"%. Â§7(Left to accept: " 
 			+ Utils.getUtils().getPlayerNamesFromList(list) + ")");
 				} else {
-					players.getPlayer().sendMessage("§6You sent a crumble request to your opponent.");
+					players.getPlayer().sendMessage("Â§6You sent a crumble request to your opponent.");
 				}
 			} else {
-				players.getPlayer().sendMessage("§b"+challenger.getOfflinePlayer().getName() + "§6 has requested to play to " + this.amount+". §7(Left to accept: " 
+				players.getPlayer().sendMessage("Â§b"+challenger.getOfflinePlayer().getName() + "Â§6 has requested to play to " + this.amount+". Â§7(Left to accept: " 
 						+ Utils.getUtils().getPlayerNamesFromList(list) + ")");
 			}
 			if (arena.getPlayers().contains(players)) {
@@ -93,10 +93,10 @@ public class Request {
 				msg1.setBold( true );
 				if (this.type.equals(RequestType.CRUMBLE)) {
 				msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover crumblecancel"));	
-				msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cCancel crumble request").create()));
+				msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§cCancel crumble request").create()));
 				} else {
 					msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover playtocancel"));	
-					msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cCancel play to request").create()));
+					msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§cCancel play to request").create()));
 				}
 				ComponentBuilder cb = new ComponentBuilder(msg1);
 				this.challenger.getPlayer().spigot().sendMessage(cb.create());
@@ -117,10 +117,10 @@ public class Request {
 		
 		if (this.type.equals(RequestType.CRUMBLE)) {
 		msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover crumbleaccept"));	
-		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aAccept crumble request").create()));
+		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§aAccept crumble request").create()));
 		} else {
 			msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover playtoaccept"));	
-			msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aAccept play to request").create()));
+			msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§aAccept play to request").create()));
 		}
 		TextComponent msg2 = null;
 		if (this.type.equals(RequestType.CRUMBLE)) {
@@ -132,10 +132,10 @@ public class Request {
 		msg2.setBold( true );
 		if (this.type.equals(RequestType.CRUMBLE)) {
 		msg2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover playtodeny"));
-		msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cDeny crumble request").create()));
+		msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§cDeny crumble request").create()));
 		} else {
 			msg2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover playtodeny"));
-			msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cDeny play to request").create()));
+			msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§cDeny play to request").create()));
 		}
 		
 		ComponentBuilder cb = new ComponentBuilder(msg1);

@@ -43,14 +43,14 @@ public class EndGameCommand implements CommandExecutor {
 						sendRequest(arena,sp);
 					}
 				} else {
-					p.sendMessage("§cYou already sent a end game request.");	
+					p.sendMessage("Â§cYou already sent a end game request.");	
 				}
 				
 				} else {
-					p.sendMessage("§cYou can not execute this command here.");		
+					p.sendMessage("Â§cYou can not execute this command here.");		
 				}
 			} else {
-				p.sendMessage("§cYou need to be in a 1v1 game to execute this command.");	
+				p.sendMessage("Â§cYou need to be in a 1v1 game to execute this command.");	
 			}
 		}
 		}
@@ -69,19 +69,19 @@ public class EndGameCommand implements CommandExecutor {
 		
 		for (SpleefPlayer players : arena.getViewers()) {			
 			if (!players.equals(sp)) {
-				players.getPlayer().sendMessage("§b"+sp.getOfflinePlayer().getName() + "§6 has requested to end the current game. To accept the request do /endgame §7(Left to accept: " 
+				players.getPlayer().sendMessage("Â§b"+sp.getOfflinePlayer().getName() + "Â§6 has requested to end the current game. To accept the request do /endgame Â§7(Left to accept: " 
 			+ Utils.getUtils().getPlayerNamesFromList(list) + ")");
 				
 				
 				if (arena.getPlayers().contains(players) && !arena.getEndGameRequest().contains(players)) {
-				TextComponent message = new TextComponent("§bClick here to end the current game!");
+				TextComponent message = new TextComponent("Â§bClick here to end the current game!");
 				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/endgame"));
-				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aEnd the current game").create()));
+				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§aEnd the current game").create()));
 					players.getPlayer().spigot().sendMessage(message);
 				}
 				
 			} else {
-				players.getPlayer().sendMessage("§6You sent a end game request to your opponent.");
+				players.getPlayer().sendMessage("Â§6You sent a end game request to your opponent.");
 			}
 		}
 		

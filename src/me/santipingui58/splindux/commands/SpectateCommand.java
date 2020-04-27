@@ -28,7 +28,7 @@ public class SpectateCommand implements CommandExecutor {
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 	
 			if (args.length==0) {
-				sender.sendMessage("§aUso of command: /spectate <Player>");
+				sender.sendMessage("Â§aUso of command: /spectate <Player>");
 			} else {
 				Player spect = Bukkit.getPlayer(args[0]);
 				if (Bukkit.getOnlinePlayers().contains(spect)) {
@@ -37,13 +37,13 @@ public class SpectateCommand implements CommandExecutor {
 						if (sp2.getArena().getGameType().equals(GameType.DUEL)) {
 						GameManager.getManager().spectate(sp,sp2);
 						} else {
-							sender.sendMessage("§cThe player §b" + args[0] + "§c is not in a 1vs1 game.");
+							sender.sendMessage("Â§cThe player Â§b" + args[0] + "Â§c is not in a 1vs1 game.");
 						}
 					} else {
-						sender.sendMessage("§cThe player §b" + args[0] + "§c is not in game.");
+						sender.sendMessage("Â§cThe player Â§b" + args[0] + "Â§c is not in game.");
 					}
 				} else {
-					sender.sendMessage("§cThe player §b" + args[0] + "§c does not exist or is not online.");
+					sender.sendMessage("Â§cThe player Â§b" + args[0] + "Â§c does not exist or is not online.");
 				}
 			}
 		}

@@ -40,7 +40,7 @@ public class StaffChatCommand implements CommandExecutor {
 		  String message = builder.toString();
 		  
 		  for (Player staff : list) {
-			  staff.sendMessage("§c[Staff] §f" + p.getName() + "§8: §e" + message);
+			  staff.sendMessage("Â§c[Staff] Â§f" + p.getName() + "Â§8: Â§e" + message);
 		  }
 		
 	}

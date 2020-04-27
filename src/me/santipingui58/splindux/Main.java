@@ -132,7 +132,7 @@ public class Main extends JavaPlugin {
 		 
 		//A bug causes player to corrupt when the plugin reloads, to prevent this, the players get kicked when the plugin starts.
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			p.kickPlayer("§cSplinduxCore restarting, please re join!");
+			p.kickPlayer("Â§cSplinduxCore restarting, please re join!");
 		}
 		
 		

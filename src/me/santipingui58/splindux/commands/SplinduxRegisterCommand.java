@@ -26,11 +26,11 @@ public class SplinduxRegisterCommand implements CommandExecutor {
 			if (p.isOp()) {
 				SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 				if (args.length==0) {
-					p.sendMessage("§aUse of command: /splinduxregister <password>");
+					p.sendMessage("Â§aUse of command: /splinduxregister <password>");
 				} else {
 					String password = SecurityManager.getManager().encryptThisString(args[0]);
 					Main.config.getConfig().set("passwords."+sp.getPlayer().getUniqueId(), password);
-					p.sendMessage("§aYou have sucessfuly registered!");
+					p.sendMessage("Â§aYou have sucessfuly registered!");
 					sp.login();					
 				}
 			}

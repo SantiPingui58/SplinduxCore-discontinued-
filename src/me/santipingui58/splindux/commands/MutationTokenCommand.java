@@ -21,7 +21,7 @@ public class MutationTokenCommand implements CommandExecutor {
 			if(cmd.getName().equalsIgnoreCase("mutationtoken")) {
 			Player p = (Player) sender;
 				if (args.length==0) {
-					p.sendMessage("§aUse of command: /mutationtoken give <player> <amount>");
+					p.sendMessage("Â§aUse of command: /mutationtoken give <player> <amount>");
 				} else if (args[0].equalsIgnoreCase("give")) {
 					if (args.length==3) {
 						@SuppressWarnings("deprecation")
@@ -32,16 +32,16 @@ public class MutationTokenCommand implements CommandExecutor {
 						try {
 							level = Integer.parseInt(args[2]);
 						} catch (Exception e) {
-							p.sendMessage("§a"+ args[3]+ " §cisnt a valid number.");
+							p.sendMessage("Â§a"+ args[3]+ " Â§cisnt a valid number.");
 							return false;
 						}
 						
 						splayer.setMutationTokens(splayer.getMutationTokens()+level);
 						} else {
-							p.sendMessage("§cThis player doesn't exist");
+							p.sendMessage("Â§cThis player doesn't exist");
 						}
 					} else {
-						p.sendMessage("§aUse of command: /mutationtoken give <player> <amount>");
+						p.sendMessage("Â§aUse of command: /mutationtoken give <player> <amount>");
 					}
 				} 
 			

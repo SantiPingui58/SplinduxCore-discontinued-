@@ -22,8 +22,8 @@ public class MatchesCommand implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender p, Command cmd, String label, final String[] args) {
 		if(cmd.getName().equalsIgnoreCase("matches")){
-				p.sendMessage("ง6-=-=-=-[งaงlMatchesง6]-=-=-=-");
-			p.sendMessage("ง5Spleef Duels:");
+				p.sendMessage("ยง6-=-=-=-[ยงaยงlMatchesยง6]-=-=-=-");
+			p.sendMessage("ยง5Spleef Duels:");
 			
 			for (SpleefArena arena : DataManager.getManager().getArenas()) {
 				if (arena.getGameType().equals(GameType.DUEL)) {
@@ -36,13 +36,13 @@ public class MatchesCommand implements CommandExecutor{
 					String map = arena.getName();			
 						if (p instanceof Player) {
 							Player player = (Player) p;
-							TextComponent message = new TextComponent("ง7UNRANKED " + "งa" + p1 + " งb" + puntos1 + "ง7-งb" + puntos2 + "งa " + p2 + " ง7[งe" + map + "ง7]" + "ง7(ง6" + Utils.getUtils().time(tiempo)+ "ง7)");
+							TextComponent message = new TextComponent("ยง7UNRANKED " + "ยงa" + p1 + " ยงb" + puntos1 + "ยง7-ยงb" + puntos2 + "ยงa " + p2 + " ยง7[ยงe" + map + "ยง7]" + "ยง7(ยง6" + Utils.getUtils().time(tiempo)+ "ยง7)");
 							message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/spectate "+arena.getDuelPlayers1().get(0).getOfflinePlayer().getName()));
-							message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("ง7Espectar งa" +p1 + " ง7-งa " + p2 ).create()));
+							message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("ยง7Espectar ยงa" +p1 + " ยง7-ยงa " + p2 ).create()));
 								player.spigot().sendMessage(message);
 						
 					}else {
-						p.sendMessage("ง7UNRANKED " + "งa" + p1 + " งb" + puntos1 + "ง7-งb" + puntos2 + "งa " + p2 + " ง7[งe" + map + "ง7]" + "ง7(ง6" + Utils.getUtils().time(tiempo)+ "ง7)");			
+						p.sendMessage("ยง7UNRANKED " + "ยงa" + p1 + " ยงb" + puntos1 + "ยง7-ยงb" + puntos2 + "ยงa " + p2 + " ยง7[ยงe" + map + "ยง7]" + "ยง7(ยง6" + Utils.getUtils().time(tiempo)+ "ยง7)");			
 					}
 						}
 				}

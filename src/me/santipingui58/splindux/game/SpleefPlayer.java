@@ -218,7 +218,7 @@ public class SpleefPlayer {
 				if (Main.arenas.getConfig().contains("mainlobby")) {
 					getPlayer().teleport(Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true));
 				}				
-			getPlayer().sendMessage("§aYou have left the queue.");		
+			getPlayer().sendMessage("Â§aYou have left the queue.");		
 			setScoreboard(ScoreboardType.LOBBY);
 			}
 			if (arena.getPlayers().contains(this)) {

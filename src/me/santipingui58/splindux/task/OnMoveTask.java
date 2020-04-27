@@ -93,7 +93,7 @@ public class OnMoveTask {
 		    			sp.back();
 		    			sp.setAFKTimer(0);
 		    			if (sp.getPlayer().hasPermission("splindux.afk")) {
-		    			sp.getPlayer().sendMessage("§7You are not longer AFK");	
+		    			sp.getPlayer().sendMessage("Â§7You are not longer AFK");	
 		    			}
 		    			}
 		    			
@@ -103,7 +103,7 @@ public class OnMoveTask {
 		    			if (sp.getAFKTimer()>=3500) {
 		    				sp.afk();
 		    				if (sp.getPlayer().hasPermission("splindux.afk")) {
-		    				sp.getPlayer().sendMessage("§7You are now AFK");	
+		    				sp.getPlayer().sendMessage("Â§7You are now AFK");	
 		    				}
 		    			}
 		    			} else {
@@ -126,7 +126,7 @@ public class OnMoveTask {
 			    			sp.addGameAFKTimer();
 			    			if (sp.getGameAFKTimer()>1600) {		    				
 			    				sp.leaveQueue(arena,true);
-			    				sp.getPlayer().sendMessage("§cYou got off from the game because you were afk too long!");
+			    				sp.getPlayer().sendMessage("Â§cYou got off from the game because you were afk too long!");
 			    			}
 			    		} else {
 			    			sp.setGameAFKTimer(0);

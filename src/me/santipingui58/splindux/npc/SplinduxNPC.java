@@ -31,14 +31,14 @@ public class SplinduxNPC {
 			Location l = new Location (npc.getStoredLocation().getWorld(),x,y,z);
 			this.hologram = HologramsAPI.createHologram(Main.get(),l);
 			hologram.clearLines();
-			hologram.appendTextLine("ง7Playing: งa" + this.playing/2);
+			hologram.appendTextLine("ยง7Playing: ยงa" + this.playing/2);
 		} else if (this.type.getGameType().equals(GameType.DUEL)) {
 			double y = npc.getStoredLocation().getBlockY()+3;
 			Location l = new Location (npc.getStoredLocation().getWorld(),x,y,z);
 			this.hologram = HologramsAPI.createHologram(Main.get(),l);
 			hologram.clearLines();
-			hologram.appendTextLine("ง7Playing: งa" + this.playing);
-			hologram.appendTextLine("ง7In Queue: งa" + this.queue);
+			hologram.appendTextLine("ยง7Playing: ยงa" + this.playing);
+			hologram.appendTextLine("ยง7In Queue: ยงa" + this.queue);
 		}
 		}
 	}
@@ -49,7 +49,7 @@ public class SplinduxNPC {
 			if (this.playing!=GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(), 0)) {
 				this.playing = GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(), 0);
 			hologram.clearLines();
-			hologram.appendTextLine("ง7Playing: งa" + this.playing);
+			hologram.appendTextLine("ยง7Playing: ยงa" + this.playing);
 			}
 		} else {		
 			if (this.queue!= GameManager.getManager().getQueueSize(type.getSpleefType(), type.getGameType(), type.getAmount()) || 
@@ -57,8 +57,8 @@ public class SplinduxNPC {
 				this.playing = GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(), 0);
 				this.queue = GameManager.getManager().getQueueSize(type.getSpleefType(), type.getGameType(), 0);				
 				hologram.clearLines();
-				hologram.appendTextLine("ง7Playing: งa" + this.playing);
-				hologram.appendTextLine("ง7In Queue: งa" + this.queue);
+				hologram.appendTextLine("ยง7Playing: ยงa" + this.playing);
+				hologram.appendTextLine("ยง7In Queue: ยงa" + this.queue);
 			}
 		}
 	}

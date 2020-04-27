@@ -41,7 +41,7 @@ public class SetupCommand implements CommandExecutor {
 				}
 			} else if (args[0].equalsIgnoreCase("setarena1")) {
 				if (args.length==2) {
-					p.sendMessage("§aYou have set the the location of Arena #1 on arena §b"+ args[1]);
+					p.sendMessage("Â§aYou have set the the location of Arena #1 on arena Â§b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".arena1", Utils.getUtils().setLoc(p.getLocation(), false));
 					Main.arenas.saveConfig();
 				} else {
@@ -49,7 +49,7 @@ public class SetupCommand implements CommandExecutor {
 				}
 			} else if (args[0].equalsIgnoreCase("setarena2")) {
 				if (args.length==2) {
-					p.sendMessage("§aYou have set the the location of Arena #2 on arena §b"+ args[1]);
+					p.sendMessage("Â§aYou have set the the location of Arena #2 on arena Â§b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".arena2", Utils.getUtils().setLoc(p.getLocation(), false));
 					Main.arenas.saveConfig();
 				} else {
@@ -57,7 +57,7 @@ public class SetupCommand implements CommandExecutor {
 				}
 			} else if (args[0].equalsIgnoreCase("setspawn1")) {
 				if (args.length==2) {
-					p.sendMessage("§aYou have set the the location of Spawn #1 on arena §b"+ args[1]);
+					p.sendMessage("Â§aYou have set the the location of Spawn #1 on arena Â§b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".spawn1", Utils.getUtils().setLoc(p.getLocation(), true));
 					Main.arenas.saveConfig();
 				} else {
@@ -65,7 +65,7 @@ public class SetupCommand implements CommandExecutor {
 				}
 			} else if (args[0].equalsIgnoreCase("setspawn2")) {
 				if (args.length==2) {
-					p.sendMessage("§aYou have set the the location of Spawn #2 on arena §b"+ args[1]);
+					p.sendMessage("Â§aYou have set the the location of Spawn #2 on arena Â§b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".spawn2", Utils.getUtils().setLoc(p.getLocation(), true));
 					Main.arenas.saveConfig();
 				} else {
@@ -77,11 +77,11 @@ public class SetupCommand implements CommandExecutor {
 					try {
 						min = Integer.parseInt(args[2]);			
 					} catch (Exception e) {
-						p.sendMessage("§a"+ args[2]+ " §cisnt a valid number.");
+						p.sendMessage("Â§a"+ args[2]+ " Â§cisnt a valid number.");
 						return false;
 					}
 					
-					p.sendMessage("§aYou have set the the min amount of players on arena §b"+ args[1]);
+					p.sendMessage("Â§aYou have set the the min amount of players on arena Â§b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".min", min);
 					Main.arenas.saveConfig();
 				} else {
@@ -93,11 +93,11 @@ public class SetupCommand implements CommandExecutor {
 					try {
 						max = Integer.parseInt(args[2]);			
 					} catch (Exception e) {
-						p.sendMessage("§a"+ args[2]+ " §cisnt a valid number.");
+						p.sendMessage("Â§a"+ args[2]+ " Â§cisnt a valid number.");
 						return false;
 					}
 					
-					p.sendMessage("§aYou have set the the max amount of players on arena §b"+ args[1]);
+					p.sendMessage("Â§aYou have set the the max amount of players on arena Â§b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".max", max);
 					Main.arenas.saveConfig();
 				} else {
@@ -105,7 +105,7 @@ public class SetupCommand implements CommandExecutor {
 				}
 			}    else if (args[0].equalsIgnoreCase("setlobby")) {
 				if (args.length==2) {
-					p.sendMessage("§aYou have set the the location of Lobby on arena §b"+ args[1]);
+					p.sendMessage("Â§aYou have set the the location of Lobby on arena Â§b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".lobby", Utils.getUtils().setLoc(p.getLocation(), false));
 					Main.arenas.saveConfig();
 				} else {
@@ -113,7 +113,7 @@ public class SetupCommand implements CommandExecutor {
 				}
 			}  else if (args[0].equalsIgnoreCase("setitem")) {
 				if (args.length==2) {
-					p.sendMessage("§aYou have set the the item to §b"+p.getItemInHand().getType()+ "§a on arena §b"+ args[1]);
+					p.sendMessage("Â§aYou have set the the item to Â§b"+p.getItemInHand().getType()+ "Â§a on arena Â§b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".item", p.getItemInHand().getType().toString());
 					Main.arenas.saveConfig();
 				} else {
@@ -121,7 +121,7 @@ public class SetupCommand implements CommandExecutor {
 				}
 			} else if (args[0].equalsIgnoreCase("setmainspawn")) {
 				if (args.length==2) {
-					p.sendMessage("§aYou have set the the location of Main Spawn on arena §b"+ args[1]);
+					p.sendMessage("Â§aYou have set the the location of Main Spawn on arena Â§b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".mainspawn", Utils.getUtils().setLoc(p.getLocation(), false));
 					Main.arenas.saveConfig();
 				} else {
@@ -131,11 +131,11 @@ public class SetupCommand implements CommandExecutor {
 				if (args.length==3) {
 					try {
 						SpleefType.valueOf(args[2]);
-					p.sendMessage("§aYou have set the the location of Type on arena §b"+ args[1]);
+					p.sendMessage("Â§aYou have set the the location of Type on arena Â§b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".spleeftype", args[2]);
 					Main.arenas.saveConfig();
 				} catch(Exception e) {
-					p.sendMessage("§cThe Spleef Type §b" + args[2] + " §cdoes not exist.");
+					p.sendMessage("Â§cThe Spleef Type Â§b" + args[2] + " Â§cdoes not exist.");
 				} 
 					
 			} else {
@@ -144,11 +144,11 @@ public class SetupCommand implements CommandExecutor {
 				if (args.length==3) {
 					try {
 						GameType.valueOf(args[2]);
-					p.sendMessage("§aYou have set the the location of Type on arena §b"+ args[1]);
+					p.sendMessage("Â§aYou have set the the location of Type on arena Â§b"+ args[1]);
 					Main.arenas.getConfig().set("arenas."+args[1]+".gametype", args[2]);
 					Main.arenas.saveConfig();
 				} catch(Exception e) {
-					p.sendMessage("§cThe Game Type §b" + args[2] + " §cdoes not exist.");
+					p.sendMessage("Â§cThe Game Type Â§b" + args[2] + " Â§cdoes not exist.");
 				} 
 					
 			} else {
@@ -167,7 +167,7 @@ public class SetupCommand implements CommandExecutor {
 								|| !Main.arenas.getConfig().contains("arenas."+args[1]+".min")
 								|| !Main.arenas.getConfig().contains("arenas."+args[1]+".max")
 								){
-								p.sendMessage("§cThe arena §b" + args[1] + " §cdoesnt have all locations set.");
+								p.sendMessage("Â§cThe arena Â§b" + args[1] + " Â§cdoesnt have all locations set.");
 								return false;
 							} else {}
 							
@@ -182,7 +182,7 @@ public class SetupCommand implements CommandExecutor {
 									|| !Main.arenas.getConfig().contains("arenas."+args[1]+".lobby")
 									|| !Main.arenas.getConfig().contains("arenas."+args[1]+".mainspawn")
 									){
-								p.sendMessage("§cThe arena §b" + args[1] + " §cdoesnt have all locations set.");
+								p.sendMessage("Â§cThe arena Â§b" + args[1] + " Â§cdoesnt have all locations set.");
 								return false;
 							}
 						}
@@ -206,12 +206,12 @@ public class SetupCommand implements CommandExecutor {
 							DataManager.getManager().loadArena(args[1], null,spawn1,spawn2, Main.lobby, arena1, arena2,spleeftype,gametype,item,min,max);
 						}
 						
-						p.sendMessage("§aThe arena §b" + args[1] + " §ahas been created succesfully!.");
+						p.sendMessage("Â§aThe arena Â§b" + args[1] + " Â§ahas been created succesfully!.");
 					} else {
-						p.sendMessage("§cThe arena §b" + args[1] + " §cdoesnt have all locations set.");
+						p.sendMessage("Â§cThe arena Â§b" + args[1] + " Â§cdoesnt have all locations set.");
 					}
 				} else {
-					p.sendMessage("§cThe arena §b" + args[1] + " §cdoesnt have all locations set.");
+					p.sendMessage("Â§cThe arena Â§b" + args[1] + " Â§cdoesnt have all locations set.");
 				}				
 			}
 				

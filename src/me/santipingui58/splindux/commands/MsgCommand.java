@@ -21,7 +21,7 @@ public class MsgCommand implements CommandExecutor {
 	if(cmd.getName().equalsIgnoreCase("msg")) {
 		final Player p = (Player) sender;
 		if (args.length == 0 || args.length == 1) {
-				p.sendMessage("§aUse of command: /msg <name> <message>");
+				p.sendMessage("Â§aUse of command: /msg <name> <message>");
 			
 			
 		} else {
@@ -35,12 +35,12 @@ public class MsgCommand implements CommandExecutor {
 			    }
 			  String message = builder.toString();
 			  
-				receptor.sendMessage("§6[" + p.getName() + " -> me] §f" + message);
-				p.sendMessage("§6[me -> " + receptor.getName() + "] §f" + message);
+				receptor.sendMessage("Â§6[" + p.getName() + " -> me] Â§f" + message);
+				p.sendMessage("Â§6[me -> " + receptor.getName() + "] Â§f" + message);
 				Player d = Bukkit.getPlayer("Notch");
 				if (Bukkit.getOnlinePlayers().contains(d)) {
 					if (d!=p && d!=receptor) {
-						d.sendMessage("§7[PM] "+p.getName()+"->" + receptor.getName() + " : " +message);
+						d.sendMessage("Â§7[PM] "+p.getName()+"->" + receptor.getName() + " : " +message);
 				}
 				}
 				respond.put(receptor, p);
@@ -49,7 +49,7 @@ public class MsgCommand implements CommandExecutor {
 				
 				
 			} else {
-					p.sendMessage("§cThe player §b" + args[0] + "§c doesn't exists or is not online.");
+					p.sendMessage("Â§cThe player Â§b" + args[0] + "Â§c doesn't exists or is not online.");
 				}
 			
 		}
@@ -67,28 +67,28 @@ public class MsgCommand implements CommandExecutor {
 			      builder.append(args[i]).append(" ");
 			    }
 			  String message = builder.toString();				
-				respond.get(p).sendMessage("§6[" + p.getName() + " -> me] §f" + message);
-				p.sendMessage("§6[me -> " + respond.get(p).getName() + "] §f" + message);
+				respond.get(p).sendMessage("Â§6[" + p.getName() + " -> me] Â§f" + message);
+				p.sendMessage("Â§6[me -> " + respond.get(p).getName() + "] Â§f" + message);
 				Player d = Bukkit.getPlayer("Notch");
 				if (Bukkit.getOnlinePlayers().contains(d)) {
 					if (d!=p && d!=respond.get(p)) {
-					d.sendMessage("§7[PM] "+p.getName()+"->" + respond.get(p).getName() + " : " +message);
+					d.sendMessage("Â§7[PM] "+p.getName()+"->" + respond.get(p).getName() + " : " +message);
 				}
 				}
 				
 			} else {
 
-					p.sendMessage("§cYou don't have anyone to reply.");
+					p.sendMessage("Â§cYou don't have anyone to reply.");
 				
 			}
 		} else {
 
-				p.sendMessage("§cYou don't have anyone to reply.");
+				p.sendMessage("Â§cYou don't have anyone to reply.");
 			
 			}
 	} else {
 
-			p.sendMessage("§aUse of command: /r <message>");
+			p.sendMessage("Â§aUse of command: /r <message>");
 		
 	}
 		}

@@ -130,23 +130,23 @@ public class ServerListener implements Listener {
 		if (e.getLine(0).equalsIgnoreCase("[Spleef]") && e.getLine(1).equalsIgnoreCase("Join")) {
 			for (SpleefArena arena : DataManager.getManager().getArenas()) {
 				if (arena.getName().equals(e.getLine(2))) {
-					e.setLine(0, "§0§l[Spleef]");
-					e.setLine(1, "§aJoin");
-					e.setLine(2, "§5§l"+arena.getName());
+					e.setLine(0, "Â§0Â§l[Spleef]");
+					e.setLine(1, "Â§aJoin");
+					e.setLine(2, "Â§5Â§l"+arena.getName());
 					return;
 				}
 			}
-			e.getPlayer().sendMessage("§cThe arena §b"+ e.getLine(2) + " §cdoesnt exist.");
+			e.getPlayer().sendMessage("Â§cThe arena Â§b"+ e.getLine(2) + " Â§cdoesnt exist.");
 		} else if (e.getLine(0).equalsIgnoreCase("[Spleef]") && e.getLine(1).equalsIgnoreCase("Leave")) {
 			for (SpleefArena arena : DataManager.getManager().getArenas()) {
 				if (arena.getName().equals(e.getLine(2))) {
-					e.setLine(0, "§0§l[Spleef]");
-					e.setLine(1, "§cLeave");
-					e.setLine(2, "§5§l"+arena.getName());
+					e.setLine(0, "Â§0Â§l[Spleef]");
+					e.setLine(1, "Â§cLeave");
+					e.setLine(2, "Â§5Â§l"+arena.getName());
 					return;
 				}
 			}
-			e.getPlayer().sendMessage("§cThe arena §b"+ e.getLine(2) + " §cdoesnt exist.");
+			e.getPlayer().sendMessage("Â§cThe arena Â§b"+ e.getLine(2) + " Â§cdoesnt exist.");
 		} else if (e.getLine(0).equalsIgnoreCase("[Spleef]") && e.getLine(1).equalsIgnoreCase("Leaderboard")
 				&& e.getLine(2).equalsIgnoreCase("FFAWins"))  {
 			e.setCancelled(true);
@@ -215,7 +215,7 @@ public class ServerListener implements Listener {
 	    		if (sp.getMutationTokens()>0) {
 	    		new MutationTokenMenu(sp).o(p);
 	    	} else {
-	    		p.sendMessage("§cYou dont have any §dMutation Token §cat the moment.");
+	    		p.sendMessage("Â§cYou dont have any Â§dMutation Token Â§cat the moment.");
 	    	} 
 	    		}
 	    		
@@ -330,26 +330,26 @@ public class ServerListener implements Listener {
 				    	    else if (player.getBukkitPlayer().isOnGround())
 				    	      player.setSitting(true);
 				    	   } else {
-									p.sendMessage("§cYou can't execute this command while playing a match.");								
+									p.sendMessage("Â§cYou can't execute this command while playing a match.");								
 				    	   }
 				       } else {
 
-					p.sendMessage("§cYou don't have permission to execute this command.");
-					p.sendMessage("§aYou need a rank "
-							+ "§6[Donator] §ato use this, visit the store for more info: §bhttp://jhspleef.buycraft.net/");
+					p.sendMessage("Â§cYou don't have permission to execute this command.");
+					p.sendMessage("Â§aYou need a rank "
+							+ "Â§6[Donator] Â§ato use this, visit the store for more info: Â§bhttp://jhspleef.buycraft.net/");
 						
 								} 
 				       
 				      } else if (args[0].equalsIgnoreCase("/lay")) {
 				    	   e.setCancelled(true);
 				      }  else if (args[0].equalsIgnoreCase("/plugins") || args[0].equalsIgnoreCase("/pl")) {
-				        	 e.getPlayer().sendMessage("§fPlugins(2): §aSplinduxCore§f, §aSlenderSeLaCome");
+				        	 e.getPlayer().sendMessage("Â§fPlugins(2): Â§aSplinduxCoreÂ§f, Â§aSlenderSeLaCome");
 						        e.setCancelled(true);
 				        
 				      } else if (args[0].equalsIgnoreCase("/d") || args[0].equalsIgnoreCase("/disguise")) {
 				    		if (sp.isInGame()) {
 				    			e.setCancelled(true);
-									p.sendMessage("§cYou can't execute this command while playing a match.");
+									p.sendMessage("Â§cYou can't execute this command while playing a match.");
 								
 				    		}
 				    	}
@@ -359,14 +359,14 @@ public class ServerListener implements Listener {
 	
 	  @EventHandler
 	  public void onSit(PlayerSitEvent e) {
-			  e.setMessage("§aYou have sat");
+			  e.setMessage("Â§aYou have sat");
 		  
 	  }
 	  
 	  
 	  @EventHandler
 	  public void onExitSit(PlayerStopSittingEvent e) {
-			  e.setMessage("§cYou have stood up");		  
+			  e.setMessage("Â§cYou have stood up");		  
 	  }
 	  
 

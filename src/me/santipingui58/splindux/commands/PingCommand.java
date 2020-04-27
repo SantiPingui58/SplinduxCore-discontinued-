@@ -31,22 +31,22 @@ public class PingCommand implements CommandExecutor{
 			sortPing();
 			Player p = (Player) sender;
 			if (args.length == 0) {
-				p.sendMessage("§aPing: §b" + getPing(p) + "ms");
+				p.sendMessage("Â§aPing: Â§b" + getPing(p) + "ms");
 			} else if (args.length >= 1 && args[0].equalsIgnoreCase("all")) {
 				
-				p.sendMessage("§aPing:");
+				p.sendMessage("Â§aPing:");
 				
 				for(int i = 1; i < Bukkit.getOnlinePlayers().size()+1 ; i++){
 					Entry<String, Integer> e = sortedPing.pollLastEntry();
 					String pname = e.getKey();
 					Integer score = e.getValue();
-				p.sendMessage("§3" + pname + "§7:§e " + score + "§ems");
+				p.sendMessage("Â§3" + pname + "Â§7:Â§e " + score + "Â§ems");
 				
 			}
 			
 			
 	} else {
-		p.sendMessage("§aPing: §e" + getPing(p) + "ms");
+		p.sendMessage("Â§aPing: Â§e" + getPing(p) + "ms");
 	}
 }
 		} 

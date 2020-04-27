@@ -79,17 +79,17 @@ public class FFAEvent {
 			hashmap= StatsManager.getManager().sortByValue(hashmap);
 			
 			int pos = 1;
-			Bukkit.broadcastMessage("§aRound §b" + this.currentRound + " §ahas finished!");
-			Bukkit.broadcastMessage("§5-=-=-=-[§d§lFFA Event Positions§5]-=-=-=-");
+			Bukkit.broadcastMessage("Â§aRound Â§b" + this.currentRound + " Â§ahas finished!");
+			Bukkit.broadcastMessage("Â§5-=-=-=-[Â§dÂ§lFFA Event PositionsÂ§5]-=-=-=-");
 			for (Entry<String, Integer> entry : hashmap.entrySet()) {
 						
-				 Bukkit.broadcastMessage("§6" +pos+". §b" + entry.getKey() + "§8: §e" + entry.getValue() +" Points");
+				 Bukkit.broadcastMessage("Â§6" +pos+". Â§b" + entry.getKey() + "Â§8: Â§e" + entry.getValue() +" Points");
 				pos++;
 				}
 
 			for (SpleefPlayer sp : getArena().getQueue()) {
 				if (getTotalPoints().containsKey(sp)) {
-					Utils.getUtils().sendTitles(sp.getPlayer(), "§6Total points: " +  getTotalPoints().get(sp), "§aPoints this round: " + getRoundPoints().get(sp), 10, 200, 10);
+					Utils.getUtils().sendTitles(sp.getPlayer(), "Â§6Total points: " +  getTotalPoints().get(sp), "Â§aPoints this round: " + getRoundPoints().get(sp), 10, 200, 10);
 				}
 			}
 			
@@ -130,14 +130,14 @@ public class FFAEvent {
 		TextComponent msg2 = new TextComponent("[Prizes]");
 		msg2.setColor( net.md_5.bungee.api.ChatColor.GOLD );
 		msg2.setBold( true );
-		msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cDeny duel request").create()));
+		msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§cDeny duel request").create()));
 		ComponentBuilder cb = new ComponentBuilder(msg1);
 		cb.append(" ");
 		cb.append(msg2);
 		
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			p.sendMessage("§d§lA new FFA Event will start in the next round! Join FFA to participate and get many points as you can! The Event will last for §a§l"+ this.maxRounds+ " rounds§d§l!");
-			p.sendMessage("§7(Rank snowballs and Mutations will be disabled until the Event ends.)");
+			p.sendMessage("Â§dÂ§lA new FFA Event will start in the next round! Join FFA to participate and get many points as you can! The Event will last for Â§aÂ§l"+ this.maxRounds+ " roundsÂ§dÂ§l!");
+			p.sendMessage("Â§7(Rank snowballs and Mutations will be disabled until the Event ends.)");
 			p.spigot().sendMessage(cb.create());
 		}
 	}
@@ -153,13 +153,13 @@ public class FFAEvent {
 		
 		
 		int pos = 1;
-		Bukkit.broadcastMessage("§d§lThe Event has finished!");
-		Bukkit.broadcastMessage("§5-=-=-=-[§d§lFFA Event Positions§5]-=-=-=-");
+		Bukkit.broadcastMessage("Â§dÂ§lThe Event has finished!");
+		Bukkit.broadcastMessage("Â§5-=-=-=-[Â§dÂ§lFFA Event PositionsÂ§5]-=-=-=-");
 		for (Entry<String, Integer> entry : hashmap.entrySet()) {
 					if (pos==1) {
-						 Bukkit.broadcastMessage("§6§l" +pos+". §b§l" + entry.getKey() + "§8§l: §e§l" + entry.getValue() +" Points");
+						 Bukkit.broadcastMessage("Â§6Â§l" +pos+". Â§bÂ§l" + entry.getKey() + "Â§8Â§l: Â§eÂ§l" + entry.getValue() +" Points");
 					} else {
-			 Bukkit.broadcastMessage("§6" +pos+". §b" + entry.getKey() + "§8: §e" + entry.getValue() +" Points");
+			 Bukkit.broadcastMessage("Â§6" +pos+". Â§b" + entry.getKey() + "Â§8: Â§e" + entry.getValue() +" Points");
 					}
 			pos++;
 			}

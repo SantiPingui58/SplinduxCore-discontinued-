@@ -43,16 +43,16 @@ public class ResetCommand implements CommandExecutor {
 						sendRequest(arena,sp);
 					}
 				} else {
-					p.sendMessage("§cYou already sent a reset request.");	
+					p.sendMessage("Â§cYou already sent a reset request.");	
 				}
 				} else {
-					p.sendMessage("§cOnly alive players can request a /reset.");	
+					p.sendMessage("Â§cOnly alive players can request a /reset.");	
 				}
 				} else {
-					p.sendMessage("§cYou can not execute this command here.");		
+					p.sendMessage("Â§cYou can not execute this command here.");		
 				}
 			} else {
-				p.sendMessage("§cYou need to be in a duel game to execute this command.");	
+				p.sendMessage("Â§cYou need to be in a duel game to execute this command.");	
 			}
 		}
 		}
@@ -71,20 +71,20 @@ public class ResetCommand implements CommandExecutor {
 		
 		for (SpleefPlayer players : arena.getViewers()) {			
 			if (!players.equals(sp)) {
-				players.getPlayer().sendMessage("§b"+sp.getOfflinePlayer().getName() + "§6 has requested a reset of the field. To accept the request do /reset §7(Left to accept: " 
+				players.getPlayer().sendMessage("Â§b"+sp.getOfflinePlayer().getName() + "Â§6 has requested a reset of the field. To accept the request do /reset Â§7(Left to accept: " 
 			+ Utils.getUtils().getPlayerNamesFromList(list) + ")");
 				
 				
 				if (arena.getPlayers().contains(players) && !arena.getResetRequest().contains(players)) {
 					if (arena.getDeadPlayers1().contains(players) || arena.getDeadPlayers2().contains(players)) continue;
-				TextComponent message = new TextComponent("§bClick here to reset the arena!");
+				TextComponent message = new TextComponent("Â§bClick here to reset the arena!");
 				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/reset"));
-				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aReset arena").create()));
+				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§aReset arena").create()));
 					players.getPlayer().spigot().sendMessage(message);
 				}
 				
 			} else {
-				players.getPlayer().sendMessage("§6You sent a reset request to your opponent.");
+				players.getPlayer().sendMessage("Â§6You sent a reset request to your opponent.");
 			}
 		}
 		

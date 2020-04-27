@@ -28,14 +28,14 @@ public class SplinduxLoginCommand implements CommandExecutor {
 			if (p.isOp()) {
 				SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 				if (args.length==0) {
-					p.sendMessage("§aUse of command: /splinduxlogin <password>");
+					p.sendMessage("Â§aUse of command: /splinduxlogin <password>");
 				} else {
 					String password = SecurityManager.getManager().encryptThisString(args[0]);
 					if (Main.config.getConfig().getString("passwords."+p.getUniqueId()).equalsIgnoreCase(password)) {					
-					p.sendMessage("§aYou have sucessfuly logged in!");
+					p.sendMessage("Â§aYou have sucessfuly logged in!");
 					sp.login();					
 				} else {
-					sp.getPlayer().kickPlayer("§4Wrong password.");
+					sp.getPlayer().kickPlayer("Â§4Wrong password.");
 				}
 				}
 			}

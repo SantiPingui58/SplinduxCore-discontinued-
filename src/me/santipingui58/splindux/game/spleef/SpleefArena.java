@@ -580,10 +580,10 @@ public class SpleefArena {
 				sp.getPlayer().teleport(getLobby());
 			sp.setScoreboard(ScoreboardType.FFAGAME_LOBBY);
 			if (getState().equals(GameState.GAME) || getState().equals(GameState.FINISHING) || getState().equals(GameState.STARTING)) {
-				sp.getPlayer().sendMessage("§aYou have been added to the queue, you will play when the next game starts!");
+				sp.getPlayer().sendMessage("Â§aYou have been added to the queue, you will play when the next game starts!");
 			} else {
 				for (SpleefPlayer p : getQueue()) {
-					p.getPlayer().sendMessage("§6" + sp.getPlayer().getName() + " §ahas joined the queue! Total: " + getQueue().size());
+					p.getPlayer().sendMessage("Â§6" + sp.getPlayer().getName() + " Â§ahas joined the queue! Total: " + getQueue().size());
 				}			
 				if (getQueue().size()>=3) {
 					new ArenaNewStartTask(this);
@@ -593,7 +593,7 @@ public class SpleefArena {
 						s= 15;
 					}
 					for (SpleefPlayer p : getQueue()) {					
-						p.getPlayer().sendMessage("§bSpleef is starting in " + s +" seconds.");
+						p.getPlayer().sendMessage("Â§bSpleef is starting in " + s +" seconds.");
 					}}}
 			
 			
@@ -608,7 +608,7 @@ public class SpleefArena {
 		 sp.leave(false);
 		 getQueue().add(sp);
 		 sp.giveQueueItems();		
-		 sp.getPlayer().sendMessage("§aYou have been added to the queue for " + this.spleeftype.toString()+ " " + this.teamsize + "V" + this.teamsize);
+		 sp.getPlayer().sendMessage("Â§aYou have been added to the queue for " + this.spleeftype.toString()+ " " + this.teamsize + "V" + this.teamsize);
 	 }
 	 
 		public void leaveQueue(SpleefPlayer sp) {		
@@ -619,7 +619,7 @@ public class SpleefArena {
 				if (Main.arenas.getConfig().contains("mainlobby")) {
 					sp.getPlayer().teleport(Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true));
 				}				
-			sp.getPlayer().sendMessage("§aYou have left the queue.");		
+			sp.getPlayer().sendMessage("Â§aYou have left the queue.");		
 			sp.setScoreboard(ScoreboardType.LOBBY);
 			}
 			if (getPlayers().contains(sp)) {
@@ -749,9 +749,9 @@ public class SpleefArena {
 				}		
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					if (!players.contains(p)) {
-					TextComponent message = new TextComponent("§aA game between §b" + getTeamName(1) + " §aand §b" + getTeamName(2) + " §ahas started! §7(Right click to spectate)");
+					TextComponent message = new TextComponent("Â§aA game between Â§b" + getTeamName(1) + " Â§aand Â§b" + getTeamName(2) + " Â§ahas started! Â§7(Right click to spectate)");
 					message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/spectate "+getDuelPlayers1().get(0).getOfflinePlayer().getName()));
-					message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Spectate §a" +getTeamName(1) + " §7-§a " + getTeamName(1)).create()));
+					message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§7Spectate Â§a" +getTeamName(1) + " Â§7-Â§a " + getTeamName(1)).create()));
 						p.spigot().sendMessage(message);
 					}}}
 			
@@ -905,7 +905,7 @@ public class SpleefArena {
 				if (getDuelPlayers1().contains(sp)) {
 					setPoints2(getPoints2()+1);
 					for (SpleefPlayer players : getViewers()) { 
-					players.getPlayer().sendMessage("§6"+ sp.getPlayer().getName()+ "§b fell! §6" + getTeamName(2)+ "§b gets a point.");			
+					players.getPlayer().sendMessage("Â§6"+ sp.getPlayer().getName()+ "Â§b fell! Â§6" + getTeamName(2)+ "Â§b gets a point.");			
 					}
 					if (getPoints2()>=getPlayTo()) {
 						GameManager.getManager().endGameDuel(this,"Team2",GameEndReason.WINNER);
@@ -917,7 +917,7 @@ public class SpleefArena {
 				} else if (getDuelPlayers2().contains(sp)) {
 					setPoints1(getPoints1()+1);
 					for (SpleefPlayer players : getViewers()) { 
-						players.getPlayer().sendMessage("§6"+ sp.getPlayer().getName()+ "§b fell! §6" + getTeamName(1)+ "§b gets a point.");							
+						players.getPlayer().sendMessage("Â§6"+ sp.getPlayer().getName()+ "Â§b fell! Â§6" + getTeamName(1)+ "Â§b gets a point.");							
 						}
 					if (getPoints1()>=getPlayTo()) {
 						GameManager.getManager().endGameDuel(this,"Team1",GameEndReason.WINNER);

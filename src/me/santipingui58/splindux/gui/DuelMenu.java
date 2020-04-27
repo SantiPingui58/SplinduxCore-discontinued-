@@ -43,7 +43,7 @@ public class DuelMenu extends MenuBuilder {
 	
 	
 	public DuelMenu(SpleefPlayer sp,List<SpleefPlayer> sp2,SpleefType type) {
-		super("§aDuel request to: §b" + getDuelTo(sp2),4);
+		super("Â§aDuel request to: Â§b" + getDuelTo(sp2),4);
 		if (sp.getDuelPage()==0) {
 		int size = sp2.size()+1;
 		size = size/2;
@@ -83,7 +83,7 @@ public class DuelMenu extends MenuBuilder {
 			}
 		}
 		
-		s(0,new ItemBuilder(Material.PAPER).setTitle("§aSuggested arenas for " + size+ "VS"+size).build());
+		s(0,new ItemBuilder(Material.PAPER).setTitle("Â§aSuggested arenas for " + size+ "VS"+size).build());
 		
 		for (SpleefArena arena : suggestedArenas) {
 			
@@ -93,17 +93,17 @@ public class DuelMenu extends MenuBuilder {
 			name = name.substring(0, 1).toUpperCase() + name.substring(1);
 			if (amount==0) {
 				List<String> lore = new ArrayList<String>();
-				lore.add("§8"+type.toString());
+				lore.add("Â§8"+type.toString());
 				for (SpleefPlayer sp_2 : sp2) {
-					lore.add("§8"+sp_2.getOfflinePlayer().getName());
+					lore.add("Â§8"+sp_2.getOfflinePlayer().getName());
 				}
-				ItemStack item = new ItemBuilder(arena.getItem()).setTitle("§6"+name).build();
+				ItemStack item = new ItemBuilder(arena.getItem()).setTitle("Â§6"+name).build();
 				ItemMeta meta = item.getItemMeta();
 				meta.setLore(lore);
 				item.setItemMeta(meta);
 			s(x,item);			
 			} else {
-				s(x,new ItemBuilder(Material.BARRIER).setTitle("§c"+name).addLore("§cNo available arenas for this map").build());
+				s(x,new ItemBuilder(Material.BARRIER).setTitle("Â§c"+name).addLore("Â§cNo available arenas for this map").build());
 			}
 			x++;
 		}
@@ -119,7 +119,7 @@ public class DuelMenu extends MenuBuilder {
 		}
 		
 		
-		s(x,new ItemBuilder(Material.PAPER).setTitle("§aRest of arenas").build());
+		s(x,new ItemBuilder(Material.PAPER).setTitle("Â§aRest of arenas").build());
 		x++;		
 		}
 		
@@ -131,17 +131,17 @@ public class DuelMenu extends MenuBuilder {
 			name = name.substring(0, 1).toUpperCase() + name.substring(1);
 			if (amount==0) {
 				List<String> lore = new ArrayList<String>();
-				lore.add("§8"+type.toString());
+				lore.add("Â§8"+type.toString());
 				for (SpleefPlayer sp_2 : sp2) {
-					lore.add("§8"+sp_2.getOfflinePlayer().getName());
+					lore.add("Â§8"+sp_2.getOfflinePlayer().getName());
 				}
-				ItemStack item = new ItemBuilder(arena.getItem()).setTitle("§6"+name).build();
+				ItemStack item = new ItemBuilder(arena.getItem()).setTitle("Â§6"+name).build();
 				ItemMeta meta = item.getItemMeta();
 				meta.setLore(lore);
 				item.setItemMeta(meta);
 			s(x,item);			
 			} else {
-				s(x,new ItemBuilder(Material.BARRIER).setTitle("§c"+name).addLore("§cNo available arenas for this map").build());
+				s(x,new ItemBuilder(Material.BARRIER).setTitle("Â§c"+name).addLore("Â§cNo available arenas for this map").build());
 			}
 			x++;
 		}
@@ -151,11 +151,11 @@ public class DuelMenu extends MenuBuilder {
 		
 		ItemStack random = Utils.getUtils().getSkull("http://textures.minecraft.net/texture/d34e063cafb467a5c8de43ec78619399f369f4a52434da8017a983cdd92516a0");
 		ItemMeta meta = random.getItemMeta();
-		meta.setDisplayName("§aRandom Arena");
+		meta.setDisplayName("Â§aRandom Arena");
 		List<String> lore = new ArrayList<String>();
-		lore.add("§8"+type.toString());
+		lore.add("Â§8"+type.toString());
 		for (SpleefPlayer sp_2 : sp2) {
-			lore.add("§8"+sp_2.getOfflinePlayer().getName());
+			lore.add("Â§8"+sp_2.getOfflinePlayer().getName());
 		}
 		
 		meta.setLore(lore);
@@ -182,7 +182,7 @@ public class DuelMenu extends MenuBuilder {
 		}
 		
 		
-		if (stack.getItemMeta().getLore().get(0).equalsIgnoreCase("§cNo available arenas for this map")) {
+		if (stack.getItemMeta().getLore().get(0).equalsIgnoreCase("Â§cNo available arenas for this map")) {
 			return;
 		}
 	
@@ -199,21 +199,21 @@ public class DuelMenu extends MenuBuilder {
 				if (sp_2.isInGame()) {
 					
 					sp.getPlayer().closeInventory();
-					sp.getPlayer().sendMessage("§cThis player is already in game.");
+					sp.getPlayer().sendMessage("Â§cThis player is already in game.");
 					return;
 				} else {
 					dueled.add(sp_2);
 				}
 			} else {
 				sp.getPlayer().closeInventory();
-				sp.getPlayer().sendMessage("§cThie player §b"+ s + " §cisnt online.");
+				sp.getPlayer().sendMessage("Â§cThie player Â§b"+ s + " Â§cisnt online.");
 				return;
 			}
 		}
 
 		
 		
-		if (stack.getItemMeta().getDisplayName().equalsIgnoreCase("§aRandom Arena")) {
+		if (stack.getItemMeta().getDisplayName().equalsIgnoreCase("Â§aRandom Arena")) {
 			SpleefDuel sduel = new SpleefDuel(sp, dueled, null,type);
 			sp.getDuels().add(sduel);
 			
@@ -252,17 +252,17 @@ public class DuelMenu extends MenuBuilder {
 		if (sp2.contains(sp)) sp2.remove(sp);
 		
 		if (sp2.size()==1) {
-			sp.getPlayer().sendMessage("§aYou have sent a duel request to §b" + sp2.get(0).getOfflinePlayer().getName()+ "§a for " + type.toString() + " in map " + duel.getArena()+"!");
-		sp2.get(0).getPlayer().sendMessage("§aThe Player §b" + sp.getPlayer().getName() + " §ahas sent you a duel request for "+ type.toString() + " in map " + duel.getArena()+ "! §7(This request expires in 1 minute.)");
+			sp.getPlayer().sendMessage("Â§aYou have sent a duel request to Â§b" + sp2.get(0).getOfflinePlayer().getName()+ "Â§a for " + type.toString() + " in map " + duel.getArena()+"!");
+		sp2.get(0).getPlayer().sendMessage("Â§aThe Player Â§b" + sp.getPlayer().getName() + " Â§ahas sent you a duel request for "+ type.toString() + " in map " + duel.getArena()+ "! Â§7(This request expires in 1 minute.)");
 		sp2.get(0).getPlayer().spigot().sendMessage(getInvitation(sp));	
 	
 		} else {
 			int size = (sp2.size()+1)/2; 
 			String mode = size+"VS"+size;
-			sp.getPlayer().sendMessage("§aYou have sent a duel request to multiple players for " + mode + " in map " + duel.getArena()+"!");
+			sp.getPlayer().sendMessage("Â§aYou have sent a duel request to multiple players for " + mode + " in map " + duel.getArena()+"!");
 			
 			for (SpleefPlayer sp_2 : sp2) {
-				sp_2.getPlayer().sendMessage("§aThe Player §b" + sp.getPlayer().getName() + " §ahas sent you a duel request for " + mode + " "+ type.toString() + " in map " + duel.getArena()+"! §7(This request expires in 1 minute.)");
+				sp_2.getPlayer().sendMessage("Â§aThe Player Â§b" + sp.getPlayer().getName() + " Â§ahas sent you a duel request for " + mode + " "+ type.toString() + " in map " + duel.getArena()+"! Â§7(This request expires in 1 minute.)");
 				sp_2.getPlayer().spigot().sendMessage(getInvitation(sp));	
 			}
 		}
@@ -271,7 +271,7 @@ public class DuelMenu extends MenuBuilder {
 		msg1.setColor(net.md_5.bungee.api.ChatColor.RED );
 		msg1.setBold( true );
 		msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover duelcancel " + duel.getUUID().toString()));	
-		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cCancel duel request").create()));
+		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§cCancel duel request").create()));
 		sp.getPlayer().spigot().sendMessage(msg1);
 		sp.getPlayer().closeInventory();
 	}
@@ -281,12 +281,12 @@ public class DuelMenu extends MenuBuilder {
 		msg1.setColor(net.md_5.bungee.api.ChatColor.GREEN );
 		msg1.setBold( true );
 		msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover duelaccept " + dueler.getPlayer().getName()));	
-		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aAccept duel request").create()));
+		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§aAccept duel request").create()));
 		TextComponent msg2 = new TextComponent("[DENY]");
 		msg2.setColor( net.md_5.bungee.api.ChatColor.RED );
 		msg2.setBold( true );
 		msg2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover dueldeny "  + dueler.getPlayer().getName()));
-		msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cDeny duel request").create()));
+		msg2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§cDeny duel request").create()));
 		ComponentBuilder cb = new ComponentBuilder(msg1);
 		cb.append(" ");
 		cb.append(msg2);

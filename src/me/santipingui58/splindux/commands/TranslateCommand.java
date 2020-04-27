@@ -34,13 +34,13 @@ public class TranslateCommand implements CommandExecutor {
 					String la = args[1].toUpperCase();
 					Language l = Language.valueOf(la);
 					sp.getOptions().setLanguage(l);
-					p.sendMessage("§aLanguage set to: §b" + sp.getOptions().getLanguage().toString()+"§a!");
+					p.sendMessage("Â§aLanguage set to: Â§b" + sp.getOptions().getLanguage().toString()+"Â§a!");
 				} else {
 					help(p);
 				}
 			} else if (args[0].equalsIgnoreCase("translate") && args.length==1) {
 				sp.getOptions().translate(!sp.getOptions().hasTranslate());
-				p.sendMessage("§aAutomatic translate set to: §b" + sp.getOptions().hasTranslate()+"§a!");
+				p.sendMessage("Â§aAutomatic translate set to: Â§b" + sp.getOptions().hasTranslate()+"Â§a!");
 			} else {
 				help(p);
 			}
@@ -56,8 +56,8 @@ public class TranslateCommand implements CommandExecutor {
 	
 
 	private void help(Player p) {
-		p.sendMessage("§aUse of command: /translate setlang <SPANISH/ENGLISH/RUSSIAN>");
-		p.sendMessage("§aUse of command: /translate translate");
+		p.sendMessage("Â§aUse of command: /translate setlang <SPANISH/ENGLISH/RUSSIAN>");
+		p.sendMessage("Â§aUse of command: /translate translate");
 	}
 	
 }

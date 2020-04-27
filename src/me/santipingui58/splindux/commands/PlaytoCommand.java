@@ -29,8 +29,8 @@ public class PlaytoCommand implements CommandExecutor {
 				if (arena.getGameType().equals(GameType.DUEL)) {
 					if (arena.getPlayToRequest()==null) {
 					if (args.length==0) {
-						p.sendMessage("§aUse of command: /playto <number>");
-						p.sendMessage("§7(The percentage must be between 1 and 99");
+						p.sendMessage("Â§aUse of command: /playto <number>");
+						p.sendMessage("Â§7(The percentage must be between 1 and 99");
 					} else {
 						int crumble = 0;
 						try {
@@ -38,11 +38,11 @@ public class PlaytoCommand implements CommandExecutor {
 							if (crumble>=1 && crumble<=99) {
 								
 							} else {
-								p.sendMessage("§cThe number must between 1 and 99.");
+								p.sendMessage("Â§cThe number must between 1 and 99.");
 								return false;
 							}
 						} catch (Exception e) {
-							p.sendMessage("§a"+ args[0]+ " §cisnt a valid number.");
+							p.sendMessage("Â§a"+ args[0]+ " Â§cisnt a valid number.");
 							return false;
 						}
 						
@@ -51,15 +51,15 @@ public class PlaytoCommand implements CommandExecutor {
 						request.sendMessage();
 						}
 					} else {
-						p.sendMessage("§cThere is a playto request at the moment, cancel it or deny it to make a new one.");	
+						p.sendMessage("Â§cThere is a playto request at the moment, cancel it or deny it to make a new one.");	
 					}
 				}else {
-					p.sendMessage("§cYou need to be in a duel game to execute this command.");	
+					p.sendMessage("Â§cYou need to be in a duel game to execute this command.");	
 				} 
 			
 							
 			} else {
-				p.sendMessage("§cYou can not execute this command here.");		
+				p.sendMessage("Â§cYou can not execute this command here.");		
 			}
 		} 
 		

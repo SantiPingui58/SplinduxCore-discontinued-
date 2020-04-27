@@ -40,7 +40,7 @@ public class SplinduxAPI {
 				int puntos2 = arena.getPoints2();
 				int tiempo = arena.getTotalTime();
 				String map = arena.getName();			
-					string = string + "\n " + "งa" + p1 + " งb" + puntos1 + "ง7-งb" + puntos2 + "งa " + p2 + " ง7[งe" + map + "ง7]" + "ง7(ง6" + Utils.getUtils().time(tiempo)+ "ง7)";			
+					string = string + "\n " + "ยงa" + p1 + " ยงb" + puntos1 + "ยง7-ยงb" + puntos2 + "ยงa " + p2 + " ยง7[ยงe" + map + "ยง7]" + "ยง7(ยง6" + Utils.getUtils().time(tiempo)+ "ยง7)";			
 				}
 					}
 			}

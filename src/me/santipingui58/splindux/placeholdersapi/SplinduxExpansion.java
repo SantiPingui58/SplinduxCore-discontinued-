@@ -117,7 +117,7 @@ public class SplinduxExpansion extends PlaceholderExpansion {
         		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(player);
         		String prefix = ChatColor.translateAlternateColorCodes('&', PermissionsEx.getUser(player).getPrefix());
         		String level = LevelManager.getManager().getRank(sp).getRankName();
-        		prefix = prefix + "ง7["+ level+"ง7]";
+        		prefix = prefix + "ยง7["+ level+"ยง7]";
         		return prefix;
         	}
         }

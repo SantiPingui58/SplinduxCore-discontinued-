@@ -61,8 +61,8 @@ public class GameMutation {
 	public void sendMutationRequest() {
 
 		for (SpleefPlayer sp : this.arena.getViewers()) {
-			sp.getPlayer().sendMessage("§b"+this.owner.getPlayer().getName()+" §ahas activated a Mutation Token for §b" + this.type.getTitle() + "§a! You need §e" 
-					+ this.type.getRequiredVotes() + " §avotes to activate this Mutation for the next game! §7(Mutation request will end in 1 minute)");			
+			sp.getPlayer().sendMessage("Â§b"+this.owner.getPlayer().getName()+" Â§ahas activated a Mutation Token for Â§b" + this.type.getTitle() + "Â§a! You need Â§e" 
+					+ this.type.getRequiredVotes() + " Â§avotes to activate this Mutation for the next game! Â§7(Mutation request will end in 1 minute)");			
 			if(!sp.equals(this.owner)) {
 				sp.getPlayer().spigot().sendMessage(getInvitation(this.owner));
 			}
@@ -83,7 +83,7 @@ public class GameMutation {
 		msg1.setColor(net.md_5.bungee.api.ChatColor.YELLOW );
 		msg1.setBold(true);
 		msg1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hover mutationaccept " + this.uuid.toString()));	
-		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§aVote to add a " + this.type.getTitle() +" §afor the next game").create()));
+		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Â§aVote to add a " + this.type.getTitle() +" Â§afor the next game").create()));
 		ComponentBuilder cb = new ComponentBuilder(msg1);
 		return cb.create();
 	}

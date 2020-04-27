@@ -46,7 +46,7 @@ public class ArenaNewStartTask {
             		   arena.setState(GameState.LOBBY);
             			Bukkit.getScheduler().cancelTask(task);
             			for (SpleefPlayer p : arena.getQueue()) {
-        					p.getPlayer().sendMessage("§cThere are not enough players to start! Countdown cancelled.");
+        					p.getPlayer().sendMessage("Â§cThere are not enough players to start! Countdown cancelled.");
         				}
             	   }
             	   
