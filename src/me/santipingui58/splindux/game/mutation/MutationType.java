@@ -218,10 +218,43 @@ public enum MutationType {
 	}
 	
 	public String getTitle() {
-		if (this.equals(SPEED_I)) {
-			return "§bSpeed I Mutation";
+		switch(this) {
+		case SPEED_I: return "§bSpeed I Mutation";
+		case SPEED_II:return "§bSpeed II Mutation";
+		case SPEED_V: return"§bSpeed V Mutation";
+		case SPEED_X: return "§bSpeed X Mutation";
+		case INVISIBILITY: return "§8Invisibility Mutation";
+		case JUMP_I: return "§aJump I Mutation";
+		case JUMP_II: return "§aJump II Mutation";
+		case JUMP_V: return "§aJump V Mutation";
+		case JUMP_X: return "§aJump X Mutation";
+		case SLOWNESS_I: return "§aJump I Mutation";
+		case SLOWNESS_II: return "§aJump I Mutation";
+		case SLOWNESS_V: return "§aJump I Mutation";
+		case SLOWNESS_X: return "§8Slowness X Mutation";
+		case BLINDNESS: return "§8Blindness Mutation";
+		case LEVITATION_I: return "§eLevitation I Mutation";
+		case LEVITATION_II: return "§eLevitation II Mutation";
+		case LEVITATION_V: return "§eLevitation V Mutation";
+		case LEVITATION_X: return "§eLevitation X Mutation";
+		case TNT_SPLEEF: return "§cTNT Spleef Mutation";
+		case GLOWING: return"§eGlowing Mutation";
+		case NAUSEA: return "§8Nausea Mutation";
+		case SPLEFF: return "§fSpleff Mutation";
+		case SNOW_RUN: return "§eSnow Run Mutation";
+		case FISHING_ROD: return "§fFishing Rod Mutation";
+		case ENDER_SPLEEF: return "§3Ender Spleef Mutation";
+		case BOW_SPLEEF: return "§6Bow Spleef Mutation";
+		case EXPERIENCE_SPLEEF: return "§eExperience Spleef Mutation";
+		case POT_SPLEEF: return "§dPot Spleef Mutation";
+		case MINI_SPLEEF:return "§7Mini Spleef Mutation";
+		case CRUMBLE_SPLEEF: return "§7Crumble Mutation";
+		case KOHI_SPLEEF: return "§aKohi Spleef Mutation";
+		case JUMP_SPLEEF:return "§9Jump Spleef Mutation";
+		case CREEPY_SPLEEF:return "§0Creepy Spleef Mutation";	
+		default: return null;
 		}
-		return null;
+		
 	}
 	
 	public Material getMaterial() {

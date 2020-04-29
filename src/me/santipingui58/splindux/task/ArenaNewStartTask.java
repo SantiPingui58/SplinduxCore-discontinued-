@@ -4,9 +4,9 @@ import org.bukkit.Bukkit;
 
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameState;
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 public class ArenaNewStartTask {
 

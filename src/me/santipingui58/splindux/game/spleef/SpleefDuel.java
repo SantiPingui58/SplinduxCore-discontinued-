@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import me.santipingui58.splindux.game.SpleefPlayer;
-
 public class SpleefDuel {
 
 	private String arena;

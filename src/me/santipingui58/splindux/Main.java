@@ -39,7 +39,7 @@ import me.santipingui58.splindux.commands.StaffChatCommand;
 import me.santipingui58.splindux.commands.StatsCommand;
 import me.santipingui58.splindux.commands.TranslateCommand;
 import me.santipingui58.splindux.economy.EconomyManager;
-import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.listener.CustomPacketListener;
 import me.santipingui58.splindux.listener.NPCListener;
 import me.santipingui58.splindux.listener.PlayerChat;

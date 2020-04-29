@@ -27,7 +27,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.santipingui58.splindux.DataManager;
-import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent.ChatSerializer;
 import net.minecraft.server.v1_12_R1.PacketPlayOutTitle;
@@ -252,6 +252,22 @@ public class Utils {
 		    return locations;
 		}
 		
+		
+		  
+		public void cylinder(Location loc, Material mat, int r) {
+		    int cx = loc.getBlockX();
+		    int cy = loc.getBlockY();
+		    int cz = loc.getBlockZ();
+		    World w = loc.getWorld();
+		    int rSquared = r * r;
+		    for (int x = cx - r; x <= cx +r; x++) {
+		        for (int z = cz - r; z <= cz +r; z++) {
+		            if ((cx - x) * (cx - x) + (cz - z) * (cz - z) <= rSquared) {
+		                w.getBlockAt(x, cy, z).setType(mat);
+		            }
+		        }
+		    }
+		}
 		
 		
 		public Location lookAt(Location loc, Location lookat) {

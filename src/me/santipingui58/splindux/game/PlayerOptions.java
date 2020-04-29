@@ -1,6 +1,7 @@
 package me.santipingui58.splindux.game;
 
 import me.santipingui58.splindux.DataManager;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.translate.Language;
 
 public class PlayerOptions {

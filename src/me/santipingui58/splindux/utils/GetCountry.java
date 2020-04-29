@@ -11,7 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.google.gson.Gson;
 
-import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 
 public class GetCountry {

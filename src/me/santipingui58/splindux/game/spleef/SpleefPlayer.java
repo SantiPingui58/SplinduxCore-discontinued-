@@ -1,4 +1,4 @@
-package me.santipingui58.splindux.game;
+package me.santipingui58.splindux.game.spleef;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,14 +12,14 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.game.GameEndReason;
+import me.santipingui58.splindux.game.GameManager;
+import me.santipingui58.splindux.game.PlayerOptions;
 import me.santipingui58.splindux.game.mutation.GameMutation;
-import me.santipingui58.splindux.game.spleef.GameType;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefDuel;
-import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.utils.GetCountry;
 import me.santipingui58.splindux.utils.Utils;
@@ -87,6 +87,7 @@ public class SpleefPlayer {
 		options = new PlayerOptions();
 		
 	}
+	
 	
 	
 	public PlayerOptions getOptions() {
@@ -728,6 +729,9 @@ public class SpleefPlayer {
 	
 	
 	public void giveGameItems() {
+		for(PotionEffect effect : getPlayer().getActivePotionEffects())	{
+		    getPlayer().removePotionEffect(effect.getType());
+		}
 		getPlayer().getInventory().clear();
 		SpleefArena arena = getArena();
 		if (arena.getSpleefType().equals(SpleefType.SPLEEF)) {
@@ -776,7 +780,9 @@ public class SpleefPlayer {
 	}
 	
 	public void giveLobbyItems() {
-		
+		for(PotionEffect effect : getPlayer().getActivePotionEffects())	{
+		    getPlayer().removePotionEffect(effect.getType());
+		}
 		getPlayer().setGameMode(GameMode.ADVENTURE);
 		getPlayer().getInventory().clear();
 		getPlayer().getInventory().setItem(4, DataManager.getManager().lobbyitems()[0]);	
@@ -784,6 +790,9 @@ public class SpleefPlayer {
 	}
 	
 	public void giveQueueItems() {
+		for(PotionEffect effect : getPlayer().getActivePotionEffects())	{
+		    getPlayer().removePotionEffect(effect.getType());
+		}
 		getPlayer().setGameMode(GameMode.ADVENTURE);
 		getPlayer().getInventory().clear();
 		getPlayer().getInventory().setItem(7, DataManager.getManager().queueitems()[0]);	

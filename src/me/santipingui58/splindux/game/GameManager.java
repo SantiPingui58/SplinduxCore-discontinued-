@@ -22,6 +22,7 @@ import me.santipingui58.splindux.game.death.DeathReason;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.Request;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.stats.level.LevelManager;
@@ -224,6 +225,7 @@ public class GameManager {
 				s = 15;
 			}		
 			arena.setState(GameState.FINISHING);
+			arena.updateMutations();
 			arena.resetTimer();
 			arena.getBrokenBlocks().clear();
 			if (reason.equals(GameEndReason.WINNER)) {

@@ -3,6 +3,7 @@ package me.santipingui58.splindux.game.spleef;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
@@ -19,7 +20,6 @@ import me.santipingui58.splindux.game.FFAEvent;
 import me.santipingui58.splindux.game.GameEndReason;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.death.BrokenBlock;
 import me.santipingui58.splindux.game.mutation.GameMutation;
 import me.santipingui58.splindux.game.mutation.MutationState;
@@ -139,7 +139,34 @@ public class SpleefArena {
 		return this.teamsize;
 	}
 	
+	public void playMutations() {
+		arenaMutations();
+		for (GameMutation mutation : getInGameMutations()) {
+			for (SpleefPlayer sp : getFFAPlayers()) {
+			mutation.giveMutationItems(sp);
+		
+			}
+		}
+		
 	
+	}
+	
+	public void arenaMutations() {
+		for (GameMutation mutation : getInGameMutations()) {
+			
+		}
+	}
+	
+	public void updateMutations() {
+		List<GameMutation> toRemove = new ArrayList<GameMutation>();
+		for (GameMutation mutation : this.mutations) {
+			if (mutation.getState().equals(MutationState.INGAME)) {
+				toRemove.add(mutation);
+			} else if (mutation.getState().equals(MutationState.QUEUE)) {
+				mutation.setState(MutationState.INGAME);
+			}
+		}
+	}
 	public List<GameMutation> getInGameMutations() {
 		List<GameMutation> list = new ArrayList<GameMutation>();
 		for (GameMutation mutation : this.mutations) {
@@ -174,6 +201,15 @@ public class SpleefArena {
 		
 		return list;
 		
+	}
+	
+	public GameMutation getMutationBy(UUID uuid) {
+		for (GameMutation mutation : this.mutations) {
+			if (mutation.getUUID().compareTo(uuid)==0) {
+				return mutation;
+			}
+		}
+		return null;
 	}
 	
 	public List<GameMutation> getAllMutations() {
@@ -696,7 +732,10 @@ public class SpleefArena {
 			setState(GameState.STARTING);		
 			resetTimer();	
 			if (getGameType().equals(GameType.FFA)) {
+				
 				reset(false,true);
+				
+				
 			Location center = new Location(getMainSpawn().getWorld(),getMainSpawn().getX(),getMainSpawn().getY()+1,getMainSpawn().getZ());
 			Location center_player = new Location(center.getWorld(),center.getX(),center.getY()+1,center.getZ());		
 			List<Location> locations = Utils.getUtils().getCircle(center,16, getQueue().size());
@@ -713,6 +752,8 @@ public class SpleefArena {
 				getFFAPlayers().add(sp);
 				i++;
 			}
+			
+			playMutations();
 			} else if (getGameType().equals(GameType.DUEL)) {
 				
 				int i = 0;
@@ -751,7 +792,7 @@ public class SpleefArena {
 					if (!players.contains(p)) {
 					TextComponent message = new TextComponent("§aA game between §b" + getTeamName(1) + " §aand §b" + getTeamName(2) + " §ahas started! §7(Right click to spectate)");
 					message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/spectate "+getDuelPlayers1().get(0).getOfflinePlayer().getName()));
-					message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Spectate §a" +getTeamName(1) + " §7-§a " + getTeamName(1)).create()));
+					message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Spectate §a" +getTeamName(1) + " §7-§a " + getTeamName(2)).create()));
 						p.spigot().sendMessage(message);
 					}}}
 			

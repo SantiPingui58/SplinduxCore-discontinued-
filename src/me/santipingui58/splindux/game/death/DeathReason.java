@@ -1,7 +1,7 @@
 package me.santipingui58.splindux.game.death;
 
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 public enum DeathReason {
 THEMSELF,SPLEEFED,SNOWBALLED, PK_FAILED, PLAYING_FAILED;

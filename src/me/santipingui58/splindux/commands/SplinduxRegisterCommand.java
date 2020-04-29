@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.security.SecurityManager;
 
 public class SplinduxRegisterCommand implements CommandExecutor {

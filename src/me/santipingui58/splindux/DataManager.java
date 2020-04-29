@@ -23,15 +23,16 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.replay.BrokenBlock;
 import me.santipingui58.splindux.replay.GameReplay;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import me.santipingui58.splindux.stats.RankingType;
 import me.santipingui58.splindux.stats.StatsManager;
+import me.santipingui58.splindux.stats.level.LevelManager;
 import me.santipingui58.splindux.utils.ItemBuilder;
 import me.santipingui58.splindux.utils.Utils;
 import me.santipingui58.translate.Language;
@@ -389,7 +390,8 @@ public class  DataManager {
     }
      
     
-    public void resetMonthlyStats() {
+    @SuppressWarnings("deprecation")
+	public void resetMonthlyStats() {
     	HologramManager.getManager().updateHolograms();
     	for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
     		Main.data.getConfig().set("players."+s+".stats.monthly.FFA_kills", 0);
@@ -407,6 +409,49 @@ public class  DataManager {
     	}
     	
     	
+    	HashMap<String, Integer> hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_WINS_MONTHLY);
+    	HashMap<String,Integer> topPositions = new HashMap<String,Integer>();
+   	 Iterator<Entry<String, Integer>> it = hashmap.entrySet().iterator();
+   	 int i = 1;
+   	    while (it.hasNext()) {
+   	        Map.Entry<String,Integer> pair = (Map.Entry<String,Integer>)it.next();
+   	        while(i<=10) {
+   	        String s = pair.getKey();
+   	       topPositions.put(s, i);
+   	       i++;
+   	        } 
+   	    }
+   	
+   	
+   	for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
+   		Main.data.getConfig().set("players."+s+".stats.weekly.FFA_kills", 0);
+   		Main.data.getConfig().set("players."+s+".stats.weekly.FFA_games", 0);
+   		Main.data.getConfig().set("players."+s+".stats.weekly.FFA_wins", 0);
+   		String name = Bukkit.getOfflinePlayer(s).getName();
+   		if (topPositions.containsKey(name)) {
+   			int stars = 0;
+   			if (topPositions.get(name)==1) stars = 5;
+   			else if (topPositions.get(name)<=4) stars = 4;
+   			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gmysteryboxes give " + name+ " 3 "  + stars);
+   			
+   			OfflinePlayer p = Bukkit.getOfflinePlayer(name);
+   			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+   			
+   			switch(topPositions.get(name)) {
+   			case 1:LevelManager.getManager().addLevel(sp, 750);
+   			case 2:LevelManager.getManager().addLevel(sp, 625);
+   			case 3:LevelManager.getManager().addLevel(sp, 560);
+   			case 4:LevelManager.getManager().addLevel(sp, 500);
+   			case 5:LevelManager.getManager().addLevel(sp, 430);
+   			case 6:LevelManager.getManager().addLevel(sp, 375);
+   			case 7:LevelManager.getManager().addLevel(sp, 310);
+   			case 8:LevelManager.getManager().addLevel(sp, 250);
+   			case 9:LevelManager.getManager().addLevel(sp, 180);
+   			case 10:LevelManager.getManager().addLevel(sp, 125);
+   			}
+		
+   		}
+   	}
     }
 
     public void resetDailyWinsLimit() {
@@ -421,7 +466,7 @@ public class  DataManager {
 	public void resetWeeklyStats() {
     	HologramManager.getManager().updateHolograms();
     	
-    	HashMap<String, Integer> hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEF1VS1_WINS_WEEKLY);
+    	HashMap<String, Integer> hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_WINS_WEEKLY);
     	
     	HashMap<String,Integer> topPositions = new HashMap<String,Integer>();
     	 Iterator<Entry<String, Integer>> it = hashmap.entrySet().iterator();
@@ -446,6 +491,23 @@ public class  DataManager {
     			if (topPositions.get(name)==1) stars = 5;
     			else if (topPositions.get(name)<=4) stars = 4;
     			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gmysteryboxes give " + name+ " 1 "  + stars);
+    			
+    			OfflinePlayer p = Bukkit.getOfflinePlayer(name);
+    			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+    			
+    			switch(topPositions.get(name)) {
+    			case 1:LevelManager.getManager().addLevel(sp, 250);
+    			case 2:LevelManager.getManager().addLevel(sp, 230);
+    			case 3:LevelManager.getManager().addLevel(sp, 190);
+    			case 4:LevelManager.getManager().addLevel(sp, 170);
+    			case 5:LevelManager.getManager().addLevel(sp, 150);
+    			case 6:LevelManager.getManager().addLevel(sp, 130);
+    			case 7:LevelManager.getManager().addLevel(sp, 110);
+    			case 8:LevelManager.getManager().addLevel(sp, 90);
+    			case 9:LevelManager.getManager().addLevel(sp, 70);
+    			case 10:LevelManager.getManager().addLevel(sp, 50);
+    			}
+		
     		}
     		 
     	}

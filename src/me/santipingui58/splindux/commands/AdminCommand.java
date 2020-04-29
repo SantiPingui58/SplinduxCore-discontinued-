@@ -12,7 +12,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.npc.NPCManager;
 
 

@@ -12,7 +12,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.stats.level.LevelManager;
 import me.santipingui58.translate.Language;
 import me.santipingui58.translate.TranslateAPI;

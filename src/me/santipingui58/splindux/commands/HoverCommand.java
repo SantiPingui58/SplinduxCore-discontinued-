@@ -13,10 +13,12 @@ import org.bukkit.entity.Player;
 
 import me.jumper251.replay.api.ReplayAPI;
 import me.santipingui58.splindux.game.GameManager;
-import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.mutation.GameMutation;
+import me.santipingui58.splindux.game.mutation.MutationState;
 import me.santipingui58.splindux.game.spleef.Request;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefDuel;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.replay.GameReplay;
 import me.santipingui58.splindux.replay.ReplayManager;
 import me.santipingui58.splindux.utils.Utils;
@@ -350,7 +352,19 @@ public class HoverCommand implements CommandExecutor {
 								} else {
 									p.sendMessage("§cThis crumble request has expired.");
 								}
-									} 
+									} else if (args[0].equalsIgnoreCase("mutationaccept")) {
+										if (sp.isInGame() || sp.isInQueue()) {
+											UUID uuid = UUID.fromString(args[1]);
+											GameMutation mutation = sp.getArena().getMutationBy(uuid);
+											if (mutation!=null && mutation.getState().equals(MutationState.VOTING)) {
+												mutation.voteMutation(sp);
+											} else {
+												p.sendMessage("§cThis mutation voting has finished or you are not in a game.");
+											}
+									} else {
+										p.sendMessage("§cYou need to be in a FFA game to execute this command.");	
+									}
+										}
 			} 
 			
 

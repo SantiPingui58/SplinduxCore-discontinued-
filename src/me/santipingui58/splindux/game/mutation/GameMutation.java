@@ -13,8 +13,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.DataManager;
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.translate.Main;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -29,12 +29,14 @@ public class GameMutation {
 	private SpleefPlayer owner;
 	private SpleefArena arena;
 	private MutationState state;
+	private int votes;
 	public GameMutation(SpleefPlayer owner,MutationType type,SpleefArena arena) {
 		this.type=type;
 		this.owner=owner;
 		this.arena = arena;
 		this.state= MutationState.VOTING;
 		this.uuid = UUID.randomUUID();
+		this.arena.getAllMutations().add(this);
 	}
 	
 	public UUID getUUID() {
@@ -45,6 +47,9 @@ public class GameMutation {
 		return this.state;
 	}
 	
+	public void setState(MutationState state) {
+		this.state = state;
+	}
 	public SpleefArena getArena() {
 		return this.arena;
 	}
@@ -58,13 +63,41 @@ public class GameMutation {
 	}
 	
 	
+	public void voteMutation(SpleefPlayer sp) {
+		Player p = sp.getPlayer();
+		int value = 0;
+		if (p.hasPermission("splindux.extreme")) {
+			value = 3;
+		} else if (p.hasPermission("splindux.epic")) {
+			value = 2;
+		} else {
+			value = 1;
+		}
+		
+		votes = votes+value;
+		
+		for (SpleefPlayer viewers : this.arena.getViewers()) viewers.getPlayer().sendMessage("§b" + p.getName()+" §ahas added §6"+value+ " §a vote(s) to add §b" +this.type.getTitle() 
+		+ "§a! §e("+this.votes+"/"+this.type.getRequiredVotes()+")");
+				
+		if (votes>=this.type.getRequiredVotes()) {
+			for (SpleefPlayer viewers : this.arena.getViewers()) viewers.getPlayer().sendMessage("§b"+ this.type.getTitle()+ " §5added to the next round!");
+			this.state=MutationState.QUEUE;
+		} else {
+			for (SpleefPlayer viewers : this.arena.getViewers()) {
+			if(!sp.equals(this.owner)) {
+				viewers.getPlayer().spigot().sendMessage(getInvitation());
+			}
+		}
+		}
+	}
+	
 	public void sendMutationRequest() {
 
 		for (SpleefPlayer sp : this.arena.getViewers()) {
 			sp.getPlayer().sendMessage("§b"+this.owner.getPlayer().getName()+" §ahas activated a Mutation Token for §b" + this.type.getTitle() + "§a! You need §e" 
 					+ this.type.getRequiredVotes() + " §avotes to activate this Mutation for the next game! §7(Mutation request will end in 1 minute)");			
 			if(!sp.equals(this.owner)) {
-				sp.getPlayer().spigot().sendMessage(getInvitation(this.owner));
+				sp.getPlayer().spigot().sendMessage(getInvitation());
 			}
 		}		
 		GameMutation g = this;
@@ -78,7 +111,7 @@ public class GameMutation {
 	}
 	
 	
-	private BaseComponent[] getInvitation(SpleefPlayer dueler) {
+	private BaseComponent[] getInvitation() {
 		TextComponent msg1 = new TextComponent("[Vote]");
 		msg1.setColor(net.md_5.bungee.api.ChatColor.YELLOW );
 		msg1.setBold(true);

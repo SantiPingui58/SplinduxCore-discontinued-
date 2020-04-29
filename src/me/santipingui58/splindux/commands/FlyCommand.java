@@ -5,7 +5,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import me.santipingui58.splindux.game.SpleefPlayer;
+
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 public class FlyCommand implements CommandExecutor {
 	

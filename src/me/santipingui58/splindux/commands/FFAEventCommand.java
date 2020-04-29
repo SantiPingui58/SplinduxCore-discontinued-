@@ -6,9 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.FFAEvent;
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 
 
@@ -30,18 +30,22 @@ public class FFAEventCommand implements CommandExecutor{
 					
 					
 				} else if (args[0].equalsIgnoreCase("start")) {
+					if (args.length==3) {
 					if (p.hasPermission("splindux.admin")) {
 						if (sp.isInArena()) {
 							SpleefArena arena = sp.getArena();
 							if (arena.getGameType().equals(GameType.FFA)) {
-								FFAEvent event = new FFAEvent(Integer.valueOf(args[1]),true);
+								FFAEvent event = new FFAEvent(Integer.valueOf(args[1]),Boolean.getBoolean(args[2]));
 								arena.setEvent(event);
 								event.sendBroadcast();
+							} else {
+								p.sendMessage("§cYou need to be in a FFA game to execute this command.");	
 							}
 						} else {
-							
+							p.sendMessage("§cYou need to be in a FFA game to execute this command.");	
 						}
 					}
+				}
 				}
 
 	

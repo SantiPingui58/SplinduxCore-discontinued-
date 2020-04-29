@@ -15,7 +15,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.scoreboard.hologram.Hologram;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 

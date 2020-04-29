@@ -6,15 +6,19 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.death.DeathReason;
+import me.santipingui58.splindux.game.mutation.GameMutation;
+import me.santipingui58.splindux.game.mutation.MutationType;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.utils.Utils;
 
 
@@ -66,10 +70,11 @@ public class OnMoveTask {
 		    		
 		    		
 		    		
-		    		//To prevent dead players to go away from alive players, if they are 30 blocks away from any player alive, they get teleported to the closest one.
-		    		//Can get glitched if  alive players are more than 30 blocks away from each other.
+		    		
 		    		if (sp.isInGame()) {
 		    			SpleefArena arena = sp.getArena();
+		    			//To prevent dead players to go away from alive players, if they are 30 blocks away from any player alive, they get teleported to the closest one.
+			    		//Can get glitched if  alive players are more than 30 blocks away from each other.
 		    			if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) {
 		    				List<SpleefPlayer> alive = new ArrayList<SpleefPlayer>();
 		    				for (SpleefPlayer players : arena.getPlayers()) {
@@ -84,6 +89,16 @@ public class OnMoveTask {
 		    						break;
 		    					}
 		    				}
+		    			}
+		    			
+		    			
+		    			//Snow Run Mutation
+		    			if (arena.getState().equals(GameState.GAME)) {
+		    			for (GameMutation mutation : arena.getInGameMutations()) {
+		    				if (mutation.getType().equals(MutationType.SNOW_RUN)) {
+		    					sp.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).setType(Material.AIR);		    					 
+		    				}
+		    			}
 		    			}
 		    		}
 		    		

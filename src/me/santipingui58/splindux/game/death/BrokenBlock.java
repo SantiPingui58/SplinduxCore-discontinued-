@@ -3,7 +3,7 @@ package me.santipingui58.splindux.game.death;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.translate.Main;
 
 public class BrokenBlock {

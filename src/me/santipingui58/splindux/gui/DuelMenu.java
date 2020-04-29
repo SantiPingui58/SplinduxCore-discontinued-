@@ -20,10 +20,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameManager;
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefDuel;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.utils.ItemBuilder;
 import me.santipingui58.splindux.utils.Utils;
@@ -252,8 +252,13 @@ public class DuelMenu extends MenuBuilder {
 		if (sp2.contains(sp)) sp2.remove(sp);
 		
 		if (sp2.size()==1) {
-			sp.getPlayer().sendMessage("§aYou have sent a duel request to §b" + sp2.get(0).getOfflinePlayer().getName()+ "§a for " + type.toString() + " in map " + duel.getArena()+"!");
-		sp2.get(0).getPlayer().sendMessage("§aThe Player §b" + sp.getPlayer().getName() + " §ahas sent you a duel request for "+ type.toString() + " in map " + duel.getArena()+ "! §7(This request expires in 1 minute.)");
+			String map = "Random map";
+			if (duel.getArena()==null) {
+				map = duel.getArena();
+			}
+			
+			sp.getPlayer().sendMessage("§aYou have sent a duel request to §b" + sp2.get(0).getOfflinePlayer().getName()+ "§a for " + type.toString() + " in map " + map+"!");
+		sp2.get(0).getPlayer().sendMessage("§aThe Player §b" + sp.getPlayer().getName() + " §ahas sent you a duel request for "+ type.toString() + " in map " + map+ "! §7(This request expires in 1 minute.)");
 		sp2.get(0).getPlayer().spigot().sendMessage(getInvitation(sp));	
 	
 		} else {

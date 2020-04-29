@@ -13,8 +13,8 @@ import com.nametagedit.plugin.NametagEdit;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.GameState;
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.stats.level.LevelManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;

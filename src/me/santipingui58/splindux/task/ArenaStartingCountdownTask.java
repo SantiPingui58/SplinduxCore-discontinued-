@@ -5,8 +5,8 @@ import org.bukkit.Bukkit;
 
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameState;
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import net.md_5.bungee.api.ChatColor;
 
 public class ArenaStartingCountdownTask {

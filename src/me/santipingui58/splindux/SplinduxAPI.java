@@ -3,9 +3,9 @@ package me.santipingui58.splindux;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.utils.Utils;
 
 public class SplinduxAPI {

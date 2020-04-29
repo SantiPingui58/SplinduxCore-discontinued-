@@ -11,10 +11,10 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.GameState;
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.death.BreakReason;
 import me.santipingui58.splindux.game.death.BrokenBlock;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 public class PlayerListener implements Listener {
 
@@ -57,12 +57,13 @@ public class PlayerListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlace(BlockPlaceEvent e) {
+		  if (e.getBlock().getLocation().getWorld().getName().equalsIgnoreCase("arenas") && (e.getBlock().getType().equals(Material.TNT))) return;
 		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(e.getPlayer());	
 		  if (sp.needsAdminLoginQuestionmark() && !sp.isLogged()) {
  			 e.setCancelled(true);
 				 return;	 
 		 }
-		  
+
 		if (!e.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
 			e.setCancelled(true);
 		} else {

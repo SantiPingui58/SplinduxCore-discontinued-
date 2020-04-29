@@ -7,9 +7,9 @@ import org.bukkit.event.Listener;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.GameManager;
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.npc.NPCManager;
 import me.santipingui58.splindux.npc.NPCType;
 import me.santipingui58.splindux.npc.SplinduxNPC;
@@ -44,7 +44,11 @@ public class NPCListener implements Listener {
 				} else if (splinduxnpc.getType().equals(NPCType.VOTES)) {
 					
 				} else {
+					if (!sp.isInQueue()) {
 					GameManager.getManager().addDuelQueue(sp, splinduxnpc.getType().getAmount(), null, splinduxnpc.getType().getSpleefType());
+				} else {
+					p.sendMessage("§cYou are already in a queue.");
+				}
 				}
 	}
 	}

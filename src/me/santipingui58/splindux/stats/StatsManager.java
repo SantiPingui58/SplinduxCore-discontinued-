@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 
 
 import me.santipingui58.splindux.DataManager;
-import me.santipingui58.splindux.game.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.scoreboard.hologram.SpleefRankingPeriod;
 
 public class StatsManager {

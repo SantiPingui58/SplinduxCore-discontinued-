@@ -2,15 +2,14 @@ package me.santipingui58.splindux.gui;
 
 import java.util.HashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.santipingui58.splindux.game.SpleefPlayer;
 import me.santipingui58.splindux.game.mutation.GameMutation;
 import me.santipingui58.splindux.game.mutation.MutationType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.utils.Utils;
 
 
@@ -39,16 +38,13 @@ public class MutationTokenMenu extends MenuBuilder {
 
 	@Override
 	public void onClick(SpleefPlayer sp, ItemStack stack, int slot) {
-		Bukkit.broadcastMessage("a");
 		if (sp.isInArena()) {
-			Bukkit.broadcastMessage("b");
 			SpleefArena arena = sp.getArena();
 			for (MutationType type : MutationType.values()) {
-				Bukkit.broadcastMessage("c");
 				if (slot==type.getSlot()) {					
-					Bukkit.broadcastMessage("d");
 					GameMutation mutation = new GameMutation(sp,type, arena);
 					mutation.sendMutationRequest();
+					sp.getPlayer().closeInventory();
 					break;
 				}
 			}
