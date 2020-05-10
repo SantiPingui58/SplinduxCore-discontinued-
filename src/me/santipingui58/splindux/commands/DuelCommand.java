@@ -62,6 +62,24 @@ public class DuelCommand implements CommandExecutor{
 			return false;
 		}
 		
+		
+		if (list.size()+1>=6 && !p.hasPermission("splindux.vip")) {
+			p.sendMessage("§cYou do not have permission to duel players for a 3V3, you can use the NPCs at lobby instead.");
+            p.sendMessage("§aYou need a §a§l[VIP] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.net/");	
+			return false;	
+		}
+		if (list.size()+1>=8 && !p.hasPermission("splindux.epic")) {
+			p.sendMessage("§cYou do not have permission to duel players for a 4V4, you can use the NPCs at lobby instead.");
+            p.sendMessage("§aYou need a §1§l[Epic] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.net/");	
+			return false;
+			
+		}
+		if (list.size()+1>=10 && !p.hasPermission("splindux.extreme")) {
+            p.sendMessage("§aYou need a §5§l[Extreme] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.net/");	
+			return false;
+			
+		}
+		
 		List<String> players = new ArrayList<String>();
 		
 

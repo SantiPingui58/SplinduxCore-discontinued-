@@ -77,7 +77,7 @@ public class GameManager {
 				arena.getQueue().add(challenger);
 				arena.getQueue().addAll(sp2);
 				arena.setTeamSize(teamSize);
-			arena.startGame();			
+			arena.startGame(false);			
 			} else {
 				challenger.getPlayer().sendMessage("§cCouldn't find a map to play! Duel cancelled.");
 				for (SpleefPlayer sp_2 : sp2)sp_2.getPlayer().sendMessage("§cCouldn't find a map to play! Duel cancelled.");
@@ -191,30 +191,7 @@ public class GameManager {
 		}
 		
 	
-		public void addDuelQueue(SpleefPlayer sp, int teamSize,String map,SpleefType type) {
-			SpleefArena arena = null;
-			for (SpleefArena a : DataManager.getManager().getArenas()) {
-				if (a.getState().equals(GameState.LOBBY) && a.getTeamSize()==teamSize) {
-					if (a.getQueue().size()+1>=teamSize*2) {
-						arena = a;
-						break;
-					}
-				}
-			}		
-			if (arena!=null) {
-				arena.addDuelQueue(sp,teamSize);
-				arena.startGame();
-			} else {
-				arena = findArena(map, type);
-				
-				if (arena!=null) {
-					arena.addDuelQueue(sp,teamSize);
-					
-				} else {
-					sp.getPlayer().sendMessage("§cCouldn't find any map to play! Try again later.");
-				}
-			}
-		}
+
 		
 		
 		
@@ -225,7 +202,6 @@ public class GameManager {
 				s = 15;
 			}		
 			arena.setState(GameState.FINISHING);
-			arena.updateMutations();
 			arena.resetTimer();
 			arena.getBrokenBlocks().clear();
 			if (reason.equals(GameEndReason.WINNER)) {
@@ -321,6 +297,7 @@ public class GameManager {
 				
 				for (SpleefPlayer p : arena.getFFAPlayers()) {
 					p.getPlayer().teleport(arena.getLobby());
+					p.setScoreboard(ScoreboardType.FFAGAME_LOBBY);
 					p.giveLobbyItems();
 				}
 			
@@ -403,7 +380,9 @@ public class GameManager {
 				if (arena.getGameType().equals(GameType.DUEL)) {
 			if (arena.getSpleefType().equals(spleeftype) && arena.getGameType().equals(gametype) && arena.getTeamSize()==player_size) {
 				i = i+arena.getQueue().size();
+				
 			}
+			
 		}	
 		}
 			return i;
@@ -414,6 +393,7 @@ public class GameManager {
 			arena.reset(false, true);
 			arena.resetResetRound();
 			arena.resetTotalTime();
+			arena.setState(GameState.FINISHING);
 			arena.getResetRequest().clear();
 			arena.setShrinkedDuelArena1(arena.getArena1());
 			arena.setShrinkedDuelArena2(arena.getArena2());
@@ -454,7 +434,7 @@ public class GameManager {
 				for (SpleefPlayer winner : winners) LevelManager.getManager().addLevel(winner, 3);
 				for (SpleefPlayer winner : winners)EconomyManager.getManager().addCoins(winner, 20, true);
 				if (arena.getDuelPlayers1().size()==1 && arena.getDuelPlayers2().size()==1) for (SpleefPlayer winner : winners) winner.add1vs1Wins();
-			arena.setState(GameState.FINISHING);
+			
 			
 			String p1 = arena.getTeamName(1);
 			String p2 = arena.getTeamName(2);
@@ -712,6 +692,34 @@ public class GameManager {
 			 }
 			 return block;
 		 }
+
+
+		 public void addDuelQueue(SpleefPlayer sp, int teamSize,String map,SpleefType type) {
+				SpleefArena arena = null;
+				for (SpleefArena a : DataManager.getManager().getArenas()) {
+					if (a.getState().equals(GameState.LOBBY) && a.getTeamSize()==teamSize && a.getQueue().size()>0) {			
+						arena = a;
+						break;
+						
+					}
+				}		
+				if (arena!=null) {
+					arena.addDuelQueue(sp,teamSize);
+					if (arena.getQueue().size()>=teamSize*2) {
+						arena.startGame(true);
+					} 
+				} else {
+					arena = findArena(map, type);
+					
+					if (arena!=null) {
+						arena.addDuelQueue(sp,teamSize);
+						
+					} else {
+						sp.getPlayer().sendMessage("§cCouldn't find any map to play! Try again later.");
+					}
+				}
+			}
+			
 }
 
 

@@ -55,10 +55,11 @@ public class GetCountry {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-	    	
+	    	try {
 			JSONObject json = new Gson().fromJson(jsonS, JSONObject.class);
 			 sp.setCountry(json.get("countryCode").toString());
-
+	    	} catch (Exception e) {
+			}
 	        
 	        try {
 				in.close();

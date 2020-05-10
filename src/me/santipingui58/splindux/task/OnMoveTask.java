@@ -135,6 +135,7 @@ public class OnMoveTask {
 		    		
 		    		//Check if the player in FFA is AFK, currently not being developed.
 		    		if (sp.isInGame() || sp.isInQueue()) {
+		    			if (sp.getArena()!=null) {
 		    			SpleefArena arena = sp.getArena();
 		    			if (arena.getGameType().equals(GameType.FFA)) {
 		    			if (sp.getLocation().getYaw()==sp.getPlayer().getLocation().getYaw() && sp.getLocation().getPitch()==sp.getPlayer().getLocation().getPitch()) {
@@ -146,6 +147,7 @@ public class OnMoveTask {
 			    		} else {
 			    			sp.setGameAFKTimer(0);
 			    		}
+		    		}
 		    		}
 		    		}
 		    		sp.setLocation(sp.getPlayer().getLocation());

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,6 +24,8 @@ import me.santipingui58.splindux.game.mutation.GameMutation;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.utils.GetCountry;
 import me.santipingui58.splindux.utils.Utils;
+import net.archangel99.dailyrewards.DailyRewards;
+import net.archangel99.dailyrewards.manager.objects.DUser;
 
 public class SpleefPlayer {
 
@@ -51,7 +54,6 @@ public class SpleefPlayer {
 	
 	private Date lastlogin;
 	private Date registerdate;
-	private int coins;
 	private ScoreboardType scoreboard;
 	private boolean isafk;
 	private int afktimer;
@@ -88,7 +90,7 @@ public class SpleefPlayer {
 		
 	}
 	
-	
+
 	
 	public PlayerOptions getOptions() {
 		return this.options;
@@ -197,6 +199,9 @@ public class SpleefPlayer {
 		 return false;
 	 }
 	 
+	 
+
+ 	 
 	 public SpleefArena getArena() {
 		 for (SpleefArena arena : DataManager.getManager().getArenas()) {
 			 if (arena.getPlayers().contains(this) || arena.getQueue().contains(this)) {
@@ -211,6 +216,7 @@ public class SpleefPlayer {
 		leaveSpectate(teleport);
 		leaveQueue(getArena(),teleport);    	
 	 }
+	 
 	 
 		public void leaveQueue(SpleefArena arena,boolean teleport) {
 			giveLobbyItems();
@@ -718,15 +724,23 @@ public class SpleefPlayer {
 	}
 	
 
+	public boolean hasUnclaimedRewards() {
+		DUser duser = DailyRewards.getInstance().getUserManager().getOrLoadUser(getPlayer());
+		return duser.hasActiveReward();
+	}
 	
 	public int getCoins() {
-		return this.coins;
+		return	(int) Main.econ.getBalance(Bukkit.getOfflinePlayer(uuid));
 	}
 	
-	public void setCoins(int i) {
-		this.coins = i;
+	public void addCoins(int i) {
+		 Main.econ.depositPlayer(Bukkit.getOfflinePlayer(uuid), i);
 	}
 	
+	
+	public void removeCoins(int i) {
+		 Main.econ.withdrawPlayer(Bukkit.getOfflinePlayer(uuid), i);
+	}
 	
 	public void giveGameItems() {
 		for(PotionEffect effect : getPlayer().getActivePotionEffects())	{
@@ -779,20 +793,24 @@ public class SpleefPlayer {
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void giveLobbyItems() {
 		for(PotionEffect effect : getPlayer().getActivePotionEffects())	{
 		    getPlayer().removePotionEffect(effect.getType());
 		}
+		getPlayer().playEffect(getPlayer().getLocation(), Effect.RECORD_PLAY, 0);
 		getPlayer().setGameMode(GameMode.ADVENTURE);
 		getPlayer().getInventory().clear();
 		getPlayer().getInventory().setItem(4, DataManager.getManager().lobbyitems()[0]);	
 		getPlayer().getInventory().setItem(5, DataManager.getManager().lobbyitems()[1]);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void giveQueueItems() {
 		for(PotionEffect effect : getPlayer().getActivePotionEffects())	{
 		    getPlayer().removePotionEffect(effect.getType());
 		}
+		getPlayer().playEffect(getPlayer().getLocation(), Effect.RECORD_PLAY, 0);
 		getPlayer().setGameMode(GameMode.ADVENTURE);
 		getPlayer().getInventory().clear();
 		getPlayer().getInventory().setItem(7, DataManager.getManager().queueitems()[0]);	

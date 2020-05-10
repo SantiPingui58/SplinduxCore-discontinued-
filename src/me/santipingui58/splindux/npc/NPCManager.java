@@ -19,6 +19,8 @@ public class NPCManager {
 		 return this.npcs;
 	 }
 	 
+
+
 	 
 	 public SplinduxNPC getSplinduxNPCBy(int id) {
 		 for (SplinduxNPC npc : this.npcs) {

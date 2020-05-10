@@ -3,7 +3,6 @@ package me.santipingui58.splindux.listener;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -11,15 +10,19 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -42,6 +45,8 @@ import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.death.BreakReason;
 import me.santipingui58.splindux.game.death.BrokenBlock;
+import me.santipingui58.splindux.game.mutation.GameMutation;
+import me.santipingui58.splindux.game.mutation.MutationType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
@@ -79,34 +84,60 @@ public class ServerListener implements Listener {
 	
 	@EventHandler 
 	public void onDeath(EntityDamageByEntityEvent e) {
-		if (Main.pvp) {
+		if (e.getDamager().getType().equals(EntityType.SNOWBALL)) {
+			e.setDamage(0.2);
+		}
 		Entity entity = e.getEntity();
 		if (entity instanceof Player) {
 			Player p = (Player) entity;
+			
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			if (sp.isInGame()) {
+				if (Main.pvp) {
 				return;
-			}
+				} 
+				
+				if (e.getDamager().getType().equals(EntityType.SNOWBALL)) {
+					for (GameMutation mutation : sp.getArena().getInGameMutations()) {
+						if (mutation.getType().equals(MutationType.KOHI_SPLEEF)) {
+							return;
+						}
+					}
+				}
 		}
-		}
+		} 
 		e.setCancelled(true);
 	}
 	
 	@EventHandler
 	public void onDamage(EntityDamageEvent e) {
-		if (Main.pvp) {
+	
 		Entity entity = e.getEntity();
 		if (entity instanceof Player) {
 			Player p = (Player) entity;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+			
+			if (Main.pvp) {
 			if (sp.isInGame()) {
 				return;
 			}
 		}
+			
+			if (sp.isInGame()) {
+			if (e.getCause().equals(DamageCause.PROJECTILE)) {
+				for (GameMutation mutation : sp.getArena().getInGameMutations()) {
+					if (mutation.getType().equals(MutationType.KOHI_SPLEEF)) {
+						return;
+					}
+				}
+			}
+			}
 		}
+		
+		
+		
 		e.setCancelled(true);
 	}
-	
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent e) {
 		e.setCancelled(true);
@@ -212,7 +243,7 @@ public class ServerListener implements Listener {
 	    	} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[1])) {
 	    		GadgetsMenuAPI.goBackToMainMenu(p);
 	    	} else if (p.getItemInHand().equals(DataManager.getManager().queueitems()[0])) {
-	    		if (sp.getMutationTokens()>0) {
+	    		if (sp.getMutationTokens()>0 && sp.getArena().getEvent()==null) {
 	    		new MutationTokenMenu(sp).o(p);
 	    	} else {
 	    		p.sendMessage("§cYou dont have any §dMutation Token §cat the moment.");
@@ -223,6 +254,18 @@ public class ServerListener implements Listener {
 	    }
 		
 	}
+	
+	
+	@EventHandler
+	public void onBurn(BlockBurnEvent e) {
+		e.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onSpread(BlockSpreadEvent   e) {
+		e.setCancelled(true);
+	}
+	
 	
 	
 	
@@ -262,6 +305,8 @@ public class ServerListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	  public void onProjectileHit(ProjectileHitEvent e)  {
+		
+		
 		if (e.getEntity().getShooter() instanceof Player) {
 	    Player p = (Player)e.getEntity().getShooter();
 	    SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
@@ -333,10 +378,9 @@ public class ServerListener implements Listener {
 									p.sendMessage("§cYou can't execute this command while playing a match.");								
 				    	   }
 				       } else {
-
-					p.sendMessage("§cYou don't have permission to execute this command.");
-					p.sendMessage("§aYou need a rank "
-							+ "§6[Donator] §ato use this, visit the store for more info: §bhttp://jhspleef.buycraft.net/");
+							p.sendMessage("§cYou don't have permission to execute this command.");
+							p.sendMessage("§aYou need a rank "
+									+ "§5§l[Extreme] §ato use this, visit the store for more info: §bhttp://store.splindux.net/");
 						
 								} 
 				       
@@ -347,6 +391,12 @@ public class ServerListener implements Listener {
 						        e.setCancelled(true);
 				        
 				      } else if (args[0].equalsIgnoreCase("/d") || args[0].equalsIgnoreCase("/disguise")) {
+				    		if (sp.isInGame()) {
+				    			e.setCancelled(true);
+									p.sendMessage("§cYou can't execute this command while playing a match.");
+								
+				    		}
+				    	}else if (args[0].equalsIgnoreCase("/ride")) {
 				    		if (sp.isInGame()) {
 				    			e.setCancelled(true);
 									p.sendMessage("§cYou can't execute this command while playing a match.");
@@ -388,7 +438,7 @@ public class ServerListener implements Listener {
 	  
 	  @EventHandler
 	  public void onWorldChange(PlayerChangedWorldEvent e) {
-			  HologramManager.getManager().sendHolograms(SpleefPlayer.getSpleefPlayer(e.getPlayer()));
+			  HologramManager.getManager().sendHolograms(SpleefPlayer.getSpleefPlayer(e.getPlayer()),false);
 		  
 	  }
 	  

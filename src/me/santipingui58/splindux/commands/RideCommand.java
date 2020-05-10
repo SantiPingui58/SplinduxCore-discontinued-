@@ -27,7 +27,7 @@ public class RideCommand implements CommandExecutor {
 			if (p.hasPermission("splindux.ride")) {
 				if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
 					SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-			if (!sp.isInGame() && !sp.isSpectating()) {
+			if (!sp.isInGame() && !sp.isSpectating() && !sp.isInQueue()) {
 			if (args.length == 1) {
 				final Player pa = Bukkit.getServer().getPlayer(args[0]);
 				

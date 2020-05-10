@@ -1,6 +1,7 @@
 package me.santipingui58.splindux.game.spleef;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -10,9 +11,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import de.robingrether.idisguise.iDisguise;
 import me.santipingui58.fawe.FAWESplinduxAPI;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.economy.EconomyManager;
@@ -23,6 +26,7 @@ import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.death.BrokenBlock;
 import me.santipingui58.splindux.game.mutation.GameMutation;
 import me.santipingui58.splindux.game.mutation.MutationState;
+import me.santipingui58.splindux.game.mutation.MutationType;
 import me.santipingui58.splindux.replay.GameReplay;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.stats.level.LevelManager;
@@ -79,8 +83,7 @@ public class SpleefArena {
 	private List<SpleefPlayer> endgamerequest = new ArrayList<SpleefPlayer>();
 	
 	
-
-		
+	
 	
 	
 	private Request crumbleRequest;
@@ -140,20 +143,40 @@ public class SpleefArena {
 	}
 	
 	public void playMutations() {
-		arenaMutations();
-		for (GameMutation mutation : getInGameMutations()) {
-			for (SpleefPlayer sp : getFFAPlayers()) {
-			mutation.giveMutationItems(sp);
 		
+			arenaMutations();
+			List<String> list = new ArrayList<String>();
+		for (GameMutation mutation : getInGameMutations()) {
+			list.add(mutation.getType().getTitle());
+			for (SpleefPlayer sp : getFFAPlayers()) {			
+			mutation.giveMutationItems(sp);		
 			}
 		}
 		
-	
+		if (getInGameMutations().size()>0) {
+		String mutations = Utils.getUtils().getNamesFromList(list);
+		for (SpleefPlayer sp : this.getViewers()) {
+			sp.getPlayer().sendMessage("§dMutations for this round: " + mutations);
+		} 
+		}
 	}
 	
 	public void arenaMutations() {
 		for (GameMutation mutation : getInGameMutations()) {
-			
+			if (mutation.getType().equals(MutationType.JUMP_SPLEEF)) {
+				mutation.jumpSpleef();
+			} else if (mutation.getType().equals(MutationType.MINI_SPLEEF)) {
+				mutation.miniSpleef();
+			}  else if (mutation.getType().equals(MutationType.CRUMBLE_SPLEEF)) {
+				mutation.crumbleSpleef();
+			} else if (mutation.getType().equals(MutationType.CREEPY_SPLEEF)) {
+				getFFAPlayers().get(0).getPlayer().playSound(getFFAPlayers().get(0).getPlayer().getLocation(), Sound.RECORD_11, 10F, 1F);
+			} else if (mutation.getType().equals(MutationType.LEVITATION_I) 
+					|| mutation.getType().equals(MutationType.LEVITATION_II)
+							|| mutation.getType().equals(MutationType.LEVITATION_V)
+									|| mutation.getType().equals(MutationType.LEVITATION_X)) {
+						mutation.levitationSpleef();
+					}
 		}
 	}
 	
@@ -161,11 +184,16 @@ public class SpleefArena {
 		List<GameMutation> toRemove = new ArrayList<GameMutation>();
 		for (GameMutation mutation : this.mutations) {
 			if (mutation.getState().equals(MutationState.INGAME)) {
+				mutation.setState(MutationState.FINISHED);
+				if (mutation.getType().equals(MutationType.TNT_SPLEEF)) {
+					mutation.clearTNT();
+				}
 				toRemove.add(mutation);
 			} else if (mutation.getState().equals(MutationState.QUEUE)) {
 				mutation.setState(MutationState.INGAME);
 			}
-		}
+		}		
+		this.mutations.removeAll(toRemove);
 	}
 	public List<GameMutation> getInGameMutations() {
 		List<GameMutation> list = new ArrayList<GameMutation>();
@@ -615,6 +643,9 @@ public class SpleefArena {
 			getQueue().add(sp);		
 				sp.getPlayer().teleport(getLobby());
 			sp.setScoreboard(ScoreboardType.FFAGAME_LOBBY);
+			for (GameMutation mutation : this.getVotingMutations()) {
+				mutation.mutationMessage(sp);
+			}
 			if (getState().equals(GameState.GAME) || getState().equals(GameState.FINISHING) || getState().equals(GameState.STARTING)) {
 				sp.getPlayer().sendMessage("§aYou have been added to the queue, you will play when the next game starts!");
 			} else {
@@ -728,11 +759,12 @@ public class SpleefArena {
 		}
 	 
 		
-		public void startGame() {		
+		public void startGame(boolean sortQueue) {		
 			setState(GameState.STARTING);		
 			resetTimer();	
 			if (getGameType().equals(GameType.FFA)) {
 				
+				updateMutations();
 				reset(false,true);
 				
 				
@@ -741,6 +773,7 @@ public class SpleefArena {
 			List<Location> locations = Utils.getUtils().getCircle(center,16, getQueue().size());
 			int i = 0;
 			for (SpleefPlayer sp : getQueue()) {
+				iDisguise.getInstance().getAPI().undisguise(sp.getPlayer());
 				sp.giveGameItems();
 				sp.addFFAGame();			
 				LevelManager.getManager().addLevel(sp, 1);
@@ -757,9 +790,11 @@ public class SpleefArena {
 			} else if (getGameType().equals(GameType.DUEL)) {
 				
 				int i = 0;
+				if (sortQueue) Collections.shuffle(queue);
 				int teamSize = getQueue().size()/2;		
 				this.teamsize= teamSize;
 				for (SpleefPlayer sp : getQueue()) {
+					iDisguise.getInstance().getAPI().undisguise(sp.getPlayer());
 					if (i<=getQueue().size()) {
 					if (getSpleefType().equals(SpleefType.SPLEEF)) {
 					sp.getPlayer().setGameMode(GameMode.SURVIVAL);
@@ -808,24 +843,49 @@ public class SpleefArena {
 		
 		
 		public void crumbleArena(int por) {
-			setCrumbleRequest(null);
+				setCrumbleRequest(null);
+			
 			  Location a = getShrinkedDuelArena1();
-			  Location b = getShrinkedDuelArena2();		  
+			  Location b = getShrinkedDuelArena2();	
+			  if (this.gametype.equals(GameType.FFA)) {
+				  a = getArena1();
+				  b = getArena2();
+			  }
+			  
 			  int ax = a.getBlockX();
 			  int az = a.getBlockZ();			  
 			  int y = a.getBlockY();		  
 			  int bx = b.getBlockX();
-			  int bz = b.getBlockZ();			  
-			  SpleefPlayer p1 = getDuelPlayers1().get(0);
-			  SpleefPlayer p2 = getDuelPlayers2().get(0);		  
+			  int bz = b.getBlockZ();	
+			  SpleefPlayer p1 = null;
+			  SpleefPlayer p2 = null;
+			  if (this.gametype.equals(GameType.FFA)) {
+			  	  p1 = getFFAPlayers().get(0);
+			  	  p2 = getFFAPlayers().get(0);
+			  } else if (this.gametype.equals(GameType.DUEL)) {
+				   p1 = getDuelPlayers1().get(0);
+				   p2 = getDuelPlayers2().get(0);	
+			  }
+			  
+			  
 			  Location p1block = new Location (p1.getPlayer().getWorld(), p1.getLocation().getBlockX(), p1.getLocation().getBlockY()-1,
 					  p1.getLocation().getBlockZ());			  
 			  Location p2block = new Location (p2.getPlayer().getWorld(), p2.getLocation().getBlockX(), p2.getLocation().getBlockY()-1,
-					  p2.getLocation().getBlockZ());			 
-			  Location spawn1 = new Location (getShrinkedDuelSpawn1().getWorld(),getShrinkedDuelSpawn1().getBlockX(),
-					  getShrinkedDuelSpawn1().getBlockY()-1, getShrinkedDuelSpawn1().getBlockZ());			  
-			  Location spawn2 = new Location (getShrinkedDuelSpawn2().getWorld(),getShrinkedDuelSpawn2().getBlockX(),
-					  getShrinkedDuelSpawn2().getBlockY()-1, getShrinkedDuelSpawn2().getBlockZ());
+					  p2.getLocation().getBlockZ());	
+			  
+			  
+			  Location spawn1 = null;
+			  Location spawn2 = null;
+			  
+			  if (this.gametype.equals(GameType.FFA)) {
+			  	  spawn1 = getMainSpawn();
+			  	  spawn2 = getMainSpawn();
+			  } else if (this.gametype.equals(GameType.DUEL)) {
+				   spawn1 = new Location (getShrinkedDuelSpawn1().getWorld(),getShrinkedDuelSpawn1().getBlockX(),
+						  getShrinkedDuelSpawn1().getBlockY()-1, getShrinkedDuelSpawn1().getBlockZ());			  
+				   spawn2 = new Location (getShrinkedDuelSpawn2().getWorld(),getShrinkedDuelSpawn2().getBlockX(),
+						  getShrinkedDuelSpawn2().getBlockY()-1, getShrinkedDuelSpawn2().getBlockZ());
+			  }
 			  
 			  for (int x = ax; x <= bx; x++) {
 				  for (int z = az; z <= bz; z++) {
@@ -835,7 +895,7 @@ public class SpleefArena {
 							  && p1block.getBlockZ() == aire.getBlockZ()) || (p2block.getBlockX() == aire.getBlockX() && p2block.getBlockY() == aire.getBlockY() 
 							  && p2block.getBlockZ() == aire.getBlockZ()) || (spawn1.getBlockX() == aire.getBlockX() && spawn1.getBlockY() == aire.getBlockY() 
 							  && spawn1.getBlockZ() == aire.getBlockZ()) ||(spawn2.getBlockX() == aire.getBlockX() && spawn2.getBlockY() == aire.getBlockY() 
-							  && spawn2.getBlockZ() == aire.getBlockZ())) {
+							  && spawn2.getBlockZ() == aire.getBlockZ()) ) {
 					  } else {
 
 							  int randomNum = ThreadLocalRandom.current().nextInt(1, 100 + 1);

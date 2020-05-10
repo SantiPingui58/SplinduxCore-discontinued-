@@ -1,6 +1,7 @@
 package me.santipingui58.splindux.scoreboard.hologram;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -22,7 +23,7 @@ public class HologramManager {
 	    }
 	
 	 private List<Hologram> holograms = new ArrayList<Hologram>();
-	 
+	 private HashMap<SpleefPlayer,Boolean> oldHasRewards = new HashMap<SpleefPlayer,Boolean>();
 	 public List<Hologram> getHolograms() {
 		 return this.holograms;
 	 }
@@ -54,8 +55,7 @@ public class HologramManager {
 		 Hologram hologram = new Hologram(UUID.randomUUID(), sp.getPlayer().getLocation(), type);
 		 this.holograms.add(hologram);
 		saveHolograms();	
-		
-		updateHolograms();
+		updateHolograms(false);
 	 }
 	 
 	 public void loadHolograms() {
@@ -80,15 +80,26 @@ public class HologramManager {
 	 }
 	 
 	 
-	 public void updateHolograms() {
+	 public void updateHolograms(boolean onlyVotes) {
 		 for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {			
-			 sendHolograms(sp);
+			 sendHolograms(sp,onlyVotes);
 		 }
 	 }
-	 public void sendHolograms(SpleefPlayer sp) {
+	 public void sendHolograms(SpleefPlayer sp,boolean onlyVotes) {
 		 for (Hologram h : this.holograms) {
+			 if (onlyVotes) {
+				 if (!h.getType().equals(HologramType.VOTES)) continue;
+				 if (!this.oldHasRewards.containsKey(sp)) {
+					 this.oldHasRewards.put(sp, sp.hasUnclaimedRewards());
+				 }	 
+				 if (this.oldHasRewards.get(sp)!=sp.hasUnclaimedRewards()) {
+					 this.oldHasRewards.put(sp, sp.hasUnclaimedRewards());
+					 h.spawn(sp);
+				 }			 
+			 } else { 
 			 h.spawn(sp);
 		 }
+			 }
 	 }
 	 
 	 public void removeHolograms(SpleefPlayer sp) {
@@ -110,7 +121,7 @@ public class HologramManager {
 			 hologram.getChangeType().put(sp, SpleefRankingType.WINS);
 			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA WINS");
 		 } 
-		 sendHolograms(sp);
+		 sendHolograms(sp,false);
 	 }
 	 
 	 
@@ -127,7 +138,7 @@ public class HologramManager {
 			 hologram.getChangePeriod().put(sp, SpleefRankingPeriod.ALL_TIME);
 			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA ALL TIME");
 		 } 
-		 sendHolograms(sp);
+		 sendHolograms(sp,false);
 	 }
 	 
 	 

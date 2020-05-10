@@ -54,20 +54,18 @@ public enum MutationType {
 	
 	public int getRequiredVotes() {
 		if (this.equals(JUMP_I) || this.equals(GLOWING) || this.equals(FISHING_ROD) || this.equals(ENDER_SPLEEF) 
-				|| this.equals(BOW_SPLEEF) || this.equals(EXPERIENCE_SPLEEF) || this.equals(CRUMBLE_SPLEEF) || this.equals(KOHI_SPLEEF) || this.equals(CREEPY_SPLEEF)) {
+				|| this.equals(BOW_SPLEEF) || this.equals(EXPERIENCE_SPLEEF) || this.equals(CRUMBLE_SPLEEF) || this.equals(KOHI_SPLEEF) || this.equals(JUMP_SPLEEF)) {
 			return 3;
 		} else if (this.equals(SPEED_I) || this.equals(JUMP_II) || this.equals(SLOWNESS_I) || this.equals(LEVITATION_I) || this.equals(SPLEFF) || this.equals(SNOW_RUN)||
 				this.equals(POT_SPLEEF) || this.equals(KOHI_SPLEEF)) {
-			return 5;
+			return 4;
 		} else if (this.equals(SPEED_II) || this.equals(INVISIBILITY) || this.equals(SLOWNESS_II) || this.equals(BLINDNESS) || this.equals(LEVITATION_II) || this.equals(MINI_SPLEEF) 
-				|| this.equals(CREEPY_SPLEEF)) {
-			return 7;
-		} else if (this.equals(SPEED_V) || this.equals(JUMP_X) || this.equals(SLOWNESS_V) || this.equals(LEVITATION_V)||this.equals(TNT_SPLEEF)) {
+				|| this.equals(CREEPY_SPLEEF) || this.equals(NAUSEA)) {
+			return 6;
+		} else if (this.equals(SPEED_V) || this.equals(JUMP_V) || this.equals(SLOWNESS_V) || this.equals(LEVITATION_V)||this.equals(TNT_SPLEEF)) {
+			return 8;
+		} else if (this.equals(SLOWNESS_X) || this.equals(LEVITATION_X) || this.equals(SPEED_X) || this.equals(JUMP_X)) {
 			return 10;
-		} else if (this.equals(SLOWNESS_X) || this.equals(LEVITATION_X)) {
-			return 12;
-		} else if (this.equals(SPEED_X)) {
-			return 15;
 		}
 		return 0;
 	}
@@ -83,7 +81,7 @@ public enum MutationType {
 		}  else if (this.equals(SLOWNESS_I) || this.equals(SLOWNESS_II) || this.equals(SLOWNESS_V) || this.equals(SLOWNESS_X)) {
 			return PotionType.SLOWNESS;
 		} else if (this.equals(LEVITATION_I) || this.equals(LEVITATION_II) || this.equals(LEVITATION_V) || this.equals(LEVITATION_X)) {
-			return PotionType.SLOWNESS;
+			return PotionType.REGEN;
 		} else if (this.equals(INVISIBILITY)) {
 			return PotionType.INVISIBILITY;
 		}
@@ -120,7 +118,7 @@ public enum MutationType {
 		List<String> lore = getDescription();
 		lore.add("");
 		lore.add("§aRequiered votes to add mutation: §b" + getRequiredVotes());
-		meta.setLore(getDescription());
+		meta.setLore(lore);
 		item.setItemMeta(meta);
 		return item;
 		

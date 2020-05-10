@@ -84,7 +84,7 @@ public class FFAEvent {
 			hashmap= StatsManager.getManager().sortByValue(hashmap);
 			
 			int pos = 1;
-			Bukkit.broadcastMessage("§aRound §b" + this.currentRound + " §ahas finished!");
+			Bukkit.broadcastMessage("§a§lRound §b(" + this.currentRound+"/"+this.maxRounds+")  §ahas finished!");
 			Bukkit.broadcastMessage("§5-=-=-=-[§d§lFFA Event Positions§5]-=-=-=-");
 			for (Entry<String, Integer> entry : hashmap.entrySet()) {
 						
@@ -136,9 +136,9 @@ public class FFAEvent {
 		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, acb.create()));
 		
 		if (!this.prizes) {
-		TextComponent b1 = new TextComponent("§e1st. §bSplinbox 5 Stars §7+ §b200 Spleef EXP §7+ §63 Mutation Tokens\n");
-		TextComponent b2 = new TextComponent("§e2nd. §bSplinbox 4 Stars §7+ §b190 Spleef EXP §7+ §62 Mutation Tokens\n");
-		TextComponent b3 = new TextComponent("§e3rd. §bSplinbox 4 Stars §7+ §b180 Spleef EXP §7+ §61 Mutation Tokens\n");
+		TextComponent b1 = new TextComponent("§e1st. §bSplinbox 5 Stars §7+ §b200 Spleef EXP §7+ §610 Mutation Tokens\n");
+		TextComponent b2 = new TextComponent("§e2nd. §bSplinbox 4 Stars §7+ §b190 Spleef EXP §7+ §67 Mutation Tokens\n");
+		TextComponent b3 = new TextComponent("§e3rd. §bSplinbox 4 Stars §7+ §b180 Spleef EXP §7+ §65 Mutation Tokens\n");
 		TextComponent b4 = new TextComponent("§e4th. §bSplinbox 3 Stars §7+ §b170 Spleef EXP\n");
 		TextComponent b5 = new TextComponent("§e5th. §bSplinbox 3 Stars §7+ §b160 Spleef EXP\n");
 		TextComponent b6 = new TextComponent("§e6th. §bSplinbox 2 Stars §7+ §b150 Spleef EXP\n");
@@ -190,6 +190,7 @@ public class FFAEvent {
 		
 		int pos = 1;
 		List<String> top10 = new ArrayList<String>();
+		String winner = null;
 		Bukkit.broadcastMessage("§d§lThe Event has finished!");
 		Bukkit.broadcastMessage("§5-=-=-=-[§d§lFFA Event Positions§5]-=-=-=-");
 		for (Entry<String, Integer> entry : hashmap.entrySet()) {
@@ -197,12 +198,16 @@ public class FFAEvent {
 				top10.add(entry.getKey());
 			}
 					if (pos==1) {
+						winner = entry.getKey();
 						 Bukkit.broadcastMessage("§6§l" +pos+". §b§l" + entry.getKey() + "§8§l: §e§l" + entry.getValue() +" Points");
 					} else if (!entry.getKey().equalsIgnoreCase("NO_PLAYER")){
 			 Bukkit.broadcastMessage("§6" +pos+". §b" + entry.getKey() + "§8: §e" + entry.getValue() +" Points");
 					}
 			pos++;
 			}
+		
+		
+		Bukkit.broadcastMessage("§d§lCongratulations to §b§l" + winner + " §d§l for winning the FFA Event!");
 		
 		if (this.prizes) {
 			givePrizes(top10);
@@ -230,9 +235,9 @@ public class FFAEvent {
 	    			else if (i<=2) stars = 2;	    			
 	    			else stars = 1;
 	    			
-	    			if (i==1) tokens = 3;
-	    			else if (i==2) tokens =2;
-	    			else if (i==3) tokens = 3;
+	    			if (i==1) tokens = 10;
+	    			else if (i==2) tokens =7;
+	    			else if (i==3) tokens = 5;
 	    			
 	    			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gmysteryboxes give " + p.getName()+ " 1 "  + stars);
 	    			sp.setMutationTokens(sp.getMutationTokens()+tokens);

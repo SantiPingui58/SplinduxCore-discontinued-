@@ -356,10 +356,12 @@ public class HoverCommand implements CommandExecutor {
 										if (sp.isInGame() || sp.isInQueue()) {
 											UUID uuid = UUID.fromString(args[1]);
 											GameMutation mutation = sp.getArena().getMutationBy(uuid);
+											if (!mutation.getOwner().equals(sp)) {
 											if (mutation!=null && mutation.getState().equals(MutationState.VOTING)) {
 												mutation.voteMutation(sp);
 											} else {
 												p.sendMessage("§cThis mutation voting has finished or you are not in a game.");
+											}
 											}
 									} else {
 										p.sendMessage("§cYou need to be in a FFA game to execute this command.");	

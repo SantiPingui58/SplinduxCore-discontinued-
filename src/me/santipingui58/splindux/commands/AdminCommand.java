@@ -1,4 +1,7 @@
 package me.santipingui58.splindux.commands;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -60,13 +63,30 @@ public class AdminCommand implements CommandExecutor {
 				} else if (args[0].equalsIgnoreCase("tp")) {
 					World world = Bukkit.getWorld(args[1]);
 					p.teleport(world.getSpawnLocation());
-				} else if (args[0].equalsIgnoreCase("test")) {
+				} else if (args[0].equalsIgnoreCase("resetholograms")) {
 					for (Hologram h : HologramsAPI.getHolograms(Main.get())) {
 						h.delete();
 					}
 					NPCManager.getManager().updateNPCs();
+				} else if (args[0].equalsIgnoreCase("addmutations")) {
+					for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
+						Main.data.getConfig().set("players."+s+".mutation_tokens", 0);
+					}
+					Main.data.saveConfig();
 				} else if (args[0].equalsIgnoreCase("pvp")) {
 					Main.pvp = !Main.pvp;
+				} else if (args[0].equalsIgnoreCase("transfer")) {
+					List<String> list = new ArrayList<String>();
+					for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
+						double coins = Main.data.getConfig().getInt("players."+s+".coins");
+						list.add(s);
+						Main.playerdata.getConfig().set(s, coins);
+					}
+					Main.playerdata.getConfig().set("AConomyPlayerList", list);
+					Main.playerdata.saveConfig();
+				} else if (args[0].equalsIgnoreCase("givemutations")) {
+					DataManager.getManager().giveMutationTokens();
+					p.sendMessage("Gave mutation tokens");
 				}
 			}
 			

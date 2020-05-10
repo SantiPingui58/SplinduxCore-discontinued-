@@ -36,6 +36,7 @@ public class CrumbleCommand implements CommandExecutor {
 						p.sendMessage("§7(The percentage must be between 10 and 90, the higher will be the less snow in the arena)");
 					} else {
 						int crumble = 0;
+
 						try {
 							crumble = Integer.parseInt(args[0]);
 							if (crumble>=10 && crumble<=90) {

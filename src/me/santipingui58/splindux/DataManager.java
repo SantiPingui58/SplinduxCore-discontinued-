@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
@@ -36,6 +37,7 @@ import me.santipingui58.splindux.stats.level.LevelManager;
 import me.santipingui58.splindux.utils.ItemBuilder;
 import me.santipingui58.splindux.utils.Utils;
 import me.santipingui58.translate.Language;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 
 
@@ -136,6 +138,7 @@ public class  DataManager {
 				 int FFAwins = Main.data.getConfig().getInt("players."+p+".stats.FFA_wins");
 				 int FFAgames = Main.data.getConfig().getInt("players."+p+".stats.FFA_games");
 				 int FFAkills = 0;
+				 int mutations = Main.data.getConfig().getInt("players."+p+".mutation_tokens");
 				 if (Main.data.getConfig().contains("players."+p+".stats.FFA_kills")) {
 				  FFAkills = Main.data.getConfig().getInt("players."+p+".stats.FFA_kills");
 				 }
@@ -146,7 +149,6 @@ public class  DataManager {
 				 int FFAMonthlyWins =0;
 				 int FFAMonthlyGames = 0;
 				 int FFAMonthlyKills = 0;
-				 int coins = 0;
 				 int dailylimit= 0;
 				 int level = 0;
 				 String ip = "";
@@ -173,10 +175,6 @@ public class  DataManager {
 					 FFAMonthlyGames = Main.data.getConfig().getInt("players."+p+".stats.monthly.FFA_games");
 					 FFAMonthlyKills = Main.data.getConfig().getInt("players."+p+".stats.monthly.FFA_kills");
 					 }
-				 
-				 if (Main.data.getConfig().contains("players."+p+".coins")) {
-					 coins = Main.data.getConfig().getInt("players."+p+".coins");
-				 }
 				 
 				 if (Main.data.getConfig().contains("players."+p+".IP")) {
 					 ip = Main.data.getConfig().getString("players."+p+".IP");
@@ -218,7 +216,6 @@ public class  DataManager {
 				 sp.setFFAKills(FFAkills);
 				 sp.setRegisterDate(date);
 				 sp.setDailyWinLimit(dailylimit);
-				 sp.setCoins(coins);
 				 sp.setWeeklyFFAWins(FFAWeeklyWins);
 				 sp.setWeeklyFFAGames(FFAWeeklyGames);
 				 sp.setWeeklyFFAKills(FFAWeeklyKills);
@@ -227,6 +224,7 @@ public class  DataManager {
 				 sp.setMonthlyFFAGames(FFAMonthlyGames);
 				 sp.setMonthlyFFAKills(FFAMonthlyKills);
 				 sp.setIP(ip);
+				 sp.setMutationTokens(mutations);
 				 
 				 sp.getOptions().setLanguage(language);
 				 sp.getOptions().translate(translate);
@@ -298,7 +296,7 @@ public class  DataManager {
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.translate",sp.getOptions().hasTranslate());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.nightvision",sp.getOptions().hasNightVision());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.language",sp.getOptions().getLanguage().toString());
-		 
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".mutation_tokens",sp.getMutationTokens());
 		 if (sp.getPlayer()!=null) {
 		 saveIP(sp.getPlayer());
 		 }
@@ -392,7 +390,9 @@ public class  DataManager {
     
     @SuppressWarnings("deprecation")
 	public void resetMonthlyStats() {
-    	HologramManager.getManager().updateHolograms();
+    	new BukkitRunnable() {
+			public void run() {
+    	HologramManager.getManager().updateHolograms(false);
     	for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
     		Main.data.getConfig().set("players."+s+".stats.monthly.FFA_kills", 0);
     		Main.data.getConfig().set("players."+s+".stats.monthly.FFA_games", 0);
@@ -402,7 +402,7 @@ public class  DataManager {
     	
     	Main.data.saveConfig();
     	
-    	for (SpleefPlayer sp : this.players) {
+    	for (SpleefPlayer sp : players) {
     		sp.setMonthlyFFAGames(0);
     		sp.setMonthlyFFAKills(0);
     		sp.setMonthlyFFAWins(0);
@@ -452,6 +452,9 @@ public class  DataManager {
 		
    		}
    	}
+   	
+    }
+}.runTaskAsynchronously(Main.get());
     }
 
     public void resetDailyWinsLimit() {
@@ -464,7 +467,9 @@ public class  DataManager {
     
     @SuppressWarnings("deprecation")
 	public void resetWeeklyStats() {
-    	HologramManager.getManager().updateHolograms();
+    	new BukkitRunnable() {
+			public void run() {
+    	HologramManager.getManager().updateHolograms(false);
     	
     	HashMap<String, Integer> hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_WINS_WEEKLY);
     	
@@ -517,13 +522,14 @@ public class  DataManager {
     	
     	 
     	
-    	for (SpleefPlayer sp : this.players) {
+    	for (SpleefPlayer sp : players) {
     		sp.setWeeklyFFAGames(0);
     		sp.setWeeklyFFAKills(0);
     		sp.setWeeklyFFAWins(0);
     	}
     	
-    	
+			}
+		}.runTaskAsynchronously(Main.get());
     }
     public ItemStack[] gameitems() {
 		ItemStack iron_shovel = new ItemStack(Material.IRON_SPADE);
@@ -569,7 +575,7 @@ public class  DataManager {
 	}
 	
 	public ItemStack[] queueitems() {
-		ItemStack powerups = new ItemBuilder(Material.ENDER_CHEST).setTitle("§d§lPowerUps").addLore("§cComing Soon").build();
+		ItemStack powerups = new ItemBuilder(Material.ENDER_CHEST).setTitle("§d§lMutations").build();
 		ItemStack leave = new ItemBuilder(Material.REDSTONE_TORCH_ON).setTitle("§c§lLeave").build();
 		ItemStack[] items = {powerups, leave};
 		return items;
@@ -603,6 +609,34 @@ public class  DataManager {
 		} else {
 			return Language.ENGLISH;
 		}
+	}
+
+	public void giveMutationTokens() {
+		new BukkitRunnable() {
+			public void run() {
+				
+			  	for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
+					OfflinePlayer p = Bukkit.getOfflinePlayer(UUID.fromString(s));
+					SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+			  		int i = Main.data.getConfig().getInt("players."+s+".mutationtokens");
+			  		
+					if (PermissionsEx.getUser(p.getName()).has("splindux.extreme")) {
+					i = i+7;
+					} else if (PermissionsEx.getUser(p.getName()).has("splindux.epic")) {
+					i = i+5;
+					} else if (PermissionsEx.getUser(p.getName()).has("splindux.vip")) {
+						i = i+3;
+						}
+					
+					Main.data.getConfig().set("players."+s+".mutationtokens", i);
+					sp.setMutationTokens(i);
+			  	}
+			  
+			  	
+			  	Main.data.saveConfig();
+			  	
+		}
+		}.runTaskAsynchronously(Main.get());
 	}
 
 	

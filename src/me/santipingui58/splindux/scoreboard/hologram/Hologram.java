@@ -214,9 +214,13 @@ public class Hologram {
 
 			    }
 			    l.add(0, -0.25, 0);
-		}
-
-	
+		} else if (type.equals(HologramType.VOTES)) {
+			id.add(line(l,sp,"§e§lRewards and Votes"));   
+		    if (sp.hasUnclaimedRewards()) {
+		    	 l.add(0, -0.25, 0);
+		    	 id.add(line(l,sp,"§bYou have unclaimed rewards!"));
+		    }
+		}	
 	ids.put(sp, id);
 		}
 	}.runTaskLater(Main.get(), 3L);

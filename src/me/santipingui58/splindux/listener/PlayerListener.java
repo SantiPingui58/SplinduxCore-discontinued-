@@ -13,6 +13,9 @@ import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.death.BreakReason;
 import me.santipingui58.splindux.game.death.BrokenBlock;
+import me.santipingui58.splindux.game.mutation.GameMutation;
+import me.santipingui58.splindux.game.mutation.MutationType;
+import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
@@ -32,10 +35,18 @@ public class PlayerListener implements Listener {
 		if (!p.getGameMode().equals(GameMode.CREATIVE)) {
 			if (sp.isInGame()) {
 				if (sp.getArena().getState().equals(GameState.GAME)) {
-				if (!e.getBlock().getType().equals(Material.SNOW_BLOCK)) {
+				if (!e.getBlock().getType().equals(Material.SNOW_BLOCK) || e.getBlock().getType().equals(Material.TNT)) {
 					e.setCancelled(true);
 				} else {
 					
+					if (sp.getArena().getGameType().equals(GameType.FFA)) {
+						for (GameMutation mutation : sp.getArena().getInGameMutations()) {
+							if (mutation.getType().equals(MutationType.KOHI_SPLEEF)) {
+								sp.getPlayer().getInventory().addItem(new ItemStack(Material.SNOW_BALL));
+								break;
+							}
+						}
+					}
 					
 					SpleefArena arena = sp.getArena();
 					BrokenBlock kill = new BrokenBlock(sp,e.getBlock().getLocation(),BreakReason.SHOVEL);
@@ -54,11 +65,23 @@ public class PlayerListener implements Listener {
 	public void onHand(PlayerSwapHandItemsEvent e) {
 		e.setCancelled(true);
 	}
+	
+	
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlace(BlockPlaceEvent e) {
-		  if (e.getBlock().getLocation().getWorld().getName().equalsIgnoreCase("arenas") && (e.getBlock().getType().equals(Material.TNT))) return;
 		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(e.getPlayer());	
+		  if (e.getBlock().getLocation().getWorld().getName().equalsIgnoreCase("arenas") && (e.getBlock().getType().equals(Material.TNT))) {
+			 try {
+				for (GameMutation mutation : sp.getArena().getInGameMutations()) {
+					if (mutation.getType().equals(MutationType.TNT_SPLEEF)) {
+						mutation.getTNT().add(e.getBlock().getLocation());
+					}
+				}
+			 } catch (Exception ex) {}
+			return;  
+		  }
+		
 		  if (sp.needsAdminLoginQuestionmark() && !sp.isLogged()) {
  			 e.setCancelled(true);
 				 return;	 

@@ -42,8 +42,8 @@ public class MutationTokenMenu extends MenuBuilder {
 			SpleefArena arena = sp.getArena();
 			for (MutationType type : MutationType.values()) {
 				if (slot==type.getSlot()) {					
-					GameMutation mutation = new GameMutation(sp,type, arena);
-					mutation.sendMutationRequest();
+					GameMutation mutation = new GameMutation(sp,type);
+					mutation.sendMutationRequest(arena);
 					sp.getPlayer().closeInventory();
 					break;
 				}

@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -12,11 +13,13 @@ import com.yapzhenyie.GadgetsMenu.economy.GEconomyProvider;
 
 import me.santipingui58.splindux.commands.AFKCommand;
 import me.santipingui58.splindux.commands.AdminCommand;
+import me.santipingui58.splindux.commands.CoinsCommand;
 import me.santipingui58.splindux.commands.CrumbleCommand;
 import me.santipingui58.splindux.commands.DuelCommand;
 import me.santipingui58.splindux.commands.EndGameCommand;
 import me.santipingui58.splindux.commands.FFAEventCommand;
 import me.santipingui58.splindux.commands.FlyCommand;
+import me.santipingui58.splindux.commands.ForceResetCommand;
 import me.santipingui58.splindux.commands.HelpCommand;
 import me.santipingui58.splindux.commands.HologramCommand;
 import me.santipingui58.splindux.commands.HoverCommand;
@@ -27,7 +30,6 @@ import me.santipingui58.splindux.commands.MutationTokenCommand;
 import me.santipingui58.splindux.commands.PingCommand;
 import me.santipingui58.splindux.commands.PlaytoCommand;
 import me.santipingui58.splindux.commands.RankCommand;
-import me.santipingui58.splindux.commands.ReinoCommand;
 import me.santipingui58.splindux.commands.ResetCommand;
 import me.santipingui58.splindux.commands.RideCommand;
 import me.santipingui58.splindux.commands.SetupCommand;
@@ -41,6 +43,7 @@ import me.santipingui58.splindux.commands.TranslateCommand;
 import me.santipingui58.splindux.economy.EconomyManager;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.listener.CustomPacketListener;
+import me.santipingui58.splindux.listener.MutationListener;
 import me.santipingui58.splindux.listener.NPCListener;
 import me.santipingui58.splindux.listener.PlayerChat;
 import me.santipingui58.splindux.listener.PlayerConnectListener;
@@ -48,7 +51,6 @@ import me.santipingui58.splindux.listener.PlayerListener;
 import me.santipingui58.splindux.listener.ServerListener;
 import me.santipingui58.splindux.npc.NPCManager;
 import me.santipingui58.splindux.placeholdersapi.SplinduxExpansion;
-import me.santipingui58.splindux.reino.ReinoManager;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import me.santipingui58.splindux.task.ArenaTimeTask;
 import me.santipingui58.splindux.task.OnMoveTask;
@@ -57,38 +59,41 @@ import me.santipingui58.splindux.task.ParkourTimerTask;
 import me.santipingui58.splindux.task.ScoreboardTask;
 import me.santipingui58.splindux.task.SortRankingTask;
 import me.santipingui58.splindux.task.TabTask;
+import me.santipingui58.splindux.timelimit.TimeLimitManager;
 import me.santipingui58.splindux.utils.Configuration;
 import me.santipingui58.splindux.utils.Utils;
+import net.milkbowl.vault.economy.Economy;
 
 
 //Agregar 3 arenas por mapa  2.2.1.0
 
-//Mutations 2.3.0.0
-//FFA Event
-
-
 //Implement stuff from Store 2.4.0.0
 //Delayed messages on login
 //Announcements & Ads
-//Optiones menu NIGHT VISION, ADS, DEFAULT COLOR IN CHAT
+//Pets
+//Particles
+
 
 //Votar NameMC 2.5.0.0
+//Ranked 
 //Join Discord
 //Votifier
 //Discord reward for invite 
 //Twitter Youtube 
 
-//In game helmets && particles 2.6.0.0
 //Youtubers & Streamers, foros Amino Reddit Facebook Twitter 
 //Staffs
+
+//In game helmets  2.6.0.0
+//Optiones menu NIGHT VISION, ADS, DEFAULT COLOR IN CHAT
 
 //Nuevo Lobby 2.7.0.0
 //Quests
 //Interactive Lobby
+//Fishing
 
 //Friends 2.8.0.0
 //LootBoxes
-//Ranked 2.7.0.0
 
 
 //Test Arena 2.9.0.0
@@ -103,7 +108,8 @@ import me.santipingui58.splindux.utils.Utils;
 //Anticheat
 //BowSpleef
 //guilds
-
+//TNT Run
+//
 
 public class Main extends JavaPlugin {
 
@@ -112,9 +118,10 @@ public class Main extends JavaPlugin {
 	public static Plugin pl;
 	public static String prefix;
 	public static boolean prefix_enabled;
-	public static Configuration config,messages,arenas,data,recordings;
+	public static Configuration config,messages,arenas,data,recordings,timelimit,playerdata;
 	public static Location lobby;
 	public static boolean pvp;
+	public static Economy econ = null;
 	public static Plugin get() {
 	    return pl;
 	  }	
@@ -144,19 +151,18 @@ public class Main extends JavaPlugin {
 		data = new Configuration("data.yml",this);
 		arenas = new Configuration("arenas.yml",this);	
 		recordings = new Configuration("recordings.yml",this);	
-		
+		timelimit = new Configuration("timelimit.yml",this);
+		playerdata = new Configuration("playerdata.yml",this);
 		//Load of players and holograms data
+		
 		DataManager.getManager().loadPlayers();
 		HologramManager.getManager().loadHolograms();
-		
+		TimeLimitManager.getManager().loadTimeLimit();
 		
 		//Default spawn of the Server
 		lobby = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true);
 		
-		
-		
-		
-		
+		setupEconomy();
 		registerTasks();
 		registerEvents();
 		registerCommands();
@@ -186,7 +192,7 @@ public class Main extends JavaPlugin {
 		
 	new BukkitRunnable() {
 		public void run() {
-			HologramManager.getManager().updateHolograms();
+			HologramManager.getManager().updateHolograms(false);
 			//Load NPCs
 			NPCManager.getManager().loadNPCs();
 
@@ -253,12 +259,13 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {	
+		DataManager.getManager().savePlayers();	
 		NPCManager.getManager().removeNPCs();
+		TimeLimitManager.getManager().saveTimeLimit();
 		//Save Data
 		for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
 			 HologramManager.getManager().removeHolograms(sp);
-		}
-		DataManager.getManager().savePlayers();	
+		}				
 		HologramManager.getManager().saveHolograms();
 	}
 	
@@ -268,10 +275,23 @@ public class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new ServerListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerChat(), this);
 		getServer().getPluginManager().registerEvents(new NPCListener(), this);
-		getServer().getPluginManager().registerEvents(new ReinoManager(), this);
+		getServer().getPluginManager().registerEvents(new MutationListener(), this);
 		new CustomPacketListener();
 		
 	}
+	
+	private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        
+        econ = rsp.getProvider();
+        return econ != null;
+    }
 	
 	private void registerCommands() {
 		getCommand("setup").setExecutor(new SetupCommand());
@@ -295,7 +315,6 @@ public class Main extends JavaPlugin {
 		getCommand("matches").setExecutor(new MatchesCommand());
 		getCommand("hologram").setExecutor(new HologramCommand());
 		getCommand("level").setExecutor(new LevelCommand());
-		getCommand("reino").setExecutor(new ReinoCommand());
 		getCommand("playto").setExecutor(new PlaytoCommand());
 		getCommand("crumble").setExecutor(new CrumbleCommand());
 		getCommand("translate").setExecutor(new TranslateCommand());
@@ -303,6 +322,8 @@ public class Main extends JavaPlugin {
 		getCommand("ffaevent").setExecutor(new FFAEventCommand());
 		getCommand("staffchat").setExecutor(new StaffChatCommand());
 		getCommand("mutationtoken").setExecutor(new MutationTokenCommand());
+		getCommand("forcereset").setExecutor(new ForceResetCommand());
+		getCommand("coins").setExecutor(new CoinsCommand());
 	}
 	
 	

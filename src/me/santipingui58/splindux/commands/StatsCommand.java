@@ -49,9 +49,9 @@ public class StatsCommand implements CommandExecutor {
 			p.sendMessage("§aKills/Games Ratio: §b"+String.format("%.00f", sp.getKillGameRatio())+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEFFFA_KG,sp) + "§ Pos.)");
 			p.sendMessage("§aWins/Games Ratio: §b"+String.format("%.00f", sp.getWinGameRatio())+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEFFFA_WG,sp) + "§ Pos.)");
 			p.sendMessage("§6-=SPLEEF 1VS1=-");
-			p.sendMessage("§a1vs1 Wins: §b"+sp.get1vs1Wins()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_WINS,sp) + "§ Pos.)");
-			p.sendMessage("§a1vs1 Games: §b"+sp.get1vs1Games()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_GAMES,sp) + "§ Pos.)");
-			p.sendMessage("§a1vs1 ELO: §b"+sp.getELO()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_ELO,sp) + "§ Pos.)");
+			p.sendMessage("§aDuel Wins: §b"+sp.get1vs1Wins()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_WINS,sp) + "§ Pos.)");
+			p.sendMessage("§aDuel Games: §b"+sp.get1vs1Games()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_GAMES,sp) + "§ Pos.)");
+			p.sendMessage("§aDuel ELO: §b"+sp.getELO()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_ELO,sp) + "§ Pos.)");
 			p.sendMessage("§6-=-=-=-[§a§lStats§6]-=-=-=-");
 			
 		} else {
@@ -79,9 +79,9 @@ public class StatsCommand implements CommandExecutor {
 				p.sendMessage("§aKills/Games Ratio: §b"+String.format("%.00f", sp2.getKillGameRatio())+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEFFFA_KG,sp2) + "§ Pos.)");
 				p.sendMessage("§aWins/Games Ratio: §b"+String.format("%.00f", sp2.getWinGameRatio())+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEFFFA_WG,sp2) + "§ Pos.)");
 				p.sendMessage("§6-=SPLEEF 1VS1=-");
-				p.sendMessage("§a1vs1 Wins: §b"+sp2.get1vs1Wins()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_WINS,sp2) + "§ Pos.)");
-				p.sendMessage("§a1vs1 Games: §b"+sp2.get1vs1Games()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_GAMES,sp2) + "§ Pos.)");
-				p.sendMessage("§a1vs1 ELO: §b"+sp2.getELO()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_ELO,sp2 ) + "§ Pos.)");
+				p.sendMessage("§aDuel Wins: §b"+sp2.get1vs1Games()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_WINS,sp2) + "§ Pos.)");
+				p.sendMessage("§aDuel Games: §b"+sp2.get1vs1Games()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_GAMES,sp2) + "§ Pos.)");
+				p.sendMessage("§aDuel ELO: §b"+sp2.getELO()+ " (§7" + StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_ELO,sp2 ) + "§ Pos.)");
 				p.sendMessage("§6-=-=-=-[§a§lStats§6]-=-=-=-");
 				} else if (args[1].equalsIgnoreCase("monthly")) {
 					
@@ -96,7 +96,7 @@ public class StatsCommand implements CommandExecutor {
 				p.sendMessage("§aUse of command: /stats <Player> weekly");
 			}
 			p.sendMessage("§aUse of command: /stats top ffaspleef <wins/games/kills/KG/WG> <page>");
-			p.sendMessage("§aUse of command: /stats top spleef1vs1 <ELO/games> <page>");
+			p.sendMessage("§aUse of command: /stats top spleefDuel <ELO/games> <page>");
 			
 		} else if (args[0].equalsIgnoreCase("ffaspleef")) {
 			if (args.length==2 || args.length==3) {

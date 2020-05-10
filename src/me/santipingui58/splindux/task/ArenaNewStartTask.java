@@ -38,7 +38,7 @@ public class ArenaNewStartTask {
             	   if (arena.getQueue().size()>=size) {
             		   
             	   if (time==0) {
-                  arena.startGame();
+                  arena.startGame(false);
                	Bukkit.getScheduler().cancelTask(task);
             	   } 
             	   time--;

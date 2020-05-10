@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.yapzhenyie.GadgetsMenu.api.GadgetsMenuAPI;
 import com.yapzhenyie.GadgetsMenu.economy.GEconomyProvider;
@@ -51,7 +52,7 @@ public class EconomyManager extends GEconomyProvider {
 				  boolean luck = false;
 				   
 				  
-				  if (sp.getPlayer().hasPermission("splinudux.extreme")) {
+				  if (sp.getPlayer().hasPermission("splindux.extreme")) {
 					  if (r<55) {
 						  luck =true;
 					  }
@@ -95,6 +96,18 @@ public class EconomyManager extends GEconomyProvider {
 				  
 				  }
 			  }
+			  
+			  if (sp.getSplinboxPoints()%5000==0) {
+				  
+				  new BukkitRunnable() {
+					  public void run() {
+						  EconomyManager.getManager().addCoins(sp, 25, true);
+					  }
+					  
+				  }.runTaskLater(Main.get(), 60L*20);
+			  }
+			  
+			  
 		  }
 	  }
 	  
@@ -102,7 +115,7 @@ public class EconomyManager extends GEconomyProvider {
 	
 	  public void addCoins(SpleefPlayer sp, Integer i,boolean multiplier) {
 	  
-		  int coins = sp.getCoins();
+
 			if (multiplier) {
 			if (PermissionsEx.getUser(sp.getOfflinePlayer().getName()).has("splindux.extreme")) {
 				i = (int) ((i*1.5));
@@ -112,9 +125,9 @@ public class EconomyManager extends GEconomyProvider {
 				i = (int) ((i*1.1));
 			} 
 			}
-			coins = coins+i;
-			sp.setCoins(coins);
-
+			
+			sp.addCoins(i);
+			
 			if (Bukkit.getOnlinePlayers().contains(sp.getOfflinePlayer())) {
 				sp.getPlayer().sendMessage("§aYou have won §6"+i+" coins");
 			}
@@ -135,7 +148,7 @@ public class EconomyManager extends GEconomyProvider {
 		
 		OfflinePlayer p = pm.getPlayer();
 		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-		sp.setCoins(sp.getCoins()+i);
+		sp.addCoins(i);
 	}
 
 	@Override
@@ -149,7 +162,7 @@ public class EconomyManager extends GEconomyProvider {
 	public void removeMysteryDust(OfflinePlayerManager pm, int i) {		
 		OfflinePlayer p = pm.getPlayer();
 		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-		sp.setCoins(sp.getCoins()-i);		
+		sp.removeCoins(i);		
 	}
 
 	@Override

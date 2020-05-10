@@ -34,6 +34,8 @@ public class HologramCommand implements CommandExecutor {
 						HologramManager.getManager().createHologram(sp,HologramType.SPLEEFRANKING); 
 						} else if (args[1].equalsIgnoreCase("onlinetime")) {
 							HologramManager.getManager().createHologram(sp,HologramType.ONLINETIME); 
+						}else if (args[1].equalsIgnoreCase("votes")) {
+							HologramManager.getManager().createHologram(sp,HologramType.VOTES); 
 						}
 						
 						p.sendMessage("§aHologram created!");

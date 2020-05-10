@@ -52,33 +52,56 @@ public class PinguiScoreboard {
 					cache.add("§f§f");
 					cache.add("   §7mc.splindux.net");
 					
-				} else if (sp.getScoreboard().equals(ScoreboardType.FFAGAME_LOBBY) || sp.getScoreboard().equals(ScoreboardType.FFAGAME_GAME)) {
+				} else if (sp.getScoreboard().equals(ScoreboardType.FFAGAME_LOBBY)) {
 					SpleefArena arena = sp.getArena();
-					cache.add(displayname);
-					cache.add("§f");
-					cache.add("§2Players left: §a" + arena.getFFAPlayers().size());
-					cache.add("§f§f§f§f§f");
-					if (arena.getState().equals(GameState.GAME)) {
-					cache.add("§2Time left: §e" + time(arena.getTime()));
-					cache.add("§f§f");
-					} else if (arena.getState().equals(GameState.STARTING)) {
-						cache.add("§2Game starting...");
+					if (sp.getArena().getState().equals(GameState.LOBBY)) {
+						cache.add(displayname);
+						cache.add("§f");
+						cache.add("§7Waiting for players..");
 						cache.add("§f§f");
-					} 			
-					
+						cache.add("§5Mutation Tokens: §d" + sp.getMutationTokens());
+						cache.add("§f§f§f");
+					} else if (sp.getArena().getState().equals(GameState.GAME)) {
+						cache.add(displayname);
+						cache.add("§f");
+						cache.add("§2Players left: §a" + arena.getFFAPlayers().size());
+						cache.add("§2Time left: §e" + time(arena.getTime()));
+						cache.add("§5Mutation Tokens: §d" + sp.getMutationTokens());
+						cache.add("§f§f§f");
+					} else if (sp.getArena().getState().equals(GameState.STARTING)) {
+						cache.add(displayname);
+						cache.add("§f");
+						cache.add("§7Game Starting...");
+						cache.add("§f§f");
+						cache.add("§5Mutation Tokens: §d" + sp.getMutationTokens());
+						cache.add("§f§f§f");
+					}
+
 					cache.add("§2FFA Wins: §e" +sp.getFFAWins());
 					cache.add("§2FFA Games: §e" + sp.getFFAGames());
-					cache.add("§2FFA Kills: §e" + sp.getFFAKills());
+					cache.add("§2FFA Kills: §e" + sp.getFFAKills());			
 					if (sp.getScoreboard().equals(ScoreboardType.FFAGAME_LOBBY)) {
-					cache.add("§2M/W Wins: §e" +sp.getMonthlyFFAWins() +"/" + sp.getWeeklyFFAWins());
-					cache.add("§2M/W Games: §e" + sp.getMonthlyFFAGames()+"/" + sp.getWeeklyFFAGames());
-					cache.add("§2M/W Kills: §e" + sp.getMonthlyFFAKills()+"/"+sp.getWeeklyFFAKills());
-					cache.add("§2W/G: §e" + df.format(sp.getWinGameRatio()));
-					cache.add("§2K/G: §e" + df.format(sp.getKillGameRatio()));
-					}
-					cache.add("§f§f§f");
+						cache.add("§2M/W Wins: §e" +sp.getMonthlyFFAWins() +"/" + sp.getWeeklyFFAWins());
+						cache.add("§2M/W Games: §e" + sp.getMonthlyFFAGames()+"/" + sp.getWeeklyFFAGames());
+						cache.add("§2M/W Kills: §e" + sp.getMonthlyFFAKills()+"/"+sp.getWeeklyFFAKills());
+						cache.add("§2W/G: §e" + df.format(sp.getWinGameRatio()));
+						cache.add("§2K/G: §e" + df.format(sp.getKillGameRatio()));
+						}
+					cache.add("§f§f§f§f");
 					cache.add("   §7mc.splindux.net");
-				} else if (sp.getScoreboard().equals(ScoreboardType._1VS1GAME)) {
+				} else if (sp.getScoreboard().equals(ScoreboardType.FFAGAME_GAME)) {
+					SpleefArena arena = sp.getArena();
+				cache.add(displayname);
+				cache.add("§f");
+				cache.add("§2Players left: §a" + arena.getFFAPlayers().size());
+				cache.add("§2Time left: §e" + time(arena.getTime()));
+				cache.add("§f§f§f");
+				cache.add("§2FFA Wins: §e" +sp.getFFAWins());
+				cache.add("§2FFA Games: §e" + sp.getFFAGames());
+				cache.add("§2FFA Kills: §e" + sp.getFFAKills());	
+				cache.add("§f§f§f§f");
+				cache.add("   §7mc.splindux.net");
+				}else if (sp.getScoreboard().equals(ScoreboardType._1VS1GAME)) {
 					SpleefArena arena = null;
 					if (sp.isSpectating()) {
 						arena = sp.getSpectating().getArena();
@@ -120,9 +143,7 @@ public class PinguiScoreboard {
 					cache.add("§f§f§f");
 					cache.add("   §7mc.splindux.net");
 				}
-					
-				} 
-				
+				}
 				
 				for(int i = 0; i < cache.size(); i++) {
 					data = cache.toArray(new String[i]);

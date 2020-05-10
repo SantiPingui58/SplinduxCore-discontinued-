@@ -123,6 +123,18 @@ public class Utils {
 		 
 		return p;
 	}
+	
+	public String getNamesFromList(List<String> list) {
+		String p = "";
+		for (String s : list) {
+		if (p.equalsIgnoreCase("")) {
+			p = s;
+		} else {
+			p = p+", " + s;
+		}
+		}
+		return p;
+	}
 	 
 	//Method to save a Location in a string.
 	// pitch is used to save or not the direction the player looks, for example, to teleport to an spawn.
@@ -254,7 +266,7 @@ public class Utils {
 		
 		
 		  
-		public void cylinder(Location loc, Material mat, int r) {
+		public void cylinder(Location loc, Material mat, Material mask,int r) {
 		    int cx = loc.getBlockX();
 		    int cy = loc.getBlockY();
 		    int cz = loc.getBlockZ();
@@ -263,7 +275,9 @@ public class Utils {
 		    for (int x = cx - r; x <= cx +r; x++) {
 		        for (int z = cz - r; z <= cz +r; z++) {
 		            if ((cx - x) * (cx - x) + (cz - z) * (cz - z) <= rSquared) {
+		            	if (w.getBlockAt(x,cy,z).getType().equals(mask)) {
 		                w.getBlockAt(x, cy, z).setType(mat);
+		            	}
 		            }
 		        }
 		    }

@@ -3,7 +3,6 @@ package me.santipingui58.splindux.listener;
 
 
 import java.util.Date;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -44,6 +43,21 @@ public class PlayerConnectListener implements Listener {
 		
 		sp = SpleefPlayer.getSpleefPlayer(p);
 		
+		if (sp.getCoins()==0) {
+			int coins = Main.data.getConfig().getInt("players."+p.getUniqueId()+".coins");
+			if (coins==0) {
+				coins = 1;
+			}
+			
+			
+			if (!Main.econ.hasAccount(p)) {
+			Main.econ.createPlayerAccount(p);			
+		}
+			
+			Main.econ.withdrawPlayer(p, Main.econ.getBalance(p));
+			Main.econ.depositPlayer(p, coins);
+		}
+		
 		DataManager.getManager().saveIP(e.getPlayer());
 		SecurityManager.getManager().adminLogin(sp);
 		sp.setScoreboard(ScoreboardType.LOBBY);
@@ -68,7 +82,7 @@ public class PlayerConnectListener implements Listener {
 		
 		new BukkitRunnable() {
 			public void run() {
-		HologramManager.getManager().sendHolograms(SpleefPlayer.getSpleefPlayer(p));
+		HologramManager.getManager().sendHolograms(SpleefPlayer.getSpleefPlayer(p),false);
 			}
 		}.runTaskLater(Main.get(), 30L);
 	}
