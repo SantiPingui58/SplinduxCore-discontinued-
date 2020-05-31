@@ -6,8 +6,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 public class MutationTokenCommand implements CommandExecutor {
@@ -19,10 +17,11 @@ public class MutationTokenCommand implements CommandExecutor {
 			
 			
 			if(cmd.getName().equalsIgnoreCase("mutationtoken")) {
-			Player p = (Player) sender;
-			if (!p.hasPermission("splindux.admin")) return false;
+				
+	
+			if (!sender.hasPermission("splindux.admin")) return false;
 				if (args.length==0) {
-					p.sendMessage("§aUse of command: /mutationtoken give <player> <amount>");
+					sender.sendMessage("§aUse of command: /mutationtoken give <player> <amount>");
 				} else if (args[0].equalsIgnoreCase("give")) {
 					if (args.length==3) {
 						@SuppressWarnings("deprecation")
@@ -33,16 +32,16 @@ public class MutationTokenCommand implements CommandExecutor {
 						try {
 							level = Integer.parseInt(args[2]);
 						} catch (Exception e) {
-							p.sendMessage("§a"+ args[3]+ " §cisnt a valid number.");
+							sender.sendMessage("§a"+ args[3]+ " §cisnt a valid number.");
 							return false;
 						}
 						
 						splayer.setMutationTokens(splayer.getMutationTokens()+level);
 						} else {
-							p.sendMessage("§cThis player doesn't exist");
+							sender.sendMessage("§cThis player doesn't exist");
 						}
 					} else {
-						p.sendMessage("§aUse of command: /mutationtoken give <player> <amount>");
+						sender.sendMessage("§aUse of command: /mutationtoken give <player> <amount>");
 					}
 				} 
 			

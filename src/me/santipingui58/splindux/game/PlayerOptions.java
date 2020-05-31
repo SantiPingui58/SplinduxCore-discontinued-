@@ -9,9 +9,17 @@ public class PlayerOptions {
 	private boolean night_vision;
 	private boolean translate;
 	private Language language;
-	
+	private boolean ads;
 	public PlayerOptions() {
 		this.translate = true;
+	}
+	
+	public boolean hasAds() {
+		return this.ads;
+	}
+	
+	public void ads(boolean b) {
+		this.ads = b;
 	}
 	
 	public boolean hasNightVision() {

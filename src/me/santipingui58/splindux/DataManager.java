@@ -28,12 +28,16 @@ import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
+import me.santipingui58.splindux.particles.ParticleManager;
+import me.santipingui58.splindux.particles.effect.ParticleEffectType;
+import me.santipingui58.splindux.particles.type.ParticleTypeSubType;
 import me.santipingui58.splindux.replay.BrokenBlock;
 import me.santipingui58.splindux.replay.GameReplay;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
 import me.santipingui58.splindux.stats.RankingType;
 import me.santipingui58.splindux.stats.StatsManager;
 import me.santipingui58.splindux.stats.level.LevelManager;
+import me.santipingui58.splindux.utils.GetCountry;
 import me.santipingui58.splindux.utils.ItemBuilder;
 import me.santipingui58.splindux.utils.Utils;
 import me.santipingui58.translate.Language;
@@ -55,7 +59,7 @@ public class  DataManager {
 	 private List<SpleefArena> arenas = new ArrayList<SpleefArena>();
 	 private List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
 	 private List<GameReplay> recordings = new ArrayList<GameReplay>();
-	 private HashMap<OfflinePlayer,SpleefPlayer> playershashmap = new HashMap<OfflinePlayer,SpleefPlayer>();
+	 private HashMap<String,SpleefPlayer> playershashmap = new HashMap<String,SpleefPlayer>();
 	 
 	 public List<SpleefArena> getArenas() {
 		 return this.arenas;
@@ -79,41 +83,41 @@ public class  DataManager {
 		 return list;
 	 }
 	 
-	 public HashMap<OfflinePlayer,SpleefPlayer> getPlayersCache() {
+	 public HashMap<String,SpleefPlayer> getPlayersCache() {
 		 return this.playershashmap;
 	 }
 	 
 	 
 	 
-		public void createSpleefPlayer(Player p) {
-			Main.data.getConfig().set("players."+p.getUniqueId()+".stats.ELO",1000);
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.1vs1_wins",0);
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.1vs1_games",0);
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.FFA_wins",0);
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.FFA_games",0);
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.FFA_kills",0);
+		public void createSpleefPlayer(UUID uuid) {
+			Main.data.getConfig().set("players."+uuid+".stats.ELO",1000);
+			 Main.data.getConfig().set("players."+uuid+".stats.1vs1_wins",0);
+			 Main.data.getConfig().set("players."+uuid+".stats.1vs1_games",0);
+			 Main.data.getConfig().set("players."+uuid+".stats.FFA_wins",0);
+			 Main.data.getConfig().set("players."+uuid+".stats.FFA_games",0);
+			 Main.data.getConfig().set("players."+uuid+".stats.FFA_kills",0);
 			 
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.monthly.FFA_wins",0);
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.monthly.FFA_games",0);
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.monthly.FFA_kills",0);
+			 Main.data.getConfig().set("players."+uuid+".stats.monthly.FFA_wins",0);
+			 Main.data.getConfig().set("players."+uuid+".stats.monthly.FFA_games",0);
+			 Main.data.getConfig().set("players."+uuid+".stats.monthly.FFA_kills",0);
 			 
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.weekly.FFA_wins",0);
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.weekly.FFA_games",0);
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".stats.weekly.FFA_kills",0);
-			 Main.data.getConfig().set("players."+p.getUniqueId()+".dailywinlimit",0);
+			 Main.data.getConfig().set("players."+uuid+".stats.weekly.FFA_wins",0);
+			 Main.data.getConfig().set("players."+uuid+".stats.weekly.FFA_games",0);
+			 Main.data.getConfig().set("players."+uuid+".stats.weekly.FFA_kills",0);
+			 Main.data.getConfig().set("players."+uuid+".dailywinlimit",0);
 			
 			 
 			 Date now = new Date();
 			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-			Main.data.getConfig().set("players."+p.getUniqueId()+".registerdate", format.format(now));
-			Main.data.getConfig().set("players."+p.getUniqueId()+".onlinetime",0);
-			Main.data.getConfig().set("players."+p.getUniqueId()+".coins",0);		
-			Main.data.getConfig().set("players."+p.getUniqueId()+".options.translate",true);	
+			Main.data.getConfig().set("players."+uuid+".registerdate", format.format(now));
+			Main.data.getConfig().set("players."+uuid+".onlinetime",0);
+			Main.data.getConfig().set("players."+uuid+".coins",0);		
+			Main.data.getConfig().set("players."+uuid+".options.translate",true);	
 			Main.data.saveConfig();
 			
-			loadPlayer(p.getUniqueId().toString());
+			loadPlayer(uuid.toString(),false);
 			
-			p.kickPlayer("§cPlayerData created, please join again!");
+			//p.kickPlayer("§cPlayerData created, please join again!");
 			
 			
 			
@@ -130,7 +134,8 @@ public class  DataManager {
 		}
 		
 		
-		public void loadPlayer(String p) {
+		public void loadPlayer(String p,boolean reload_data) {
+			
 			 if (Main.data.getConfig().contains("players."+p)) {
 				 int ELO = Main.data.getConfig().getInt("players."+p+".stats.ELO");
 				 int _1vs1wins = Main.data.getConfig().getInt("players."+p+".stats.1vs1_wins");
@@ -151,12 +156,19 @@ public class  DataManager {
 				 int FFAMonthlyKills = 0;
 				 int dailylimit= 0;
 				 int level = 0;
+				 String country = null;
 				 String ip = "";
-				 
+				 Date d = null;
 				 boolean translate = false;
 				 boolean nightVision = false;
+				 boolean ads = false;
 				 Language language = null;
+				
 				 int totalonlinetime =  Main.data.getConfig().getInt("players."+p+".onlinetime");
+				 
+				 
+				
+				 
 				 if (Main.data.getConfig().contains("players."+p+".dailywinlimit")) {
 					 dailylimit =  Main.data.getConfig().getInt("players."+p+".dailywinlimit");
 				 }
@@ -180,6 +192,13 @@ public class  DataManager {
 					 ip = Main.data.getConfig().getString("players."+p+".IP");
 				 }
 				 
+				 if (Main.data.getConfig().contains("players."+p+".lastlogin")) {
+					   try {
+						d= new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse((Main.data.getConfig().getString("players."+p+".lastlogin")));
+					} catch (ParseException e) {
+						
+					}  
+				 }
 				 
 				 if (Main.data.getConfig().contains("players."+p+".options.translate")) {
 					 translate = Main.data.getConfig().getBoolean("players."+p+".options.translate");
@@ -189,8 +208,17 @@ public class  DataManager {
 					 nightVision = Main.data.getConfig().getBoolean("players."+p+".options.nightvision");
 				 }
 				 
+				 if (Main.data.getConfig().contains("players."+p+".options.ads")) {
+					 ads = Main.data.getConfig().getBoolean("players."+p+".options.ads");
+				 }
+				 
+				 if (Main.data.getConfig().contains("players."+p+".country")) {
+					 country =Main.data.getConfig().getString("players."+p+".country");
+				 }
 				 if (Main.data.getConfig().contains("players."+p+".options.language")) {
 					 language = Language.valueOf(Main.data.getConfig().getString("players."+p+".options.language"));
+				 } else if (country!=null) {
+						language = languageFromCountry(country);	 
 				 }
 				 
 				 if (Main.data.getConfig().contains("players."+p+".IP")) {
@@ -225,13 +253,15 @@ public class  DataManager {
 				 sp.setMonthlyFFAKills(FFAMonthlyKills);
 				 sp.setIP(ip);
 				 sp.setMutationTokens(mutations);
-				 
+				 sp.setLastLogin(d);
 				 sp.getOptions().setLanguage(language);
 				 sp.getOptions().translate(translate);
 				 sp.getOptions().nightVision(nightVision);
-				 
+				 sp.getOptions().ads(ads);
+				 sp.setCountry(country);
+				 sp.back();
 				 this.players.add(sp);
-				 if (sp.getOfflinePlayer().isOnline()) {
+				 if (sp.getOfflinePlayer().isOnline() && !reload_data) {
 					sp.giveLobbyItems();
 				 }
 				 
@@ -240,11 +270,36 @@ public class  DataManager {
 			 
 		}
 		
-	 public void loadPlayers() {
+		
+		public void loadParticles() {
+				 for (SpleefPlayer sp : DataManager.getManager().getPlayers()) {
+					 ParticleTypeSubType type = null;
+					 ParticleEffectType effect = null;
+					 if (Main.data.getConfig().contains("players."+sp.getOfflinePlayer().getUniqueId().toString()+".particles.effect")) {
+						 effect = ParticleEffectType.valueOf(Main.data.getConfig().getString("players."+sp.getOfflinePlayer().getUniqueId().toString()+".particles.effect"));
+					 }
+					 
+					 if (Main.data.getConfig().contains("players."+sp.getOfflinePlayer().getUniqueId().toString()+".particles.type")) {
+						 type = ParticleTypeSubType.valueOf(Main.data.getConfig().getString("players."+sp.getOfflinePlayer().getUniqueId().toString()+".particles.type"));
+					 }
+					 
+					 if (type!=null) {
+						 sp.selectParticleType(ParticleManager.getManager().getTypeBySubType(type),false);
+						 }
+						 if (effect!=null) {					 
+						 sp.selectParticleEffect(ParticleManager.getManager().getEffectByType(effect),false);
+						 }
+			 }
+				
+			 
+		}
+		
+	 public void loadPlayers(boolean reload_data) {
+		 	this.players.clear();
 			 if (Main.data.getConfig().contains("players")) {
 				 Set<String> players = Main.data.getConfig().getConfigurationSection("players").getKeys(false);
 				 for (String p : players) {
-					 loadPlayer(p);
+					 loadPlayer(p,reload_data);
 			 }
 				
 			 }
@@ -281,9 +336,17 @@ public class  DataManager {
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.FFA_games",sp.getFFAGames());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.FFA_kills",sp.getFFAKills());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".level",sp.getLevel());
-		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".onlinetime", sp.getTotalOnlineTime());
-		
-		 
+		 if (sp.getSelectedParticleEffect()==null) {
+			 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".particles.effect",null);
+		 } else {
+			 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".particles.effect",sp.getSelectedParticleEffect().getType().toString());
+		 }
+		 if (sp.getSelectedParticleType()==null) {
+			 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".particles.type",null);
+		 } else {
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".particles.type",sp.getSelectedParticleType().getType().toString());
+		 }
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".onlinetime", sp.getTotalOnlineTime());	 
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.weekly.FFA_wins",sp.getWeeklyFFAWins());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.weekly.FFA_games",sp.getWeeklyFFAGames());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".stats.weekly.FFA_kills",sp.getWeeklyFFAKills());
@@ -294,14 +357,13 @@ public class  DataManager {
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".dailywinlimit",sp.getDailyWinLimit());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".country",sp.getCountry());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.translate",sp.getOptions().hasTranslate());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.ads",sp.getOptions().hasAds());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.nightvision",sp.getOptions().hasNightVision());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.language",sp.getOptions().getLanguage().toString());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".mutation_tokens",sp.getMutationTokens());
-		 if (sp.getPlayer()!=null) {
-		 saveIP(sp.getPlayer());
-		 }
+		 
 			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-			if (sp.getOfflinePlayer().isOnline()) {
+			if (sp.getOfflinePlayer().isOnline() && sp.getLastLogin()!=null) {
 		Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".lastlogin", format.format(sp.getLastLogin()));
 			}
 		
@@ -310,24 +372,22 @@ public class  DataManager {
 	 }
 	  
 	 
-	 public void saveIP(Player p) {
+	 public void saveIP(SpleefPlayer sp) {
+		 Player p = sp.getPlayer();
 		 InetAddress ip = p.getAddress().getAddress();
 		 if (!Main.data.getConfig().contains("players."+p.getUniqueId()+".IP")) {
 			 if (!ip.toString().equalsIgnoreCase(Main.data.getConfig().getString("players."+p.getUniqueId()+".IP"))) {
 		   Main.data.getConfig().set("players." + p.getUniqueId() + ".IP", ip.toString());
 		   Main.data.saveConfig();
-			 }
-			 
-			
+			 }	
 		 }
 		 
-		 if (!Main.data.getConfig().contains("players."+p.getUniqueId()+".country")) {
-			 if (!ip.toString().equalsIgnoreCase(Main.data.getConfig().getString("players."+p.getUniqueId()+".IP"))) {
-		   Main.data.getConfig().set("players." + p.getUniqueId() + ".IP", ip.toString());
-		   Main.data.saveConfig();
-			 }
-			 
-			
+		 if (!Main.data.getConfig().contains("players."+p.getUniqueId().toString()+".country")) {
+			 String country = GetCountry.getCountry(ip.toString());
+		
+			sp.setCountry(country);
+			 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".country",sp.getCountry());
+			 Main.data.saveConfig();
 		 }
 		   
 	 }
@@ -568,9 +628,9 @@ public class  DataManager {
     
 	public ItemStack[] lobbyitems() {
 		
-		ItemStack gadgets = new ItemBuilder(Material.CHEST).setTitle("§6§lGadgets").build();
-		ItemStack ranked = new ItemBuilder(Material.NETHER_STAR).setTitle("§a§lRanked").addLore("§cComing Soon").build();
-		ItemStack[] items = {ranked,gadgets};
+		ItemStack gadgets = new ItemBuilder(Material.CHEST).setTitle("§d§lCosmetics").build();
+		ItemStack parkour = new ItemBuilder(Material.FEATHER).setTitle("§b§lParkour").build();
+		ItemStack[] items = {gadgets,parkour};
 		return items;
 	}
 	
@@ -618,23 +678,21 @@ public class  DataManager {
 			  	for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
 					OfflinePlayer p = Bukkit.getOfflinePlayer(UUID.fromString(s));
 					SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-			  		int i = Main.data.getConfig().getInt("players."+s+".mutationtokens");
-			  		
+			  		int i = Main.data.getConfig().getInt("players."+s+".mutation_tokens");
 					if (PermissionsEx.getUser(p.getName()).has("splindux.extreme")) {
-					i = i+7;
-					} else if (PermissionsEx.getUser(p.getName()).has("splindux.epic")) {
 					i = i+5;
+					} else if (PermissionsEx.getUser(p.getName()).has("splindux.epic")) {
+					i = i+3;
 					} else if (PermissionsEx.getUser(p.getName()).has("splindux.vip")) {
-						i = i+3;
+						i = i+1;
 						}
 					
-					Main.data.getConfig().set("players."+s+".mutationtokens", i);
+				
+					Main.data.getConfig().set("players."+s+".mutation_tokens", i);
 					sp.setMutationTokens(i);
 			  	}
 			  
-			  	
-			  	Main.data.saveConfig();
-			  	
+			  	Main.data.saveConfig(); 	
 		}
 		}.runTaskAsynchronously(Main.get());
 	}

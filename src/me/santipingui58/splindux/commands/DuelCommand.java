@@ -99,7 +99,7 @@ public class DuelCommand implements CommandExecutor{
 					  if (!dueled.isInGame()) {
 						  sp2.add(dueled);
 				  } else {
-						sender.sendMessage("§cThis player §b"+ op.getName() +" is already in game.");
+						sender.sendMessage("§cThis player §b"+ dueled.getName() +" is already in game.");
 						return false;
 					}
 			  } else {

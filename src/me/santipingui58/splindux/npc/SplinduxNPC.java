@@ -42,13 +42,15 @@ public class SplinduxNPC {
 		}  else if (this.type.getGameType().equals(GameType.DUEL)) {
 			hologram.appendTextLine("§7Playing: §a" + this.playing);
 			hologram.appendTextLine("§7In Queue: §a" + this.queue);
+		} else if (this.type.equals(NPCType.FISHING)) {
+			hologram.appendTextLine("§eNPC");
 		}
 		}
 	}
 	
 	
 	public void updateHologram() {	
-		if (this.type.equals(NPCType.VOTES)) return;
+		if (this.type.equals(NPCType.VOTES) || this.type.equals(NPCType.FISHING)) return;
 		if (this.type.equals(NPCType.FFA)) {	
 			if (this.playing!=GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(), 0)) {
 				this.playing = GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(), 0);
@@ -72,8 +74,7 @@ public class SplinduxNPC {
 			if (h.getLocation().distance(l)<1) {
 				return h;
 			}
-		}
-		
+		}	
 		return HologramsAPI.createHologram(Main.get(),l);
 	}
 	

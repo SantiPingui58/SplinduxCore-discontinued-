@@ -7,6 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+
 
 
 public class MsgCommand implements CommandExecutor {
@@ -34,20 +36,12 @@ public class MsgCommand implements CommandExecutor {
 			      builder.append(args[i]).append(" ");
 			    }
 			  String message = builder.toString();
-			  
-				receptor.sendMessage("§6[" + p.getName() + " -> me] §f" + message);
-				p.sendMessage("§6[me -> " + receptor.getName() + "] §f" + message);
-				Player d = Bukkit.getPlayer("Notch");
-				if (Bukkit.getOnlinePlayers().contains(d)) {
-					if (d!=p && d!=receptor) {
-						d.sendMessage("§7[PM] "+p.getName()+"->" + receptor.getName() + " : " +message);
-				}
-				}
+			  SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+			  SpleefPlayer sreceptor = SpleefPlayer.getSpleefPlayer(receptor);
+				receptor.sendMessage("§6[" + sp.getName() + " -> me] §f" + message);
+				p.sendMessage("§6[me -> " + sreceptor.getName() + "] §f" + message);
 				respond.put(receptor, p);
 				respond.put(p, receptor);
-				
-				
-				
 			} else {
 					p.sendMessage("§cThe player §b" + args[0] + "§c doesn't exists or is not online.");
 				}
@@ -66,30 +60,21 @@ public class MsgCommand implements CommandExecutor {
 			    {
 			      builder.append(args[i]).append(" ");
 			    }
-			  String message = builder.toString();				
-				respond.get(p).sendMessage("§6[" + p.getName() + " -> me] §f" + message);
-				p.sendMessage("§6[me -> " + respond.get(p).getName() + "] §f" + message);
-				Player d = Bukkit.getPlayer("Notch");
-				if (Bukkit.getOnlinePlayers().contains(d)) {
-					if (d!=p && d!=respond.get(p)) {
-					d.sendMessage("§7[PM] "+p.getName()+"->" + respond.get(p).getName() + " : " +message);
-				}
-				}
-				
+			  String message = builder.toString();		
+			  
+			  SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+			  SpleefPlayer sreceptor = SpleefPlayer.getSpleefPlayer((Player) respond.get(p));
+			  
+				respond.get(p).sendMessage("§6[" + sp.getName() + " -> me] §f" + message);
+				p.sendMessage("§6[me -> " + sreceptor.getName() + "] §f" + message);		
 			} else {
-
-					p.sendMessage("§cYou don't have anyone to reply.");
-				
+					p.sendMessage("§cYou don't have anyone to reply.");		
 			}
 		} else {
-
-				p.sendMessage("§cYou don't have anyone to reply.");
-			
+				p.sendMessage("§cYou don't have anyone to reply.");		
 			}
 	} else {
-
-			p.sendMessage("§aUse of command: /r <message>");
-		
+			p.sendMessage("§aUse of command: /r <message>");	
 	}
 		}
 	}

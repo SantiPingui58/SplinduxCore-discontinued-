@@ -162,7 +162,7 @@ public class GameMutation {
 		
 		votes = votes+value;
 		
-		for (SpleefPlayer viewers : this.arena.getViewers()) viewers.getPlayer().sendMessage("§b" + p.getName()+" §ahas added §6"+value+ " §a vote(s) to add §b" +this.type.getTitle() 
+		for (SpleefPlayer viewers : this.arena.getViewers()) viewers.getPlayer().sendMessage("§b" + sp.getName()+" §ahas added §6"+value+ " §a vote(s) to add §b" +this.type.getTitle() 
 		+ "§a! §e("+this.votes+"/"+this.type.getRequiredVotes()+")");
 				
 		if (votes>=this.type.getRequiredVotes()) {
@@ -215,7 +215,7 @@ public class GameMutation {
 	}
 	
 	public void mutationMessage(SpleefPlayer sp) {
-			sp.getPlayer().sendMessage("§b"+this.owner.getPlayer().getName()+" §ahas activated a Mutation Token for §b" + this.type.getTitle() + "§a! You need §e" 
+			sp.getPlayer().sendMessage("§b"+this.owner.getName()+" §ahas activated a Mutation Token for §b" + this.type.getTitle() + "§a! You need §e" 
 					+ this.type.getRequiredVotes() + " §avotes to activate this Mutation for the next game! §7(Mutation request will end in 1 minute) §e("+this.votes+"/"+this.type.getRequiredVotes()+")");			
 			if(!sp.equals(this.owner)) {
 				sp.getPlayer().spigot().sendMessage(getInvitation());

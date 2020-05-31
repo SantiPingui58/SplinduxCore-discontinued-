@@ -4,10 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
-import me.santipingui58.splindux.utils.Utils;
 
 
 
@@ -25,8 +22,11 @@ public class SpawnCommand implements CommandExecutor {
 			Player p = (Player) sender;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			sp.leave(true);
+			sp.teleportToLobby();
+			
+			
+			
 		
-		p.teleport(Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true));
 		}
 		}
 		return false;

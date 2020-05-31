@@ -14,7 +14,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,6 +30,7 @@ import com.mojang.authlib.properties.Property;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import net.minecraft.server.v1_12_R1.EntityFishingHook;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent.ChatSerializer;
 import net.minecraft.server.v1_12_R1.PacketPlayOutTitle;
@@ -318,6 +321,52 @@ public class Utils {
 
 	        return loc;
 	    }
+		
+		
+		public  boolean isUnicode(String s) {
+		      if (s == null) // checks if the String is null {
+		          return false;
+		       
+		       int len = s.length();
+		       for (int i = 0; i < len; i++) {
+		          // checks whether the character is not a letter
+		          // if it is not a letter ,it will return false
+		          if ((Character.isLetter(s.charAt(i)) == false)) {
+		             return false;
+		          }
+		       }
+		       return true;
+		    }
+
+		
+		
+		public void setBiteTime(FishHook hook, int time) {
+		   EntityFishingHook hookCopy = (EntityFishingHook) ((CraftEntity) hook).getHandle();
+
+		    Field fishCatchTime = null;
+
+		    try {
+		        fishCatchTime = EntityFishingHook.class.getDeclaredField("h");
+		    } catch (NoSuchFieldException e) {
+		        e.printStackTrace();
+		    } catch (SecurityException e) {
+		        e.printStackTrace();
+		    }
+
+		    fishCatchTime.setAccessible(true);
+
+		    try {
+		        fishCatchTime.setInt(hookCopy, time);
+		    } catch (IllegalArgumentException e) {
+		        e.printStackTrace();
+		    } catch (IllegalAccessException e) {
+		        e.printStackTrace();
+		    }
+
+		    fishCatchTime.setAccessible(false);
+		}
+		
+		
 		
 		
 		//Minecraft saves all skins, even if they aren't being used by a player. That way we can get custom heads with a weird code (Base64). This method converts Base64 urls to the Head Item.

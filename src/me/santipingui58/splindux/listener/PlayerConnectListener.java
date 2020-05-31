@@ -3,11 +3,15 @@ package me.santipingui58.splindux.listener;
 
 
 import java.util.Date;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -29,20 +33,24 @@ public class PlayerConnectListener implements Listener {
 
 	
 	@EventHandler
+	public void onPreJoin(AsyncPlayerPreLoginEvent e) {
+		UUID uuid = e.getUniqueId();
+		
+		if (!Main.data.getConfig().contains("players."+uuid.toString())) {
+			 DataManager.getManager().createSpleefPlayer(uuid);
+			} 
+	}
+	
+	
+	
+	@EventHandler (priority=EventPriority.HIGHEST)
 	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(null); 
 		
 		e.getPlayer().setGameMode(GameMode.ADVENTURE);
 		Player p = e.getPlayer();
 		
-		SpleefPlayer sp = null;
-		if (!Main.data.getConfig().contains("players."+p.getUniqueId().toString())) {
-		 DataManager.getManager().createSpleefPlayer(p);
-		 return;
-		} 
-		
-		sp = SpleefPlayer.getSpleefPlayer(p);
-		
+		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 		if (sp.getCoins()==0) {
 			int coins = Main.data.getConfig().getInt("players."+p.getUniqueId()+".coins");
 			if (coins==0) {
@@ -58,7 +66,10 @@ public class PlayerConnectListener implements Listener {
 			Main.econ.depositPlayer(p, coins);
 		}
 		
-		DataManager.getManager().saveIP(e.getPlayer());
+		
+		
+		
+		DataManager.getManager().saveIP(sp);
 		SecurityManager.getManager().adminLogin(sp);
 		sp.setScoreboard(ScoreboardType.LOBBY);
 		LevelManager.getManager().setExp(sp);
@@ -66,7 +77,7 @@ public class PlayerConnectListener implements Listener {
 		if (e.getPlayer().hasPermission("splindux.join")) {
 			for (Player o : Bukkit.getOnlinePlayers()) {	
 				String prefix = ChatColor.translateAlternateColorCodes('&', PermissionsEx.getUser(e.getPlayer()).getPrefix());
-				o.sendMessage(prefix+  e.getPlayer().getName() + " §ahas joined the server!");
+				o.sendMessage(prefix+  sp.getName() + " §ahas joined the server!");
 			}
 		}
 		if (Main.arenas.getConfig().contains("mainlobby")) {
@@ -98,7 +109,7 @@ public class PlayerConnectListener implements Listener {
 			SpleefArena arena = sp.getArena();
 			sp.leaveQueue(arena,false);
 				for (SpleefPlayer s : arena.getViewers()) {
-					s.getPlayer().sendMessage(ChatColor.GOLD + e.getPlayer().getName() + " §chas left the server!");
+					s.getPlayer().sendMessage(ChatColor.GOLD + sp.getName() + " §chas left the server!");
 				}
 			}	
 		for (SpleefPlayer spect : sp.getSpectators()) {
@@ -111,7 +122,7 @@ public class PlayerConnectListener implements Listener {
 				SpleefDuel duel = online.getDuelByDueledPlayer(sp);
 				if (duel.getDueledPlayers().contains(sp)) {
 					for (SpleefPlayer dueled : duel.getDueledPlayers()) {
-					dueled.getPlayer().sendMessage("§cThe player §b" + sp.getPlayer().getName() + "§c has left the Server! Duel cancelled.");
+					dueled.getPlayer().sendMessage("§cThe player §b" + sp.getName() + "§c has left the Server! Duel cancelled.");
 					}
 					duel.getChallenger().getDuels().remove(duel);
 				}

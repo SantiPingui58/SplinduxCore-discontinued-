@@ -1,10 +1,8 @@
 package me.santipingui58.splindux.commands;
-import java.util.ArrayList;
-import java.util.List;
+
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,15 +22,9 @@ public class AdminCommand implements CommandExecutor {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
-		if(!(sender instanceof Player)) {
-			
-			sender.sendMessage("Solo los jugadores pueden hacer esto!");
-			return true;
-			
-		} else {
 	
 		if(cmd.getName().equalsIgnoreCase("admin")){
-			final Player p = (Player) sender;
+			final CommandSender p = sender;
 			if (p.hasPermission("*")) {
 				if (args[0].equalsIgnoreCase("resetweekly")) {
 					p.sendMessage(ChatColor.GREEN+"week reset");
@@ -60,9 +52,6 @@ public class AdminCommand implements CommandExecutor {
 						sp.setMonthlyFFAKills(0);
 						sp.setMonthlyFFAWins(0);
 					}
-				} else if (args[0].equalsIgnoreCase("tp")) {
-					World world = Bukkit.getWorld(args[1]);
-					p.teleport(world.getSpawnLocation());
 				} else if (args[0].equalsIgnoreCase("resetholograms")) {
 					for (Hologram h : HologramsAPI.getHolograms(Main.get())) {
 						h.delete();
@@ -75,27 +64,19 @@ public class AdminCommand implements CommandExecutor {
 					Main.data.saveConfig();
 				} else if (args[0].equalsIgnoreCase("pvp")) {
 					Main.pvp = !Main.pvp;
-				} else if (args[0].equalsIgnoreCase("transfer")) {
-					List<String> list = new ArrayList<String>();
-					for (String s : Main.data.getConfig().getConfigurationSection("players").getKeys(false)) {
-						double coins = Main.data.getConfig().getInt("players."+s+".coins");
-						list.add(s);
-						Main.playerdata.getConfig().set(s, coins);
-					}
-					Main.playerdata.getConfig().set("AConomyPlayerList", list);
-					Main.playerdata.saveConfig();
-				} else if (args[0].equalsIgnoreCase("givemutations")) {
+				}  else if (args[0].equalsIgnoreCase("givemutations")) {
 					DataManager.getManager().giveMutationTokens();
 					p.sendMessage("Gave mutation tokens");
+				}else if (args[0].equalsIgnoreCase("test")) {
+					for (Player pl : Bukkit.getOnlinePlayers()) {
+						Player player = (Player) sender;
+						if (player!=pl) {
+							player.hidePlayer(Main.get(), pl);
+							
+						}
+					}
 				}
-			}
-			
-			if (p.hasPermission("splindux.builder")) {
-				 if (args[0].equalsIgnoreCase("build")) {
-					World world = Bukkit.getWorld("construccion");
-					p.teleport(world.getSpawnLocation());
-				} 
-			}
+				
 			}
 			
 

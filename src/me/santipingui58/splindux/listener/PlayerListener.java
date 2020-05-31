@@ -9,6 +9,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.death.BreakReason;
@@ -18,6 +20,7 @@ import me.santipingui58.splindux.game.mutation.MutationType;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.translate.Main;
 
 public class PlayerListener implements Listener {
 
@@ -33,9 +36,9 @@ public class PlayerListener implements Listener {
 		 }
 		  
 		if (!p.getGameMode().equals(GameMode.CREATIVE)) {
-			if (sp.isInGame()) {
+			if (sp.isInGame() || sp.isInQueue()) {
 				if (sp.getArena().getState().equals(GameState.GAME)) {
-				if (!e.getBlock().getType().equals(Material.SNOW_BLOCK) || e.getBlock().getType().equals(Material.TNT)) {
+				if (!e.getBlock().getType().equals(Material.SNOW_BLOCK) && !e.getBlock().getType().equals(Material.TNT)) {
 					e.setCancelled(true);
 				} else {
 					
@@ -52,6 +55,16 @@ public class PlayerListener implements Listener {
 					BrokenBlock kill = new BrokenBlock(sp,e.getBlock().getLocation(),BreakReason.SHOVEL);
 					arena.getBrokenBlocks().add(kill);
 				}
+				} else if (sp.getArena().getState().equals(GameState.LOBBY) && sp.getArena().getGameType().equals(GameType.FFA)){
+					if (!e.getBlock().getType().equals(Material.SNOW_BLOCK) && !e.getBlock().getType().equals(Material.TNT)) {
+						e.setCancelled(true);
+					} else {
+					new BukkitRunnable() {
+						public void run() {
+							e.getBlock().setType(Material.SNOW_BLOCK);
+						}
+					}.runTaskLater(Main.get(), 20L*20);
+					}
 				} else {
 					e.setCancelled(true);
 				}

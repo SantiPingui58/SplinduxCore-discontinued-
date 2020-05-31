@@ -5,11 +5,11 @@ import org.bukkit.ChatColor;
 public enum SpleefRank {
 
 	
-	BEGGINER_I,
-	BEGGINER_II,
-	BEGGINER_III,
-	BEGGINER_IV,
-	BEGGINER_V,
+	BEGINNER_I,
+	BEGINNER_II,
+	BEGINNER_III,
+	BEGINNER_IV,
+	BEGINNER_V,
 	AMATEUR_I,
 	AMATEUR_II,
 	AMATEUR_III,
@@ -58,15 +58,15 @@ public enum SpleefRank {
 	
 	
 	public int getRequiredLevel() {
-		if (this==BEGGINER_I) {
+		if (this==BEGINNER_I) {
 			return 20;
-		} else if (this.equals(BEGGINER_II)) {
+		} else if (this.equals(BEGINNER_II)) {
 			return 40;
-		} else if (this.equals(BEGGINER_III)) {
+		} else if (this.equals(BEGINNER_III)) {
 			return 60;
-		} else if (this.equals(BEGGINER_IV)) {
+		} else if (this.equals(BEGINNER_IV)) {
 			return 80;
-		} else if (this.equals(BEGGINER_V)) {
+		} else if (this.equals(BEGINNER_V)) {
 			return 100;
 		} else if (this==AMATEUR_I) {
 			return 180;
@@ -163,15 +163,15 @@ public enum SpleefRank {
 	}
 	
 	public int getInt() {
-		if (this==BEGGINER_I) {
+		if (this==BEGINNER_I) {
 			return 1;
-		} else if (this.equals(BEGGINER_II)) {
+		} else if (this.equals(BEGINNER_II)) {
 			return 2;
-		} else if (this.equals(BEGGINER_III)) {
+		} else if (this.equals(BEGINNER_III)) {
 			return 3;
-		} else if (this.equals(BEGGINER_IV)) {
+		} else if (this.equals(BEGINNER_IV)) {
 			return 4;
-		} else if (this.equals(BEGGINER_V)) {
+		} else if (this.equals(BEGINNER_V)) {
 			return 5;
 		} else if (this==AMATEUR_I) {
 			return 6;
@@ -269,15 +269,15 @@ public enum SpleefRank {
 	
 	
 	public SpleefRank getNextRank() {
-		if (this==BEGGINER_I) {
-			return BEGGINER_II;
-		} else if (this.equals(BEGGINER_II)) {
-			return BEGGINER_III;
-		} else if (this.equals(BEGGINER_III)) {
-			return BEGGINER_IV;
-		} else if (this.equals(BEGGINER_IV)) {
-			return BEGGINER_V;
-		} else if (this.equals(BEGGINER_V)) {
+		if (this==BEGINNER_I) {
+			return BEGINNER_II;
+		} else if (this.equals(BEGINNER_II)) {
+			return BEGINNER_III;
+		} else if (this.equals(BEGINNER_III)) {
+			return BEGINNER_IV;
+		} else if (this.equals(BEGINNER_IV)) {
+			return BEGINNER_V;
+		} else if (this.equals(BEGINNER_V)) {
 			return AMATEUR_I;
 		} else if (this==AMATEUR_I) {
 			return AMATEUR_II;
@@ -373,16 +373,16 @@ public enum SpleefRank {
 	
 	
 	public SpleefRank getPrevRank() {
-		if (this.equals(BEGGINER_II)) {
-			return BEGGINER_I;
-		} else if (this.equals(BEGGINER_III)) {
-			return BEGGINER_II;
-		} else if (this.equals(BEGGINER_IV)) {
-			return BEGGINER_III;
-		} else if (this.equals(BEGGINER_V)) {
-			return BEGGINER_IV;
+		if (this.equals(BEGINNER_II)) {
+			return BEGINNER_I;
+		} else if (this.equals(BEGINNER_III)) {
+			return BEGINNER_II;
+		} else if (this.equals(BEGINNER_IV)) {
+			return BEGINNER_III;
+		} else if (this.equals(BEGINNER_V)) {
+			return BEGINNER_IV;
 		} else if (this==AMATEUR_I) {
-			return BEGGINER_V;
+			return BEGINNER_V;
 		} else if (this.equals(AMATEUR_II)) {
 			return AMATEUR_I;
 		} else if (this.equals(AMATEUR_III)) {
@@ -487,7 +487,7 @@ public enum SpleefRank {
 	
 	
 	public ChatColor getRankColor() {
-		if (getMainRank().equals(BEGGINER_I)) {
+		if (getMainRank().equals(BEGINNER_I)) {
 			return ChatColor.GRAY;
 		} else if (getMainRank().equals(AMATEUR_I)) {
 			return ChatColor.WHITE;
@@ -512,8 +512,8 @@ public enum SpleefRank {
 	}
 	
 	public SpleefRank getMainRank() {
-		if (this.equals(BEGGINER_I) || this.equals(BEGGINER_II) || this.equals(BEGGINER_III) || this.equals(BEGGINER_IV) || this.equals(BEGGINER_V)) {
-			return BEGGINER_I;
+		if (this.equals(BEGINNER_I) || this.equals(BEGINNER_II) || this.equals(BEGINNER_III) || this.equals(BEGINNER_IV) || this.equals(BEGINNER_V)) {
+			return BEGINNER_I;
 		} else if (this.equals(AMATEUR_I) || this.equals(AMATEUR_II) || this.equals(AMATEUR_III) || this.equals(AMATEUR_IV) || this.equals(AMATEUR_V)) {
 			return AMATEUR_I;
 		} else if (this.equals(MEDIUM_I) || this.equals(MEDIUM_II) || this.equals(MEDIUM_III) || this.equals(MEDIUM_IV) || this.equals(MEDIUM_V)) {
@@ -537,8 +537,8 @@ public enum SpleefRank {
 	}
 	
 	public SpleefRank getTopRank() {
-		if (this.equals(BEGGINER_I) || this.equals(BEGGINER_II) || this.equals(BEGGINER_III) || this.equals(BEGGINER_IV) || this.equals(BEGGINER_V)) {
-			return BEGGINER_V;
+		if (this.equals(BEGINNER_I) || this.equals(BEGINNER_II) || this.equals(BEGINNER_III) || this.equals(BEGINNER_IV) || this.equals(BEGINNER_V)) {
+			return BEGINNER_V;
 		} else if (this.equals(AMATEUR_I) || this.equals(AMATEUR_II) || this.equals(AMATEUR_III) || this.equals(AMATEUR_IV) || this.equals(AMATEUR_V)) {
 			return AMATEUR_V;
 		} else if (this.equals(MEDIUM_I) || this.equals(MEDIUM_II) || this.equals(MEDIUM_III) || this.equals(MEDIUM_IV) || this.equals(MEDIUM_V)) {

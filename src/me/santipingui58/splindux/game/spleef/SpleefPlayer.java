@@ -14,15 +14,20 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.inventivetalent.nicknamer.api.NickNamerAPI;
 
+import dev.esophose.playerparticles.api.PlayerParticlesAPI;
+import me.neznamy.tab.api.TABAPI;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameEndReason;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.PlayerOptions;
 import me.santipingui58.splindux.game.mutation.GameMutation;
+import me.santipingui58.splindux.particles.effect.ParticleEffect;
+import me.santipingui58.splindux.particles.type.ParticleType;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
-import me.santipingui58.splindux.utils.GetCountry;
 import me.santipingui58.splindux.utils.Utils;
 import net.archangel99.dailyrewards.DailyRewards;
 import net.archangel99.dailyrewards.manager.objects.DUser;
@@ -83,6 +88,12 @@ public class SpleefPlayer {
 	
 	private PlayerOptions options;
 	
+	private ParticleEffect particleEffect;
+	private ParticleType particleType;
+	
+	
+	private boolean petShop; 
+	
 	public SpleefPlayer(UUID uuid) {
 		this.uuid = uuid;
 		this.scoreboard = ScoreboardType.LOBBY;
@@ -90,8 +101,75 @@ public class SpleefPlayer {
 		
 	}
 	
-
 	
+	public static SpleefPlayer getSpleefPlayer(OfflinePlayer p) {
+
+		if (!p.isOnline()) {
+		if (!p.hasPlayedBefore() && !(p.getPlayer()==null)) {
+			return null;
+		}
+		}
+		
+		if (DataManager.getManager().getPlayersCache().containsKey(p.getName())) {
+			return DataManager.getManager().getPlayersCache().get(p.getName());
+		} else {
+		for (SpleefPlayer rp : DataManager.getManager().getPlayers()) {
+			if (rp.getOfflinePlayer().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {		
+				DataManager.getManager().getPlayersCache().put(p.getName(), rp);
+				return rp;
+			}
+		}	
+		
+		return null;
+	}
+	}
+	
+	
+
+	public boolean hasPetShopOpen() {
+		return this.petShop;
+	}
+	
+	public void petShop(boolean b) {
+		this.petShop = b;
+	}
+	
+	public void setParticle(ParticleEffect effect, ParticleType type) {
+		if (this.getSelectedParticleEffect()!=null && this.getSelectedParticleType() !=null) {
+			if (getOfflinePlayer().isOnline()) {
+		PlayerParticlesAPI.getInstance().resetActivePlayerParticles(getPlayer());
+		PlayerParticlesAPI.getInstance().addActivePlayerParticle(getPlayer(), type.typeToEffect(),effect.effectToDefaultStyles());
+		}
+		}
+	}
+	
+	public ParticleEffect getSelectedParticleEffect() {
+		return this.particleEffect;	
+	}
+	
+	public void selectParticleEffect(ParticleEffect effect, boolean message) {
+		this.particleEffect = effect;
+		if (getOfflinePlayer().isOnline()) {
+			setParticle(effect,this.particleType);	
+		if (this.particleType==null && message) {
+			getPlayer().sendMessage("§7§oRemember to also select a §a§oParticle Type");
+		}
+		}
+	}
+	
+	public ParticleType getSelectedParticleType() {
+		return this.particleType;
+	}
+	
+	public void selectParticleType(ParticleType type,boolean message) {
+		this.particleType = type;
+		if (getOfflinePlayer().isOnline()) {
+			setParticle(this.getSelectedParticleEffect(), type);
+		if (this.getSelectedParticleEffect()==null && message) {
+			getPlayer().sendMessage("§7§oRemember to also select a §a§oParticle Effect");
+		}
+		}
+	}
 	public PlayerOptions getOptions() {
 		return this.options;
 	}
@@ -139,37 +217,15 @@ public class SpleefPlayer {
 	public void setLastLogin(Date d) {
 		this.lastlogin = d;
 	}
-	
-	public static SpleefPlayer getSpleefPlayerOnRestart(OfflinePlayer p) {
-		for (SpleefPlayer rp : DataManager.getManager().getPlayers()) {
-			if (rp.getOfflinePlayer().getUniqueId().equals(p.getUniqueId())) {		
-				DataManager.getManager().getPlayersCache().put(p, rp);
-				return rp;
-			}
-		}	
-		return null;
-	
-	}
-	
-	public static SpleefPlayer getSpleefPlayer(OfflinePlayer p) {
 
-		if (!p.hasPlayedBefore() && !(p.getPlayer()==null)) {
-			return null;
-		}
-		if (DataManager.getManager().getPlayersCache().containsKey(p)) {
-			return DataManager.getManager().getPlayersCache().get(p);
-		} else {
-		for (SpleefPlayer rp : DataManager.getManager().getPlayers()) {
 	
-			if (rp.getOfflinePlayer().getUniqueId().equals(p.getUniqueId())) {		
-				DataManager.getManager().getPlayersCache().put(p, rp);
-				return rp;
+	public void teleportToLobby() {
+		new BukkitRunnable() {
+			public void run() {
+				getPlayer().teleport(Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true));
 			}
-		}	
-		return null;
+		}.runTaskLater(Main.get(), 2L);
 	}
-	}
-	
 	
 	 public boolean isInGame() {
 		 for (SpleefArena arena : DataManager.getManager().getArenas()) {
@@ -212,14 +268,15 @@ public class SpleefPlayer {
 	 }
 	 
 	 public void leave(boolean teleport) {
-		 getPlayer().setGameMode(GameMode.ADVENTURE);
-		leaveSpectate(teleport);
+		 getPlayer().setGameMode(GameMode.ADVENTURE);	
 		leaveQueue(getArena(),teleport);    	
+		leaveSpectate(teleport);
 	 }
 	 
 	 
 		public void leaveQueue(SpleefArena arena,boolean teleport) {
 			giveLobbyItems();
+			
 			if (isInArena()) {
 			if (getPlayer().isOnline() && teleport) {
 				if (Main.arenas.getConfig().contains("mainlobby")) {
@@ -444,11 +501,7 @@ public class SpleefPlayer {
 		this.parkour = false;
 		resetParkourTimer();
 	}
- 	public String getCountry() {
-		if (this.country==null) {
-			new GetCountry(this);
-		}
-		
+ 	public String getCountry() {		
 		return this.country;
 	}
 	
@@ -609,10 +662,28 @@ public class SpleefPlayer {
 	}
 	public void afk() {
 		this.isafk = true;
+		if (getOfflinePlayer().isOnline()) {
+		if (getPlayer().hasPermission("splindux.vip")) {
+			UUID uuid = getPlayer().getUniqueId();
+		TABAPI.setAboveNameTemporarily(uuid, "");
+		TABAPI.setTabPrefixTemporarily(uuid, "§7§oAFK ");
+		TABAPI.setTagPrefixTemporarily(uuid, "§7§oAFK ");
+		TABAPI.setBelowNameTemporarily(uuid, "");
 	}
+		}
+		}
 	
 	public void back() {
 		this.isafk = false;
+		if (getOfflinePlayer().isOnline()) {
+		if (getPlayer().hasPermission("splindux.vip")) {
+			UUID uuid = getPlayer().getUniqueId();
+			TABAPI.removeTemporaryAboveName(uuid);
+			TABAPI.removeTemporaryBelowName(uuid);
+			TABAPI.removeTemporaryTabPrefix(uuid);
+			TABAPI.removeTemporaryTagPrefix(uuid);
+		}
+	}
 	}
 	public ScoreboardType getScoreboard() {
 		return this.scoreboard;
@@ -800,21 +871,45 @@ public class SpleefPlayer {
 		}
 		getPlayer().playEffect(getPlayer().getLocation(), Effect.RECORD_PLAY, 0);
 		getPlayer().setGameMode(GameMode.ADVENTURE);
+		if (!getPlayer().getWorld().getName().equalsIgnoreCase("world")) {	
 		getPlayer().getInventory().clear();
+		}
+		getPlayer().getInventory().setItem(3, DataManager.getManager().lobbyitems()[1]);		
 		getPlayer().getInventory().setItem(4, DataManager.getManager().lobbyitems()[0]);	
-		getPlayer().getInventory().setItem(5, DataManager.getManager().lobbyitems()[1]);
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void giveQueueItems() {
+	public void giveQueueItems(boolean giveShovel,boolean giveMutations) {
+	
+		getPlayer().getInventory().clear();
+		if (giveShovel) {
+			getPlayer().setGameMode(GameMode.SURVIVAL);
+		if (getPlayer().hasPermission("splindux.diamondshovel")) {
+			getPlayer().getInventory().setItem(0, DataManager.getManager().gameitems()[1]);
+		} else {
+			getPlayer().getInventory().setItem(0, DataManager.getManager().gameitems()[0]);
+		}
+		} else {
+			getPlayer().setGameMode(GameMode.ADVENTURE);
+		}
 		for(PotionEffect effect : getPlayer().getActivePotionEffects())	{
 		    getPlayer().removePotionEffect(effect.getType());
 		}
 		getPlayer().playEffect(getPlayer().getLocation(), Effect.RECORD_PLAY, 0);
-		getPlayer().setGameMode(GameMode.ADVENTURE);
-		getPlayer().getInventory().clear();
+		
+		if (giveMutations) {
 		getPlayer().getInventory().setItem(7, DataManager.getManager().queueitems()[0]);	
+		}
 		getPlayer().getInventory().setItem(8, DataManager.getManager().queueitems()[1]);
+		getPlayer().getInventory().setItem(4, DataManager.getManager().lobbyitems()[0]);	
+	}
+
+
+	public String getName() {
+		 if (NickNamerAPI.getNickManager().isNicked(getOfflinePlayer().getUniqueId())) {
+			 return "~"+ NickNamerAPI.getNickManager().getNick(getOfflinePlayer().getUniqueId());
+		 }
+		 return getOfflinePlayer().getName();
 	}
 	
 	

@@ -44,13 +44,14 @@ public class NPCListener implements Listener {
 			}		
 				} else if (splinduxnpc.getType().equals(NPCType.VOTES)) {
 					new VotesMenu(sp).o(p);
-				} else {
+				} else if (splinduxnpc.getType().equals(NPCType.FISHING)) {
+				} else {		
 					if (!sp.isInQueue()) {
-						GameManager.getManager().addDuelQueue(sp, splinduxnpc.getType().getAmount(), null, splinduxnpc.getType().getSpleefType());
+						GameManager.getManager().addDuelQueue(sp, splinduxnpc.getType().getAmount(), null, splinduxnpc.getType().getSpleefType(),splinduxnpc.getType().isRanked());
 				} else {
 					p.sendMessage("§cYou are already in a queue.");
 				}
 				}
-	}
+	} 
 	}
 }

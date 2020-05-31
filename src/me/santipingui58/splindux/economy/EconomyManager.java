@@ -91,17 +91,17 @@ public class EconomyManager extends GEconomyProvider {
 					  x++;
 				  }
 				  
-				  Bukkit.broadcastMessage("§fThe player §b" + sp.getOfflinePlayer().getName() + "§f has found a §bSplinBox §e" + stars + "§f!");
+				  Bukkit.broadcastMessage("§fThe player §b" + sp.getName() + "§f has found a §bSplinBox §e" + stars + "§f!");
 				  
 				  
 				  }
 			  }
 			  
-			  if (sp.getSplinboxPoints()%5000==0) {
+			  if (sp.getSplinboxPoints()%10000==0) {
 				  
 				  new BukkitRunnable() {
 					  public void run() {
-						  EconomyManager.getManager().addCoins(sp, 25, true);
+						  EconomyManager.getManager().addCoins(sp, 25, true,false);
 					  }
 					  
 				  }.runTaskLater(Main.get(), 60L*20);
@@ -113,7 +113,7 @@ public class EconomyManager extends GEconomyProvider {
 	  
 	  
 	
-	  public void addCoins(SpleefPlayer sp, Integer i,boolean multiplier) {
+	  public void addCoins(SpleefPlayer sp, Integer i,boolean multiplier,boolean found) {
 	  
 
 			if (multiplier) {
@@ -129,7 +129,11 @@ public class EconomyManager extends GEconomyProvider {
 			sp.addCoins(i);
 			
 			if (Bukkit.getOnlinePlayers().contains(sp.getOfflinePlayer())) {
+				if (found) {
+					sp.getPlayer().sendMessage("§eYou have found §6§l" + i + "&ecoins!");				
+			} else {
 				sp.getPlayer().sendMessage("§aYou have won §6"+i+" coins");
+			}
 			}
 	  } 
 		

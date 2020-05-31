@@ -62,13 +62,13 @@ public class Request {
 		for (SpleefPlayer players : arena.getViewers()) {
 			if (this.type.equals(RequestType.CRUMBLE)) {
 				if (players!=this.challenger) {
-			players.getPlayer().sendMessage("§b"+challenger.getOfflinePlayer().getName() + "§6 has requested to crumble the field with " + this.amount+"%. §7(Left to accept: " 
+			players.getPlayer().sendMessage("§b"+challenger.getName() + "§6 has requested to crumble the field with " + this.amount+"%. §7(Left to accept: " 
 			+ Utils.getUtils().getPlayerNamesFromList(list) + ")");
 				} else {
 					players.getPlayer().sendMessage("§6You sent a crumble request to your opponent.");
 				}
 			} else {
-				players.getPlayer().sendMessage("§b"+challenger.getOfflinePlayer().getName() + "§6 has requested to play to " + this.amount+". §7(Left to accept: " 
+				players.getPlayer().sendMessage("§b"+challenger.getName() + "§6 has requested to play to " + this.amount+". §7(Left to accept: " 
 						+ Utils.getUtils().getPlayerNamesFromList(list) + ")");
 			}
 			if (arena.getPlayers().contains(players)) {

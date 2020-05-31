@@ -11,20 +11,19 @@ import org.json.simple.JSONObject;
 
 import com.google.gson.Gson;
 
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
-
 
 public class GetCountry {
 
 
 	//Here we can get the country of the player based on their IP adress, using the ip-api.com API. 
-	public GetCountry (SpleefPlayer sp) {
+	public static String getCountry (String ip) {
 		 String jsonS = "";
 	        URL url = null;
 			try {
-
-				String ip = sp.getIP().replace("/", "");
-				
+				 ip = ip.replace("/", "");
+				if (ip.equalsIgnoreCase("127.0.0.1") || ip.contains("192.168.0")) {
+					return "AR";
+				}
 				url = new URL("http://ip-api.com/json/" + ip+ "?fields=message,countryCode");
 			} catch (MalformedURLException e1) {
 				e1.printStackTrace();
@@ -55,18 +54,13 @@ public class GetCountry {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-	    	try {
-			JSONObject json = new Gson().fromJson(jsonS, JSONObject.class);
-			 sp.setCountry(json.get("countryCode").toString());
-	    	} catch (Exception e) {
-			}
 	        
-	        try {
-				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			JSONObject json = new Gson().fromJson(jsonS, JSONObject.class);		
+			return json.get("countryCode").toString();
+
 	}
 
+	
+	
 	
 }

@@ -65,7 +65,6 @@ public class Hologram {
 	 return this.packets;
  }
  
- 
 	public int line(Location loc,SpleefPlayer sp,String text) {
 		try {
         WorldServer s = ((CraftWorld)loc.getWorld()).getHandle();
@@ -208,7 +207,7 @@ public class Hologram {
 			    l.add(0, -0.25, 0);
 			    int rank = StatsManager.getManager().getRankingPosition(RankingType.TOTALONLINETIME, sp);
 			    if (!ranking) {
-			    id.add(line(l,sp,"§6§l"+rank+". §b§l"+sp.getOfflinePlayer().getName()+" §7§l- §e§l" + " " + Utils.getUtils().minutesToDate(sp.getOnlineTime())));
+			    id.add(line(l,sp,"§6§l"+rank+". §b§l"+sp.getOfflinePlayer().getName()+" §7§l- §e§l" + " " + Utils.getUtils().minutesToDate(sp.getTotalOnlineTime())));
 			    } else {
 			    	 id.add(line(l,sp,"§f"));
 

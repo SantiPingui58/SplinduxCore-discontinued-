@@ -217,13 +217,11 @@ public class GameManager {
 				
 				winner.setScoreboard(ScoreboardType.FFAGAME_LOBBY);
 				LevelManager.getManager().addLevel(winner, 2);
-				EconomyManager.getManager().addCoins(winner, 15, true);
+				EconomyManager.getManager().addCoins(winner, 15, true,false);
 				SpleefPlayer winstreaker = null;
 				int wins = 0;
 				boolean isover = false;
 			winner.getPlayer().playSound(arena.getLobby(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.5F);
-			
-			
 			if (arena.getWinStreak().isEmpty()) {
 				arena.getWinStreak().put(winner, 1);
 			} else {
@@ -244,21 +242,24 @@ public class GameManager {
 			}
 			
 			for (SpleefPlayer players : DataManager.getManager().getOnlinePlayers()) {
-				players.getPlayer().sendMessage("§b"+winner.getPlayer().getName()+" §bhas won Spleef!");
+				players.getPlayer().sendMessage("§b"+winner.getName()+" §bhas won Spleef!");
 				if (arena.getQueue().size()>=3) {
 				players.getPlayer().sendMessage("§bSpleef is starting in "+ s + " seconds.");
 			}
 				if (isover) {
 					if (wins>1) {
-					players.getPlayer().sendMessage("§bWin Streak of " + winstreaker.getOfflinePlayer().getName() + " is over! Total wins: " + wins);
+					players.getPlayer().sendMessage("§bWin Streak of " + winstreaker.getName() + " is over! Total wins: " + wins);
 				}
 				}
 				
 			}
 			
+			
+			
 			winner.addFFAWin();
 			winner.getPlayer().teleport(arena.getLobby());
-			winner.giveQueueItems();
+			winner.giveQueueItems(false,true);
+			
 			arena.getFFAPlayers().remove(winner);
 			arena.reset(false,false);
 			
@@ -287,7 +288,7 @@ public class GameManager {
 					}  
 					
 					if (wins>1) {
-						players.getPlayer().sendMessage("§bWin Streak of " + winstreaker.getPlayer().getName() + " is over! Total wins: " + wins);
+						players.getPlayer().sendMessage("§bWin Streak of " + winstreaker.getName() + " is over! Total wins: " + wins);
 					}
 					
 					
@@ -298,7 +299,6 @@ public class GameManager {
 				for (SpleefPlayer p : arena.getFFAPlayers()) {
 					p.getPlayer().teleport(arena.getLobby());
 					p.setScoreboard(ScoreboardType.FFAGAME_LOBBY);
-					p.giveLobbyItems();
 				}
 			
 			} else if (reason.equals(GameEndReason.LOG_OFF)) {
@@ -319,7 +319,7 @@ public class GameManager {
 					}  
 					
 					if (wins>1) {
-						players.getPlayer().sendMessage("§bWin Streak of " + winstreaker.getPlayer().getName() + " is over! Total wins: " + wins);
+						players.getPlayer().sendMessage("§bWin Streak of " + winstreaker.getName() + " is over! Total wins: " + wins);
 					}
 				}
 			}
@@ -432,7 +432,7 @@ public class GameManager {
 				}
 				for (SpleefPlayer loser : losers) LevelManager.getManager().addLevel(loser, 1);
 				for (SpleefPlayer winner : winners) LevelManager.getManager().addLevel(winner, 3);
-				for (SpleefPlayer winner : winners)EconomyManager.getManager().addCoins(winner, 20, true);
+				for (SpleefPlayer winner : winners)EconomyManager.getManager().addCoins(winner, 20, true,false);
 				if (arena.getDuelPlayers1().size()==1 && arena.getDuelPlayers2().size()==1) for (SpleefPlayer winner : winners) winner.add1vs1Wins();
 			
 			
@@ -445,14 +445,11 @@ public class GameManager {
 					online.getPlayer().sendMessage("§b" +p2 +" won against " + p1 +" §7(§a" + arena.getPoints2() + "§7-§a" + arena.getPoints1()+"§7)");
 				}
 				}
-				
-			
-			
-				for (SpleefPlayer winner : winners) winner.getPlayer().teleport(Main.lobby);
-				for (SpleefPlayer loser : losers) loser.getPlayer().teleport(Main.lobby);
+
 				for (SpleefPlayer winner : winners)winner.giveLobbyItems();
 			for (SpleefPlayer loser : losers)loser.giveLobbyItems();
-		
+			for (SpleefPlayer winner : winners) winner.teleportToLobby();	
+			for (SpleefPlayer loser : losers) loser.teleportToLobby();
 			} else if (reason.equals(GameEndReason.TIME_OUT)) {
 				for (SpleefPlayer online : arena.getViewers()) {
 					online.getPlayer().sendMessage("§bThe 1vs1 between " + arena.getTeamName(1)+ " §band" + arena.getTeamName(2)  + "§bfinished in a draw!");
@@ -464,21 +461,25 @@ public class GameManager {
 				} else {
 					winners.addAll(arena.getDuelPlayers2());
 				}
-				 for (SpleefPlayer winner : winners) winner.getPlayer().teleport(Main.lobby);
-				 for (SpleefPlayer winner : winners) winner.getPlayer().teleport(Main.lobby); 
+				for (SpleefPlayer winner : winners)winner.giveLobbyItems();
 				 for (SpleefPlayer winner : winners)winner.giveLobbyItems();
 				 for (SpleefPlayer online : DataManager.getManager().getOnlinePlayers()) {
 					 int i = 0;
+					 int l = 0;
 					 if (winners==arena.getDuelPlayers1()) {
 						 i = 1;
-					 } else i = 2;
-						online.getPlayer().sendMessage("§b" +arena.getTeamName(i) +" won the game!");
+						 l= 2;
+					 } else { 
+						 i = 2;
+						 l=1;				 
+					 }
+					 online.getPlayer().sendMessage("§b" +arena.getTeamName(i) +" won against " + arena.getTeamName(l) +" §7(§a" + arena.getPoints1() + "§7-§a" + arena.getPoints2()+"§7)");
 					}
 			
 			} else if (reason.equals(GameEndReason.ENDGAME)) {
 				for (SpleefPlayer sp : arena.getPlayers()) {
-					sp.getPlayer().teleport(Main.lobby);
-					sp.giveLobbyItems();
+					sp.giveLobbyItems();				
+					sp.teleportToLobby();			
 				}
 			}
 			arena.getDuelPlayers1().clear();
@@ -555,7 +556,7 @@ public class GameManager {
 			}
 			
 			sp.getPlayer().teleport(arena.getLobby());
-			sp.giveQueueItems();
+			sp.giveQueueItems(false,true);
 			
 			DeathReason reason = (new ArrayList<DeathReason>(r.keySet())).get(0);	
 			SpleefPlayer killer = (new ArrayList<SpleefPlayer>(r.values())).get(0);	
@@ -597,7 +598,7 @@ public class GameManager {
 					arena.getDeadPlayers1().add(sp);
 					if (arena.getDeadPlayers1().size()<arena.getDuelPlayers1().size()) {
 						for (SpleefPlayer players : arena.getViewers()) { 
-							players.getPlayer().sendMessage("§6"+ sp.getPlayer().getName()+ "§b fell!");							
+							players.getPlayer().sendMessage("§6"+ sp.getName()+ "§b fell!");							
 							}
 						sp.getPlayer().setGameMode(GameMode.SPECTATOR);
 						return;
@@ -606,7 +607,7 @@ public class GameManager {
 					arena.getDeadPlayers2().add(sp);
 					if (arena.getDeadPlayers2().size()<arena.getDuelPlayers2().size()) {
 						for (SpleefPlayer players : arena.getViewers()) { 
-							players.getPlayer().sendMessage("§6"+ sp.getPlayer().getName()+ "§b fell!");							
+							players.getPlayer().sendMessage("§6"+ sp.getName()+ "§b fell!");							
 							}
 						sp.getPlayer().setGameMode(GameMode.SPECTATOR);
 						return;
@@ -693,18 +694,23 @@ public class GameManager {
 			 return block;
 		 }
 
+		 
+		 
+		 
+		 
+		 
 
-		 public void addDuelQueue(SpleefPlayer sp, int teamSize,String map,SpleefType type) {
+		 public void addDuelQueue(SpleefPlayer sp, int teamSize,String map,SpleefType type,boolean ranked) {
 				SpleefArena arena = null;
 				for (SpleefArena a : DataManager.getManager().getArenas()) {
-					if (a.getState().equals(GameState.LOBBY) && a.getTeamSize()==teamSize && a.getQueue().size()>0) {			
+					if (a.getState().equals(GameState.LOBBY) && a.getTeamSize()==teamSize && a.getQueue().size()>0 && ranked==a.isRanked()) {			
 						arena = a;
 						break;
 						
 					}
 				}		
 				if (arena!=null) {
-					arena.addDuelQueue(sp,teamSize);
+					arena.addDuelQueue(sp,teamSize,ranked);
 					if (arena.getQueue().size()>=teamSize*2) {
 						arena.startGame(true);
 					} 
@@ -712,7 +718,7 @@ public class GameManager {
 					arena = findArena(map, type);
 					
 					if (arena!=null) {
-						arena.addDuelQueue(sp,teamSize);
+						arena.addDuelQueue(sp,teamSize,ranked);
 						
 					} else {
 						sp.getPlayer().sendMessage("§cCouldn't find any map to play! Try again later.");

@@ -71,7 +71,7 @@ public class ResetCommand implements CommandExecutor {
 		
 		for (SpleefPlayer players : arena.getViewers()) {			
 			if (!players.equals(sp)) {
-				players.getPlayer().sendMessage("§b"+sp.getOfflinePlayer().getName() + "§6 has requested a reset of the field. To accept the request do /reset §7(Left to accept: " 
+				players.getPlayer().sendMessage("§b"+sp.getName() + "§6 has requested a reset of the field. To accept the request do /reset §7(Left to accept: " 
 			+ Utils.getUtils().getPlayerNamesFromList(list) + ")");
 				
 				

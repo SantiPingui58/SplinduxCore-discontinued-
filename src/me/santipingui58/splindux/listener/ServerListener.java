@@ -3,6 +3,7 @@ package me.santipingui58.splindux.listener;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -31,6 +33,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -39,7 +42,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import com.yapzhenyie.GadgetsMenu.api.GadgetsMenuAPI;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameState;
@@ -50,8 +52,10 @@ import me.santipingui58.splindux.game.mutation.MutationType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
+import me.santipingui58.splindux.gui.GadgetsMenu;
 import me.santipingui58.splindux.gui.MutationTokenMenu;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
+import me.santipingui58.splindux.utils.Utils;
 import net.apcat.simplesit.SimpleSitPlayer;
 import net.apcat.simplesit.events.PlayerSitEvent;
 import net.apcat.simplesit.events.PlayerStopSittingEvent;
@@ -71,6 +75,14 @@ public class ServerListener implements Listener {
 	            }
 			}
 	}
+	
+	
+	@EventHandler
+	public void onFishing(PlayerFishEvent e) {
+			Utils.getUtils().setBiteTime(e.getHook(), 2);
+		
+	}
+	
 	
 	@EventHandler
 	public void onSmelt(BlockFadeEvent e) {
@@ -92,6 +104,7 @@ public class ServerListener implements Listener {
 			Player p = (Player) entity;
 			
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+			if (sp==null) return;			
 			if (sp.isInGame()) {
 				if (Main.pvp) {
 				return;
@@ -116,6 +129,7 @@ public class ServerListener implements Listener {
 		if (entity instanceof Player) {
 			Player p = (Player) entity;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+			if (sp==null) return;
 			
 			if (Main.pvp) {
 			if (sp.isInGame()) {
@@ -132,10 +146,7 @@ public class ServerListener implements Listener {
 				}
 			}
 			}
-		}
-		
-		
-		
+		}		
 		e.setCancelled(true);
 	}
 	@EventHandler
@@ -240,14 +251,27 @@ public class ServerListener implements Listener {
 	    	}
 	    	} else if (p.getItemInHand().equals(DataManager.getManager().queueitems()[1])) {
 	    			sp.leaveQueue(sp.getArena(),true); 		
-	    	} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[1])) {
-	    		GadgetsMenuAPI.goBackToMainMenu(p);
+	    			sp.getPlayer().getInventory().clear();
+	    			new BukkitRunnable() {
+
+						@Override
+						public void run() {
+							sp.giveLobbyItems();
+							
+						}
+	    			
+	    			}.runTaskLater(Main.get(), 2L);
+	    	} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[0])) {
+	    		new GadgetsMenu(sp).o(p);
+	    		//GadgetsMenuAPI.goBackToMainMenu(p);
 	    	} else if (p.getItemInHand().equals(DataManager.getManager().queueitems()[0])) {
 	    		if (sp.getMutationTokens()>0 && sp.getArena().getEvent()==null) {
 	    		new MutationTokenMenu(sp).o(p);
 	    	} else {
 	    		p.sendMessage("§cYou dont have any §dMutation Token §cat the moment.");
 	    	} 
+	    		} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[1])) {
+	    			p.performCommand("ajparkour start parkour1");
 	    		}
 	    		
 	    	
@@ -268,14 +292,25 @@ public class ServerListener implements Listener {
 	
 	
 	
-	
 	@EventHandler
 	public void onEggThrow(PlayerEggThrowEvent event) {
 		 event.setHatching(false);
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onInventoryMove(InventoryClickEvent e) {
+		
+		
+		if (e.getWhoClicked() instanceof Player) {
+			Player p = (Player) e.getWhoClicked();
+			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+			if (!p.getGameMode().equals(GameMode.CREATIVE) && !sp.isInGame()) {
+				if (!e.getInventory().equals(p.getInventory()) ) {
+				e.setCancelled(true);	
+				}
+			}
+		}
+		
 		for (ItemStack i : DataManager.getManager().lobbyitems()) {
 			if (e.getCurrentItem()!=null) {
 				if (e.getCurrentItem().equals(i)) {
@@ -301,6 +336,8 @@ public class ServerListener implements Listener {
 	
 		
 	}
+	
+
 
 	@SuppressWarnings("deprecation")
 	@EventHandler
@@ -401,6 +438,11 @@ public class ServerListener implements Listener {
 				    			e.setCancelled(true);
 									p.sendMessage("§cYou can't execute this command while playing a match.");
 								
+				    		}
+				    	} else if (args[0].equalsIgnoreCase("/nick") && args.length>1) {
+				    		if (!Utils.getUtils().isUnicode(args[1])) {
+				    			p.sendMessage("§cYou can't use this nick.");
+				    			e.setCancelled(true);
 				    		}
 				    	}
 		    }

@@ -52,6 +52,7 @@ public class SpleefArena {
 	private int min;
 	private int max;
 	private int teamsize;
+	private boolean ranked;
 	private HashMap<SpleefPlayer,Integer> winstreak = new HashMap<SpleefPlayer,Integer>();
 	private int time;
 	private int totaltime;
@@ -133,6 +134,14 @@ public class SpleefArena {
 		this.max = max;
 	}
 	
+	
+	public boolean isRanked() {
+		return this.ranked;
+	}
+	
+	public void ranked(boolean b) {
+		this.ranked = b;
+	}
 	
 	public void setTeamSize(int i) {
 		this.teamsize = i;
@@ -625,9 +634,9 @@ public class SpleefArena {
 		 String p = "";
 		 for (SpleefPlayer sp : list) {
 			if(p.equalsIgnoreCase("")) {
-			p = sp.getOfflinePlayer().getName();	
+			p = sp.getName();	
 			}  else {
-				p = p+"-" + sp.getOfflinePlayer().getName();
+				p = p+"-" + sp.getName();
 			}
 		 }
 		 
@@ -641,17 +650,22 @@ public class SpleefArena {
 		 if (!this.gametype.equals(GameType.FFA)) return;
 		sp.leave(false);
 			getQueue().add(sp);		
-				sp.getPlayer().teleport(getLobby());
+				
 			sp.setScoreboard(ScoreboardType.FFAGAME_LOBBY);
 			for (GameMutation mutation : this.getVotingMutations()) {
 				mutation.mutationMessage(sp);
 			}
 			if (getState().equals(GameState.GAME) || getState().equals(GameState.FINISHING) || getState().equals(GameState.STARTING)) {
 				sp.getPlayer().sendMessage("§aYou have been added to the queue, you will play when the next game starts!");
+				sp.getPlayer().teleport(getLobby());
+				sp.giveQueueItems(false,true);	
 			} else {
 				for (SpleefPlayer p : getQueue()) {
-					p.getPlayer().sendMessage("§6" + sp.getPlayer().getName() + " §ahas joined the queue! Total: " + getQueue().size());
+					p.getPlayer().sendMessage("§6" + sp.getName() + " §ahas joined the queue! Total: " + getQueue().size());
 				}			
+				sp.giveQueueItems(true,true);	
+				
+				sp.getPlayer().teleport(getMainSpawn());
 				if (getQueue().size()>=3) {
 					new ArenaNewStartTask(this);
 					setState(GameState.STARTING);
@@ -665,16 +679,17 @@ public class SpleefArena {
 			
 			
 			
-			sp.giveQueueItems();	
+			
 		}
 	 
 	 
-	 public void addDuelQueue(SpleefPlayer sp, int teamSize) {
+	 public void addDuelQueue(SpleefPlayer sp, int teamSize,boolean ranked) {
 		 if (!this.gametype.equals(GameType.DUEL)) return;
 		 this.teamsize= teamSize;
+		 this.ranked = ranked;
 		 sp.leave(false);
 		 getQueue().add(sp);
-		 sp.giveQueueItems();		
+		 sp.giveQueueItems(false,false);		
 		 sp.getPlayer().sendMessage("§aYou have been added to the queue for " + this.spleeftype.toString()+ " " + this.teamsize + "V" + this.teamsize);
 	 }
 	 
@@ -832,7 +847,7 @@ public class SpleefArena {
 					}}}
 			
 			for (SpleefPlayer s : getPlayers()) {
-				EconomyManager.getManager().addCoins(s, 2, true);
+				EconomyManager.getManager().addCoins(s, 2, true,false);
 				s.add1vs1Games();
 			}
 			for (SpleefPlayer s : getDuelPlayers1()) s.getPlayer().teleport(getShrinkedDuelSpawn1());
@@ -1006,7 +1021,7 @@ public class SpleefArena {
 				if (getDuelPlayers1().contains(sp)) {
 					setPoints2(getPoints2()+1);
 					for (SpleefPlayer players : getViewers()) { 
-					players.getPlayer().sendMessage("§6"+ sp.getPlayer().getName()+ "§b fell! §6" + getTeamName(2)+ "§b gets a point.");			
+					players.getPlayer().sendMessage("§6"+ sp.getName()+ "§b fell! §6" + getTeamName(2)+ "§b gets a point.");			
 					}
 					if (getPoints2()>=getPlayTo()) {
 						GameManager.getManager().endGameDuel(this,"Team2",GameEndReason.WINNER);
@@ -1018,7 +1033,7 @@ public class SpleefArena {
 				} else if (getDuelPlayers2().contains(sp)) {
 					setPoints1(getPoints1()+1);
 					for (SpleefPlayer players : getViewers()) { 
-						players.getPlayer().sendMessage("§6"+ sp.getPlayer().getName()+ "§b fell! §6" + getTeamName(1)+ "§b gets a point.");							
+						players.getPlayer().sendMessage("§6"+ sp.getName()+ "§b fell! §6" + getTeamName(1)+ "§b gets a point.");							
 						}
 					if (getPoints1()>=getPlayTo()) {
 						GameManager.getManager().endGameDuel(this,"Team1",GameEndReason.WINNER);

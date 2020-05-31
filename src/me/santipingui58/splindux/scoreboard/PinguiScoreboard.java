@@ -9,9 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import com.nametagedit.plugin.NametagEdit;
-
-import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
@@ -39,7 +36,7 @@ public class PinguiScoreboard {
 				if (sp.getScoreboard().equals(ScoreboardType.LOBBY)) {
 					cache.add(displayname);
 					cache.add("§f§f§f");
-					cache.add("§fName: §6" + sp.getPlayer().getName());
+					cache.add("§fName: §6" + sp.getName());
 					cache.add("§fRank: " + prefix(sp));
 					cache.add("§fLevel: " + LevelManager.getManager().getRank(sp).getRankName());
 					cache.add("§fOnline players: §a" + Bukkit.getOnlinePlayers().size());
@@ -118,16 +115,16 @@ public class PinguiScoreboard {
 						cache.add("§2Total Time: §e" + time(arena.getTotalTime()));
 					if (arena.getPoints1()>=arena.getPoints2()) {
 						if (arena.getDuelPlayers1().size()==1 && arena.getDuelPlayers2().size()==1) {
-					cache.add("§2"+ arena.getDuelPlayers1().get(0).getPlayer().getName() + ": §e" + arena.getPoints1());
-					cache.add("§2"+ arena.getDuelPlayers2().get(0).getPlayer().getName() + ": §e" + arena.getPoints2());
+					cache.add("§2"+ arena.getDuelPlayers1().get(0).getName() + ": §e" + arena.getPoints1());
+					cache.add("§2"+ arena.getDuelPlayers2().get(0).getName() + ": §e" + arena.getPoints2());
 						} else {
 							cache.add("§9Blue Team: §e" + arena.getPoints1());
 							cache.add("§cRed Team: §e" + arena.getPoints2());
 						}
 					} else {				
 						if (arena.getDuelPlayers1().size()==1 && arena.getDuelPlayers2().size()==1) {
-							cache.add("§2"+ arena.getDuelPlayers2().get(0).getPlayer().getName() + ": §e" + arena.getPoints2());
-							cache.add("§2"+ arena.getDuelPlayers1().get(0).getPlayer().getName() + ": §e" + arena.getPoints1());
+							cache.add("§2"+ arena.getDuelPlayers2().get(0).getName() + ": §e" + arena.getPoints2());
+							cache.add("§2"+ arena.getDuelPlayers1().get(0).getName() + ": §e" + arena.getPoints1());
 								} else {
 									cache.add("§cRed Team: §e" + arena.getPoints2());
 									cache.add("§9Blue Team: §e" + arena.getPoints1());
@@ -161,22 +158,7 @@ public class PinguiScoreboard {
 			return String.format("%02d:%02d",  minutes, seconds);
 		  }
 	
-	public void setTags() {
-		
-		for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
-		Player p = sp.getPlayer();
-		if (sp.isAfk() && sp.getPlayer().hasPermission("splindux.afk")) {	
-			NametagEdit.getApi().setPrefix(p, "§7§oAFK ");
-		} else {
-			String prefix = PermissionsEx.getUser(p).getPrefix();
-			if (!prefix.isEmpty()) {
-			NametagEdit.getApi().setPrefix(p, PermissionsEx.getUser(p).getPrefix());
-			} else {
-				NametagEdit.getApi().setPrefix(p, "§7");
-			}
-		}
-	}
-	}
+
 	
 	private String prefix(SpleefPlayer sp) {
 		if (PermissionsEx.getUser(sp.getPlayer()).getPrefix().equalsIgnoreCase("")) {
@@ -186,6 +168,7 @@ public class PinguiScoreboard {
 		}
 	}
 
+	
 	
 }
 	

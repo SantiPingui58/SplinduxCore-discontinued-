@@ -73,7 +73,9 @@ public class HologramManager {
 	 
 	 public void saveHolograms() {
 		 for (Hologram h : holograms) {
+			 if (h.getLocation()!=null) {
 			 Main.arenas.getConfig().set("holograms."+h.getUUID().toString()+".location", Utils.getUtils().setLoc(h.getLocation(), false));
+			 }
 			 Main.arenas.getConfig().set("holograms."+h.getUUID().toString()+".type", h.getType().toString());
 		 }
 		 Main.arenas.saveConfig();

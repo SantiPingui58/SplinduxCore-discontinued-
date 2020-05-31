@@ -90,7 +90,7 @@ public class HoverCommand implements CommandExecutor {
 									cb.append(msg2);
 									BaseComponent[] bc =  cb.create();						
 									for (SpleefPlayer dueled : list) {										
-										dueled.getPlayer().sendMessage("§6"+sp.getOfflinePlayer().getName() + " §ahas accepted the request! §7(Left to accept: " + 
+										dueled.getPlayer().sendMessage("§6"+sp.getName() + " §ahas accepted the request! §7(Left to accept: " + 
 										Utils.getUtils().getPlayerNamesFromList(leftToAccept) + ")");
 										if (dueled!=duel.getChallenger()) {
 											if (!duel.getAcceptedPlayers().contains(dueled))
@@ -116,11 +116,11 @@ public class HoverCommand implements CommandExecutor {
 					 SpleefPlayer challenger = SpleefPlayer.getSpleefPlayer(p2);
 					if (challenger.hasDueled(sp)) {
 						SpleefDuel duel = challenger.getDuelByDueledPlayer(sp);
-						sp.getPlayer().sendMessage("§cYou have denied the duel request from §b" + challenger.getPlayer().getName() + "§c!");
+						sp.getPlayer().sendMessage("§cYou have denied the duel request from §b" + challenger.getName() + "§c!");
 						
 						for (SpleefPlayer dueled : duel.getAllPlayers()) {
 							if (dueled!=sp)
-								dueled.getPlayer().sendMessage("§cThe player §b" + sp.getPlayer().getName() + "§c has denied the request! Duel cancelled.");
+								dueled.getPlayer().sendMessage("§cThe player §b" + sp.getName() + "§c has denied the request! Duel cancelled.");
 						}
 						challenger.getDuels().remove(duel);
 					} else {
@@ -133,7 +133,7 @@ public class HoverCommand implements CommandExecutor {
 				SpleefDuel duel = sp.getDuelByUUID(UUID.fromString(args[1]));		
 						if (duel!=null) {
 							for (SpleefPlayer dueled : duel.getDueledPlayers()) {
-								dueled.getPlayer().sendMessage("§b" + sp.getPlayer().getName() + "§c has cancelled the duel request.");
+								dueled.getPlayer().sendMessage("§b" + sp.getName() + "§c has cancelled the duel request.");
 							}
 							duel.getChallenger().getPlayer().sendMessage("§cYou have cancelled the duel request.");
 							duel.getChallenger().getDuels().remove(duel);
@@ -170,7 +170,7 @@ public class HoverCommand implements CommandExecutor {
 				if (request!=null) {
 					if (request.getChallenger().equals(sp)) {
 				for (SpleefPlayer dueled : arena.getViewers()) {
-					dueled.getPlayer().sendMessage("§b" + sp.getPlayer().getName() + "§c has cancelled the  crumble request.");
+					dueled.getPlayer().sendMessage("§b" + sp.getName() + "§c has cancelled the  crumble request.");
 				}
 				arena.setCrumbleRequest(null);
 					} else {
@@ -187,7 +187,7 @@ public class HoverCommand implements CommandExecutor {
 						SpleefArena arena = sp.getArena();
 						if (arena.getCrumbleRequest()!=null) {
 						for (SpleefPlayer dueled : arena.getPlayers()) {
-							dueled.getPlayer().sendMessage("§cThe player §b" + sp.getPlayer().getName() + "§c has denied the request! Crumble cancelled.");
+							dueled.getPlayer().sendMessage("§cThe player §b" + sp.getName() + "§c has denied the request! Crumble cancelled.");
 						}
 						
 						arena.setCrumbleRequest(null);
@@ -238,7 +238,7 @@ public class HoverCommand implements CommandExecutor {
 										return true;
 									} 
 									for (SpleefPlayer dueled : arena.getPlayers()) {										
-										dueled.getPlayer().sendMessage("§6"+sp.getOfflinePlayer().getName() + " §ahas accepted the request! §7(Left to accept: " + 
+										dueled.getPlayer().sendMessage("§6"+sp.getName() + " §ahas accepted the request! §7(Left to accept: " + 
 										Utils.getUtils().getPlayerNamesFromList(leftToAccept) + ")");
 										if (dueled!=request.getChallenger()) {
 											if (!request.getAcceptedPlayers().contains(dueled) && !arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp))
@@ -266,7 +266,7 @@ public class HoverCommand implements CommandExecutor {
 							if (request!=null) {
 								if (request.getChallenger().equals(sp)) {
 							for (SpleefPlayer dueled : arena.getViewers()) {
-								dueled.getPlayer().sendMessage("§b" + sp.getPlayer().getName() + "§c has cancelled the  playto request.");
+								dueled.getPlayer().sendMessage("§b" + sp.getName() + "§c has cancelled the  playto request.");
 							}
 							arena.setPlayToRequest(null);
 								} else {
@@ -283,7 +283,7 @@ public class HoverCommand implements CommandExecutor {
 									SpleefArena arena = sp.getArena();
 									if (arena.getPlayToRequest()!=null) {
 									for (SpleefPlayer dueled : arena.getPlayers()) {
-										dueled.getPlayer().sendMessage("§cThe player §b" + sp.getPlayer().getName() + "§c has denied the request! Playto cancelled.");
+										dueled.getPlayer().sendMessage("§cThe player §b" + sp.getName() + "§c has denied the request! Playto cancelled.");
 									}
 									
 									arena.setPlayToRequest(null);
@@ -333,7 +333,7 @@ public class HoverCommand implements CommandExecutor {
 													return true;
 												} 
 												for (SpleefPlayer dueled : arena.getPlayers()) {										
-													dueled.getPlayer().sendMessage("§6"+sp.getOfflinePlayer().getName() + " §ahas accepted the request! §7(Left to accept: " + 
+													dueled.getPlayer().sendMessage("§6"+sp.getName() + " §ahas accepted the request! §7(Left to accept: " + 
 													Utils.getUtils().getPlayerNamesFromList(leftToAccept) + ")");
 													if (dueled!=request.getChallenger()) {
 														if (!request.getAcceptedPlayers().contains(dueled))

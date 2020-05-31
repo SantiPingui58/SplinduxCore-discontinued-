@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.utils.ValueComparator;
 
 
@@ -64,7 +65,8 @@ public static void sortPing() {
 		
 		TreeMap<String, Integer> map = new TreeMap<String, Integer>();
     	for (Player s : Bukkit.getOnlinePlayers()) {
-    		map.put(s.getName(), getPing(s));
+    		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(s);
+    		map.put(sp.getName(), getPing(s));
     	}
 
 		 sortedPing = sortMapByValue(map);

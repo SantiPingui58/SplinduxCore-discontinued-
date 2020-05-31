@@ -87,12 +87,12 @@ public class PlayerChat implements Listener {
 				 
 				 if (p.hasPermission("splindux.staff")) {
 					 output = ChatColor.translateAlternateColorCodes('&', output);
-					 r.sendMessage(prefix +p.getName() +"§8: §b"+output );
+					 r.sendMessage(prefix +sp.getName() +"§8: §b"+output );
 				} else if (p.hasPermission("splindux.donatorchat")) {
 					output = ChatColor.translateAlternateColorCodes('&', output);
-					r.sendMessage(prefix +p.getName() +"§8: §f"+output);
+					r.sendMessage(prefix +sp.getName() +"§8: §f"+output);
 				} else {
-					r.sendMessage(prefix +" "+p.getName() +"§8: §7"+ output );
+					r.sendMessage(prefix +" "+sp.getName() +"§8: §7"+ output );
 				}
 			 }
 		 }
@@ -101,14 +101,15 @@ public class PlayerChat implements Listener {
 			 e.getRecipients().remove(r);
 		 }
 		 		
+		
 		if (p.hasPermission("splindux.staff")) {
 			 msg = ChatColor.translateAlternateColorCodes('&', msg);
-			e.setFormat(prefix +p.getName() +"§8: §b"+msg );
+			e.setFormat(prefix +sp.getName() +"§8: §b"+msg );
 		} else if (p.hasPermission("splindux.donatorchat")) {
 			 msg = ChatColor.translateAlternateColorCodes('&', msg);
-			e.setFormat(prefix +p.getName() +"§8: §f"+msg);
+			e.setFormat(prefix +sp.getName() +"§8: §f"+msg);
 		} else {
-			e.setFormat(prefix +" "+p.getName() +"§8: §7"+ msg );
+			e.setFormat(prefix +" "+sp.getName() +"§8: §7"+ msg );
 		}
 		
 		cooldown.add(p);

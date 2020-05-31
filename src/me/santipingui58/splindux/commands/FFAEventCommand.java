@@ -1,5 +1,4 @@
 package me.santipingui58.splindux.commands;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -52,22 +51,24 @@ public class FFAEventCommand implements CommandExecutor{
 									
 									if (p.hasPermission("splindux.admin")) {
 										if (args.length==3) {
-								FFAEvent event = new FFAEvent(Integer.valueOf(args[1]),Boolean.getBoolean(args[2]));
+								FFAEvent event = new FFAEvent(Integer.valueOf(args[1]),Boolean.parseBoolean(args[2]));
 								arena.setEvent(event);
 								event.sendBroadcast();
 										} else {
 											sender.sendMessage("§aUse of command: /ffaevent start <Rounds> <Prizes? true/false>");
 										}
 									} else if (p.hasPermission("splindux.extreme") || p.hasPermission("splindux.epic")) {
+										if (!TimeLimitManager.getManager().hasActiveTimeLimitBy(sp, TimeLimitType.FFAEVENTDELAY)) {
 										Integer rounds = 0;
 										try {
 											rounds = Integer.valueOf(args[1]);
 											if (rounds>10 && !p.hasPermission("splindux.extreme")) {
 												if (rounds>15) {
 													p.sendMessage("§cYou can't host ffa events larger than 15 rounds.");	
+													return false;
 												} else {
 												p.sendMessage("§aYou need atleast a rank "
-														+ "§1§l[Extreme] §ato have more than 10 rounds, visit the store for more info: §bhttp://store.splindux.net/");
+														+ "§5§l[Extreme] §ato have more than 10 rounds, visit the store for more info: §bhttp://store.splindux.net/");
 												return false;
 											} 
 											}
@@ -84,6 +85,9 @@ public class FFAEventCommand implements CommandExecutor{
 										}
 										arena.setEvent(event);
 										event.sendBroadcast();
+									} else {
+										p.sendMessage("§cYou need to wait §b"  + TimeLimitManager.getManager().getTimeLimitBy(sp, TimeLimitType.FFAEVENTDELAY).getLeftTime() +  " §cto use this command again.");	
+									}
 									} else {
 										 p.sendMessage("§cYou do not have permission to execute this command.");
 							                p.sendMessage("§aYou need a §1§l[Epic] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.net/");	

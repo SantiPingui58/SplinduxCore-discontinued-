@@ -11,7 +11,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.yapzhenyie.GadgetsMenu.economy.GEconomyProvider;
 
+import me.santipingui58.splindux.anouncements.AnnouncementManager;
 import me.santipingui58.splindux.commands.AFKCommand;
+import me.santipingui58.splindux.commands.AdCommand;
 import me.santipingui58.splindux.commands.AdminCommand;
 import me.santipingui58.splindux.commands.CoinsCommand;
 import me.santipingui58.splindux.commands.CrumbleCommand;
@@ -20,6 +22,7 @@ import me.santipingui58.splindux.commands.EndGameCommand;
 import me.santipingui58.splindux.commands.FFAEventCommand;
 import me.santipingui58.splindux.commands.FlyCommand;
 import me.santipingui58.splindux.commands.ForceResetCommand;
+import me.santipingui58.splindux.commands.HeadCommand;
 import me.santipingui58.splindux.commands.HelpCommand;
 import me.santipingui58.splindux.commands.HologramCommand;
 import me.santipingui58.splindux.commands.HoverCommand;
@@ -38,6 +41,7 @@ import me.santipingui58.splindux.commands.SpectateCommand;
 import me.santipingui58.splindux.commands.SplinduxLoginCommand;
 import me.santipingui58.splindux.commands.SplinduxRegisterCommand;
 import me.santipingui58.splindux.commands.StaffChatCommand;
+import me.santipingui58.splindux.commands.StaffCommand;
 import me.santipingui58.splindux.commands.StatsCommand;
 import me.santipingui58.splindux.commands.TranslateCommand;
 import me.santipingui58.splindux.economy.EconomyManager;
@@ -50,15 +54,11 @@ import me.santipingui58.splindux.listener.PlayerConnectListener;
 import me.santipingui58.splindux.listener.PlayerListener;
 import me.santipingui58.splindux.listener.ServerListener;
 import me.santipingui58.splindux.npc.NPCManager;
+import me.santipingui58.splindux.particles.ParticleManager;
+import me.santipingui58.splindux.petshop.PetShopManager;
 import me.santipingui58.splindux.placeholdersapi.SplinduxExpansion;
 import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
-import me.santipingui58.splindux.task.ArenaTimeTask;
-import me.santipingui58.splindux.task.OnMoveTask;
-import me.santipingui58.splindux.task.OnlineTimeTask;
-import me.santipingui58.splindux.task.ParkourTimerTask;
-import me.santipingui58.splindux.task.ScoreboardTask;
-import me.santipingui58.splindux.task.SortRankingTask;
-import me.santipingui58.splindux.task.TabTask;
+import me.santipingui58.splindux.task.TaskManager;
 import me.santipingui58.splindux.timelimit.TimeLimitManager;
 import me.santipingui58.splindux.utils.Configuration;
 import me.santipingui58.splindux.utils.Utils;
@@ -67,15 +67,17 @@ import net.milkbowl.vault.economy.Economy;
 
 //Agregar 3 arenas por mapa  2.2.1.0
 
-//Implement stuff from Store 2.4.0.0
-//Delayed messages on login
-//Announcements & Ads
-//Pets
-//Particles
+//Implement stuff from Store 2.3.0.0
+//Delayed messages on login 
+//Pets Externo
+//Particles Externo
+
+//Ranked 2.5.0
+//Fishing
 
 
-//Votar NameMC 2.5.0.0
-//Ranked 
+
+//Votar NameMC 2.6.0
 //Join Discord
 //Votifier
 //Discord reward for invite 
@@ -84,19 +86,18 @@ import net.milkbowl.vault.economy.Economy;
 //Youtubers & Streamers, foros Amino Reddit Facebook Twitter 
 //Staffs
 
-//In game helmets  2.6.0.0
+//In game helmets  2.7.0.0
 //Optiones menu NIGHT VISION, ADS, DEFAULT COLOR IN CHAT
 
-//Nuevo Lobby 2.7.0.0
+//Nuevo Lobby 2.8.0.0
 //Quests
 //Interactive Lobby
-//Fishing
 
-//Friends 2.8.0.0
+//Friends 2.9.0.0
 //LootBoxes
 
 
-//Test Arena 2.9.0.0
+//Test Arena 2.10.0.0
 //Spleef KotH
 //Spleef Mobs
 
@@ -118,7 +119,7 @@ public class Main extends JavaPlugin {
 	public static Plugin pl;
 	public static String prefix;
 	public static boolean prefix_enabled;
-	public static Configuration config,messages,arenas,data,recordings,timelimit,playerdata;
+	public static Configuration config,messages,arenas,data,recordings,timelimit,petblocks,announcements,petshop;
 	public static Location lobby;
 	public static boolean pvp;
 	public static Economy econ = null;
@@ -137,10 +138,6 @@ public class Main extends JavaPlugin {
              new SplinduxExpansion(this).register();
        }
 		 
-		//A bug causes player to corrupt when the plugin reloads, to prevent this, the players get kicked when the plugin starts.
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			p.kickPlayer("§cSplinduxCore restarting, please re join!");
-		}
 		
 		
 		//API for GadgetsMenu
@@ -152,18 +149,30 @@ public class Main extends JavaPlugin {
 		arenas = new Configuration("arenas.yml",this);	
 		recordings = new Configuration("recordings.yml",this);	
 		timelimit = new Configuration("timelimit.yml",this);
-		playerdata = new Configuration("playerdata.yml",this);
+		petblocks = new Configuration("petblocks.yml",this);
+		announcements = new Configuration("announcements.yml",this);
+		petshop = new Configuration("petshop.yml",this);
 		//Load of players and holograms data
-		
-		DataManager.getManager().loadPlayers();
+		ParticleManager.getManager().loadEffectsAndTypes();	
 		HologramManager.getManager().loadHolograms();
 		TimeLimitManager.getManager().loadTimeLimit();
+		AnnouncementManager.getManager().loadAnnouncements();
+		PetShopManager.getManager().loadPets();	
+		DataManager.getManager().loadPlayers(false);
 		
+	
+
 		//Default spawn of the Server
 		lobby = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true);
-		
+		//Bug fixed, now instead of kicking players, they are getting teleported to the spawn, to avoid being stuck in dead games
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					if (p.getWorld().getName().equalsIgnoreCase("arenas")) {
+					p.teleport(lobby);
+					}
+				}
+				
 		setupEconomy();
-		registerTasks();
+		TaskManager.getManager().task();
 		registerEvents();
 		registerCommands();
 		
@@ -174,6 +183,8 @@ public class Main extends JavaPlugin {
 			@Override
 			public void run() {
 				new WorldCreator("arenas").createWorld();
+				new WorldCreator("lobby").createWorld();
+				DataManager.getManager().loadParticles();
 				//new WorldCreator("construccion").createWorld();
 				
 			}
@@ -261,6 +272,7 @@ public class Main extends JavaPlugin {
 	public void onDisable() {	
 		DataManager.getManager().savePlayers();	
 		NPCManager.getManager().removeNPCs();
+		PetShopManager.getManager().savePets();
 		TimeLimitManager.getManager().saveTimeLimit();
 		//Save Data
 		for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
@@ -324,19 +336,14 @@ public class Main extends JavaPlugin {
 		getCommand("mutationtoken").setExecutor(new MutationTokenCommand());
 		getCommand("forcereset").setExecutor(new ForceResetCommand());
 		getCommand("coins").setExecutor(new CoinsCommand());
-	}
-	
-	
-	private void registerTasks() {
-		new OnMoveTask();
-		new ScoreboardTask();
-		new ArenaTimeTask();
-		new TabTask();
-		new OnlineTimeTask();
-		new ParkourTimerTask();
-		new SortRankingTask();
+		getCommand("head").setExecutor(new HeadCommand());
+		getCommand("ad").setExecutor(new AdCommand());
+		getCommand("staff").setExecutor(new StaffCommand());
 		
 	}
+	
+	
+
 	
 
 	

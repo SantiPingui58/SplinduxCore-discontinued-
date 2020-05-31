@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -78,7 +79,7 @@ public class FFAEvent {
 		
 		HashMap<String,Integer> hashmap = new HashMap<String,Integer>();
 		for (Entry<SpleefPlayer, Integer> entry : this.total_points.entrySet()) {
-			  hashmap.put(entry.getKey().getOfflinePlayer().getName(), entry.getValue());
+			  hashmap.put(entry.getKey().getName(), entry.getValue());
 			}
 			
 			hashmap= StatsManager.getManager().sortByValue(hashmap);
@@ -134,8 +135,7 @@ public class FFAEvent {
 		ComponentBuilder acb = new ComponentBuilder(a1);
 		acb.append(a2).append(a3);
 		msg1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, acb.create()));
-		
-		if (!this.prizes) {
+		if (this.prizes) {
 		TextComponent b1 = new TextComponent("§e1st. §bSplinbox 5 Stars §7+ §b200 Spleef EXP §7+ §610 Mutation Tokens\n");
 		TextComponent b2 = new TextComponent("§e2nd. §bSplinbox 4 Stars §7+ §b190 Spleef EXP §7+ §67 Mutation Tokens\n");
 		TextComponent b3 = new TextComponent("§e3rd. §bSplinbox 4 Stars §7+ §b180 Spleef EXP §7+ §65 Mutation Tokens\n");
@@ -152,7 +152,7 @@ public class FFAEvent {
 		}
 		
 		ComponentBuilder cb = new ComponentBuilder(msg1);
-		if (!this.prizes) {
+		if (this.prizes) {
 		cb.append(" ");
 		cb.append(msg2);
 		}
@@ -170,7 +170,7 @@ public class FFAEvent {
 		HashMap<String,Integer> hashmap = new HashMap<String,Integer>();
 		
 		for (Entry<SpleefPlayer, Integer> entry : this.total_points.entrySet()) {
-		  hashmap.put(entry.getKey().getOfflinePlayer().getName(), entry.getValue());
+		  hashmap.put(entry.getKey().getName(), entry.getValue());
 		}
 		
 		hashmap= StatsManager.getManager().sortByValue(hashmap);
@@ -208,12 +208,13 @@ public class FFAEvent {
 		
 		
 		Bukkit.broadcastMessage("§d§lCongratulations to §b§l" + winner + " §d§l for winning the FFA Event!");
+		getArena().setEvent(null);
 		
 		if (this.prizes) {
 			givePrizes(top10);
 		}
 		
-	getArena().setEvent(null);
+
 	}
 	
 	public void tieBreakerRound() {
@@ -223,6 +224,12 @@ public class FFAEvent {
 	public void givePrizes(List<String> top10) {
 			int i = 1;
 		   for (String s : top10) {
+			   s = ChatColor.stripColor(s);
+			   if (!s.equalsIgnoreCase("NO_PLAYER")) {
+				   Bukkit.broadcastMessage(s);
+				   
+				   
+				   
 			   @SuppressWarnings("deprecation")
 			OfflinePlayer p = Bukkit.getOfflinePlayer(s);
 			   SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
@@ -238,7 +245,6 @@ public class FFAEvent {
 	    			if (i==1) tokens = 10;
 	    			else if (i==2) tokens =7;
 	    			else if (i==3) tokens = 5;
-	    			
 	    			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gmysteryboxes give " + p.getName()+ " 1 "  + stars);
 	    			sp.setMutationTokens(sp.getMutationTokens()+tokens);
 	    			
@@ -253,8 +259,10 @@ public class FFAEvent {
 	    			case 8:LevelManager.getManager().addLevel(sp, 90);
 	    			case 9:LevelManager.getManager().addLevel(sp, 70);
 	    			case 10:LevelManager.getManager().addLevel(sp, 50);
-			   }
+	    			 } 
+			   
 			   i++;
+		   }	
 		   }
-	}
+}
 }

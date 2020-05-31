@@ -69,7 +69,7 @@ public class EndGameCommand implements CommandExecutor {
 		
 		for (SpleefPlayer players : arena.getViewers()) {			
 			if (!players.equals(sp)) {
-				players.getPlayer().sendMessage("§b"+sp.getOfflinePlayer().getName() + "§6 has requested to end the current game. To accept the request do /endgame §7(Left to accept: " 
+				players.getPlayer().sendMessage("§b"+sp.getName() + "§6 has requested to end the current game. To accept the request do /endgame §7(Left to accept: " 
 			+ Utils.getUtils().getPlayerNamesFromList(list) + ")");
 				
 				
