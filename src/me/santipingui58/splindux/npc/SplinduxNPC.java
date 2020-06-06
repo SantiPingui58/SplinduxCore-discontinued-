@@ -52,16 +52,16 @@ public class SplinduxNPC {
 	public void updateHologram() {	
 		if (this.type.equals(NPCType.VOTES) || this.type.equals(NPCType.FISHING)) return;
 		if (this.type.equals(NPCType.FFA)) {	
-			if (this.playing!=GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(), 0)) {
-				this.playing = GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(), 0);
+			if (this.playing!=GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(),0,0)) {
+				this.playing = GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(),0,0);
 			hologram.clearLines();
 			hologram.appendTextLine("§7Playing: §a" + this.playing);
 			}
 		} else {		
-			if (this.queue!= GameManager.getManager().getQueueSize(type.getSpleefType(), type.getGameType(), type.getAmount()) || 
-					this.playing!=GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(), type.getAmount())) {
-				this.playing = GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(), type.getAmount());
-				this.queue = GameManager.getManager().getQueueSize(type.getSpleefType(), type.getGameType(), type.getAmount());				
+			if (this.queue!= GameManager.getManager().getQueueSize(type.getSpleefType(), type.getGameType(),0,0) || 
+					this.playing!=GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(),0,0)) {
+				this.playing = GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(),0,0);
+				this.queue = GameManager.getManager().getQueueSize(type.getSpleefType(), type.getGameType(),0,0);				
 				hologram.clearLines();
 				hologram.appendTextLine("§7Playing: §a" + this.playing);
 				hologram.appendTextLine("§7In Queue: §a" + this.queue);

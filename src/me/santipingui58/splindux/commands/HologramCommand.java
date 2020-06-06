@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
-import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
-import me.santipingui58.splindux.scoreboard.hologram.HologramType;
+import me.santipingui58.splindux.hologram.HologramType;
+import me.santipingui58.splindux.hologram.HologramManager;
 
 
 
@@ -31,7 +31,7 @@ public class HologramCommand implements CommandExecutor {
 					p.sendMessage("§aUse of command: /hologram list");
 				} else if (args[0].equalsIgnoreCase("create")) {
 						if (args[1].equalsIgnoreCase("spleefranking")) {
-						HologramManager.getManager().createHologram(sp,HologramType.SPLEEFRANKING); 
+						HologramManager.getManager().createHologram(sp,HologramType.SPLEEF_FFA_RANKING); 
 						} else if (args[1].equalsIgnoreCase("onlinetime")) {
 							HologramManager.getManager().createHologram(sp,HologramType.ONLINETIME); 
 						}else if (args[1].equalsIgnoreCase("votes")) {

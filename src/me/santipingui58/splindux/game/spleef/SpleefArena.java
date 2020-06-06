@@ -13,6 +13,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import de.robingrether.idisguise.iDisguise;
@@ -27,6 +29,7 @@ import me.santipingui58.splindux.game.death.BrokenBlock;
 import me.santipingui58.splindux.game.mutation.GameMutation;
 import me.santipingui58.splindux.game.mutation.MutationState;
 import me.santipingui58.splindux.game.mutation.MutationType;
+import me.santipingui58.splindux.game.ranked.RankedTeam;
 import me.santipingui58.splindux.replay.GameReplay;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.stats.level.LevelManager;
@@ -40,6 +43,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class SpleefArena {
 
+	//Required values of the arena.
 	private SpleefType spleeftype;
 	private GameType gametype;
 	private Location mainspawn;
@@ -49,22 +53,47 @@ public class SpleefArena {
 	private Location spawn1;
 	private Location spawn2;
 	private String name;
+	
+	//Min and max amount of players per arena, to determinate the expansion of the arena.
 	private int min;
 	private int max;
+	
+	//Amount of players per team this game will have.
 	private int teamsize;
+	
+	//If the game is ranked or not.
 	private boolean ranked;
+	
+	//HashMap contains the current player with the win streak and the amount of wins, only used in FFA.
 	private HashMap<SpleefPlayer,Integer> winstreak = new HashMap<SpleefPlayer,Integer>();
+	
+	//Time until reset in Duels, or finish game in FFA.
 	private int time;
+	
+	//Total time of the arena, only increases.
 	private int totaltime;
+	
+	//Current State of the arena.
 	private GameState state;
+	
+	//List of FFA Players.
 	private List<SpleefPlayer> FFAplayers = new ArrayList<SpleefPlayer>();
+	
+	//List of Duel Players per team.
 	private List<SpleefPlayer> spleefDuelPlayers1 = new ArrayList<SpleefPlayer>();
 	private List<SpleefPlayer> spleefDuelPlayers2 = new ArrayList<SpleefPlayer>();
+	
+	//In Team Duels, players will be put in this list temporarily when they die.
 	private List<SpleefPlayer> duelDeadPlayers1 = new ArrayList<SpleefPlayer>();
 	private List<SpleefPlayer> duelDeadPlayers2 = new ArrayList<SpleefPlayer>();
+	
+	//Players queued for the arena, not used in Ranked.
 	private List<SpleefPlayer> queue = new ArrayList<SpleefPlayer>();
+	
+	//List of broken blocks in FFA games, used to check the kills.
 	private List<BrokenBlock> brokenblocks = new ArrayList<BrokenBlock>();
 	
+	//Temp locations when the arena shrinks.
 	private Location arena1_1vs1;
 	private Location arena2_1vs1;
 	private Location spawn1_1vs1;
@@ -75,26 +104,53 @@ public class SpleefArena {
 	private Location shrinked_spawn1_1vs1;
 	private Location shrinked_spawn2_1vs1;
 	
+	//Item displayed in the DuelMenu.
 	private Material item;
+	
+	//Increases every reset in a round to calculate the shape of the field when it shrinks.
 	private int resetround;
+	
+	//Points per player in Duels.
 	private int points1;
 	private int points2;
+	
+	//Until when a Duel will be played, default is 7.
 	private int playto;
+	
+	//List of players who requested a reset.
 	private List<SpleefPlayer> resetrequest = new ArrayList<SpleefPlayer>();
+	
+	//List of players who requested an endgame.
 	private List<SpleefPlayer> endgamerequest = new ArrayList<SpleefPlayer>();
 	
-	
-	
-	
-	
+	//Custom Request object for crumble and playto.
 	private Request crumbleRequest;
 	private Request playtoRequest;
+	
+	//If the current game is being recorded, not used.
 	private boolean isRecording;
 	private boolean recordingRequest;
 	private GameReplay replay;
+	
+	//Mutations and FFAEvent.
 	private List<GameMutation> mutations = new ArrayList<GameMutation>();
 	private FFAEvent event;
 	
+	//Ranked Teams for Ranked Duels
+	private RankedTeam rankedTeam1;
+	private RankedTeam rankedTeam2;
+	
+		/**
+	    * Create the Arena object, where the games will be played. This constructor is used for FFA Arenas.
+	    * @param name - code name of the arena.
+	    * @param mainspawn - location used for FFA Games, middle point of the arena.
+	    * @param lobby - location where players will be teleported after the round/game ends, only used in FFA.
+	    * @param arena1 - first corner of the snow field, X and Z values HAVE to be lower than arena2 values.
+	    * @param arena2 - second corner of the snow field, X and Z values HAVE to be greater than arena1 values.
+	    * @param spleeftype - spleef type of the arena.
+	    * @param gametype - game type of the arena.
+	    * @return Arena object.
+	    */
 	public SpleefArena(String name,Location mainspawn,Location lobby,Location arena1, Location arena2,SpleefType spleeftype,GameType gametype) {
 		this.name = name;
 		this.mainspawn = mainspawn;
@@ -105,10 +161,23 @@ public class SpleefArena {
 		this.gametype = gametype;
 		this.state = GameState.LOBBY;
 		this.time = 150;
-		
-		
 	}
 
+	
+	  	/**
+	    * Create the Arena object, where the games will be played. This constructor is used for Duel Arenas.
+	    * @param name - code name of the arena.
+	    * @param mainspawn - location used for FFA Games, middle point of the arena.
+	    * @param lobby - location where players will be teleported after the round/game ends, only used in FFA.
+	    * @param arena1 - first corner of the snow field, X and Z values HAVE to be lower than arena2 values.
+	    * @param arena2 - second corner of the snow field, X and Z values HAVE to be greater than arena1 values.
+	    * @param spleeftype - spleef type of the arena.
+	    * @param gametype - game type of the arena.
+	    * @param item - item displayed in DuelMenu.
+	    * @param min - min amount of players that can play in the field.
+	    * @param max - max amount of players that can play in the field, based on how much can the arena grow without breaking or getting out of the build.
+	    * @return Arena object.
+	    */
 	public SpleefArena(String name,Location spawn1,Location spawn2,Location arena1, Location arena2,SpleefType spleeftype, GameType gametype,Material item,int min,int max) {
 		this.name = name;
 		this.spawn1 = spawn1;
@@ -135,24 +204,60 @@ public class SpleefArena {
 	}
 	
 	
+	public void setRankedTeam1(RankedTeam team) {
+		this.rankedTeam1 = team;
+	}
+	
+	public RankedTeam getRankedTeam1() {
+		return this.rankedTeam1;
+	}
+	
+	public void setRankedTeam2(RankedTeam team) {
+		this.rankedTeam2 = team;
+	}
+	
+	public RankedTeam getRankedTeam2() {
+		return this.rankedTeam2;
+	}
+	
+		/**
+	    * Determine if the current Arena is having a ranked game.
+	    * @return TRUE if it is, FALSE otherwise.
+	    */
 	public boolean isRanked() {
 		return this.ranked;
 	}
 	
+		/**
+	    * Change ranked value of the arena.
+	    * @param b - TRUE if it is, FALSE otherwise.
+	    */
 	public void ranked(boolean b) {
 		this.ranked = b;
 	}
 	
+	
+		/**
+	    * Set the team size of the next game.
+	    * @param i - amount of players per team will the next game have.
+	    */
 	public void setTeamSize(int i) {
 		this.teamsize = i;
 	}
 	
+		/**
+	    * Get the amount of players a team has in the current game.
+	    * @return Amount of players per team.
+	    */
 	public int getTeamSize() {
 		return this.teamsize;
 	}
 	
+	
+		/**
+	    * Give players effects/items of the mutation that is about to start in the next game, also sends a broadcast of the mutations that are currently in the game.
+	    */
 	public void playMutations() {
-		
 			arenaMutations();
 			List<String> list = new ArrayList<String>();
 		for (GameMutation mutation : getInGameMutations()) {
@@ -170,6 +275,9 @@ public class SpleefArena {
 		}
 	}
 	
+		/**
+	    * Some mutations are more special than others and needs a custom code to work.
+	    */
 	public void arenaMutations() {
 		for (GameMutation mutation : getInGameMutations()) {
 			if (mutation.getType().equals(MutationType.JUMP_SPLEEF)) {
@@ -186,9 +294,15 @@ public class SpleefArena {
 									|| mutation.getType().equals(MutationType.LEVITATION_X)) {
 						mutation.levitationSpleef();
 					}
+			}
 		}
-	}
 	
+	
+	
+	
+		/**
+	    * Called every round to update the state of the mutations and put them in their list. Also removes used mutations, and cleans the arena for TNT_SPLEEF Mutation
+	    */
 	public void updateMutations() {
 		List<GameMutation> toRemove = new ArrayList<GameMutation>();
 		for (GameMutation mutation : this.mutations) {
@@ -204,18 +318,26 @@ public class SpleefArena {
 		}		
 		this.mutations.removeAll(toRemove);
 	}
+	
+	
+		/**
+	    * Mutations that are currently in the round that is being played.
+	    * @return List of Mutations that are currently in the game.
+	    */
 	public List<GameMutation> getInGameMutations() {
 		List<GameMutation> list = new ArrayList<GameMutation>();
 		for (GameMutation mutation : this.mutations) {
 			if (mutation.getState().equals(MutationState.INGAME)) {
 			list.add(mutation);
 			}
-		}
-		
-		return list;
-		
+		}	
+		return list;		
 	}
 	
+		/**
+	    * Mutations that already won the voting process, and are waiting for the round to end to  
+	    * @return List of Mutations that are currently in the game.
+	    */
 	public List<GameMutation> getQueuedMutations() {
 		List<GameMutation> list = new ArrayList<GameMutation>();
 		for (GameMutation mutation : this.mutations) {
@@ -228,6 +350,10 @@ public class SpleefArena {
 		
 	}
 	
+		/**
+	    * Mutations that are in the voting process.
+	    * @return List of Mutations that are currently in the voting process.
+	    */
 	public List<GameMutation> getVotingMutations() {
 		List<GameMutation> list = new ArrayList<GameMutation>();
 		for (GameMutation mutation : this.mutations) {
@@ -235,11 +361,15 @@ public class SpleefArena {
 			list.add(mutation);
 			}
 		}
-		
 		return list;
 		
 	}
 	
+	
+		/**
+	    * @param uuid - UUID of the Mutation.
+	    * @return Mutation 
+	    */
 	public GameMutation getMutationBy(UUID uuid) {
 		for (GameMutation mutation : this.mutations) {
 			if (mutation.getUUID().compareTo(uuid)==0) {
@@ -249,19 +379,33 @@ public class SpleefArena {
 		return null;
 	}
 	
+	
+		/**
+	    * @return Returns all Mutations in the game 
+	    */
 	public List<GameMutation> getAllMutations() {
 		return this.mutations;
 	}
 	
+		/**
+	    * @return TRUE if there is a FFAEvent going on, FALSE otherwise.
+	    */
 	public boolean isInEvent() {
 		if (this.event==null) {
 			return false;
 		}
 		return true;
 	}
+	
+	
+		/**
+	    * @return Returns the current FFAEvent, null if there isn't one.
+	    */
 	public FFAEvent getEvent() {
 		return this.event;
 	}
+	
+	
 	
 	public void setEvent(FFAEvent event) {
 		this.event = event;
@@ -787,11 +931,14 @@ public class SpleefArena {
 			Location center_player = new Location(center.getWorld(),center.getX(),center.getY()+1,center.getZ());		
 			List<Location> locations = Utils.getUtils().getCircle(center,16, getQueue().size());
 			int i = 0;
+			Collections.shuffle(getQueue());
 			for (SpleefPlayer sp : getQueue()) {
 				iDisguise.getInstance().getAPI().undisguise(sp.getPlayer());
 				sp.giveGameItems();
 				sp.addFFAGame();			
 				LevelManager.getManager().addLevel(sp, 1);
+				EconomyManager.getManager().addCoins(sp, 3, false,false);
+	
 				Location l = locations.get(i);		
 				sp.getPlayer().teleport(Utils.getUtils().lookAt(l, center_player));
 				sp.getPlayer().setGameMode(GameMode.SURVIVAL);
@@ -813,6 +960,9 @@ public class SpleefArena {
 					if (i<=getQueue().size()) {
 					if (getSpleefType().equals(SpleefType.SPLEEF)) {
 					sp.getPlayer().setGameMode(GameMode.SURVIVAL);
+					if (sp.getOptions().hasNightVision()) {
+					sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,Integer.MAX_VALUE,Integer.MAX_VALUE));
+					}
 					} else if (getSpleefType().equals(SpleefType.SPLEGG)) {
 						sp.getPlayer().setGameMode(GameMode.ADVENTURE);
 					}
@@ -832,24 +982,33 @@ public class SpleefArena {
 				for (SpleefPlayer s : getPlayers()) {
 					getQueue().remove(s);
 				}
-				for (SpleefPlayer sp :getDuelPlayers1()) sp.giveGameItems();
-				for (SpleefPlayer sp :getDuelPlayers2()) sp.giveGameItems();
+				for (SpleefPlayer sp :getDuelPlayers1()) sp.giveGameItems(); 
+				for (SpleefPlayer sp :getDuelPlayers2()) sp.giveGameItems();	
 				List<Player> players = new ArrayList<Player>();
 				for (SpleefPlayer sp : getPlayers()) {
 					players.add(sp.getPlayer());
+					sp.add1vs1Games();
+					EconomyManager.getManager().addCoins(sp, 5, false,false);
+					if (sp.getOptions().hasNightVision()) {
+						sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,Integer.MAX_VALUE,Integer.MAX_VALUE));
+						}
 				}		
+				TextComponent message =null;
+				if (isRanked()) {
+					 message = new TextComponent("§6[Ranked] §aA game between §b" + getTeamName(1) + 
+							 "§7(§6"+ rankedTeam1.getELO() + "§7)" + " §aand §b" + getTeamName(2) + getTeamName(1) + 
+							 "§7(§6"+ rankedTeam2.getELO() + "§7)"+ " §ahas started! §7(Right click to spectate)");
+				} else {
+				 message = new TextComponent("§aA game between §b" + getTeamName(1) + " §aand §b" + getTeamName(2) + " §ahas started! §7(Right click to spectate)");
+				}
+				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/spectate "+getDuelPlayers1().get(0).getOfflinePlayer().getName()));
+				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Spectate §a" +getTeamName(1) + " §7-§a " + getTeamName(2)).create()));
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					if (!players.contains(p)) {
-					TextComponent message = new TextComponent("§aA game between §b" + getTeamName(1) + " §aand §b" + getTeamName(2) + " §ahas started! §7(Right click to spectate)");
-					message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/spectate "+getDuelPlayers1().get(0).getOfflinePlayer().getName()));
-					message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Spectate §a" +getTeamName(1) + " §7-§a " + getTeamName(2)).create()));
 						p.spigot().sendMessage(message);
 					}}}
 			
-			for (SpleefPlayer s : getPlayers()) {
-				EconomyManager.getManager().addCoins(s, 2, true,false);
-				s.add1vs1Games();
-			}
+
 			for (SpleefPlayer s : getDuelPlayers1()) s.getPlayer().teleport(getShrinkedDuelSpawn1());
 			for (SpleefPlayer s : getDuelPlayers2()) s.getPlayer().teleport(getShrinkedDuelSpawn2());
 			new ArenaStartingCountdownTask(this);	

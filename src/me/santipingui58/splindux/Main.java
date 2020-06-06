@@ -45,6 +45,7 @@ import me.santipingui58.splindux.commands.StaffCommand;
 import me.santipingui58.splindux.commands.StatsCommand;
 import me.santipingui58.splindux.commands.TranslateCommand;
 import me.santipingui58.splindux.economy.EconomyManager;
+import me.santipingui58.splindux.game.ranked.RankedManager;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.listener.CustomPacketListener;
 import me.santipingui58.splindux.listener.MutationListener;
@@ -57,7 +58,7 @@ import me.santipingui58.splindux.npc.NPCManager;
 import me.santipingui58.splindux.particles.ParticleManager;
 import me.santipingui58.splindux.petshop.PetShopManager;
 import me.santipingui58.splindux.placeholdersapi.SplinduxExpansion;
-import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
+import me.santipingui58.splindux.hologram.HologramManager;
 import me.santipingui58.splindux.task.TaskManager;
 import me.santipingui58.splindux.timelimit.TimeLimitManager;
 import me.santipingui58.splindux.utils.Configuration;
@@ -67,15 +68,11 @@ import net.milkbowl.vault.economy.Economy;
 
 //Agregar 3 arenas por mapa  2.2.1.0
 
-//Implement stuff from Store 2.3.0.0
-//Delayed messages on login 
-//Pets Externo
-//Particles Externo
-
-//Ranked 2.5.0
+//Implement stuff from Store 2.5.0.0
+//Ranked
+//Optiones menu NIGHT VISION, ADS, DEFAULT COLOR IN CHAT, MAP RANKED
+//Spectator  
 //Fishing
-
-
 
 //Votar NameMC 2.6.0
 //Join Discord
@@ -87,7 +84,7 @@ import net.milkbowl.vault.economy.Economy;
 //Staffs
 
 //In game helmets  2.7.0.0
-//Optiones menu NIGHT VISION, ADS, DEFAULT COLOR IN CHAT
+
 
 //Nuevo Lobby 2.8.0.0
 //Quests
@@ -114,18 +111,29 @@ import net.milkbowl.vault.economy.Economy;
 
 public class Main extends JavaPlugin {
 
-	
-	//Static variables used around the plugin
+	//Instance of the plugin
 	public static Plugin pl;
-	public static String prefix;
-	public static boolean prefix_enabled;
+	
+	//.yml files	
 	public static Configuration config,messages,arenas,data,recordings,timelimit,petblocks,announcements,petshop;
+	
+	//Spawn point of the server
 	public static Location lobby;
+	
+	//If the PvP is enabled or not
 	public static boolean pvp;
+	
+	//Handles Vault Economy integration
 	public static Economy econ = null;
+	
+	
+		/**
+	    * @return Returns Main plugin instance.
+	    */
 	public static Plugin get() {
 	    return pl;
 	  }	
+	
 	
 	
 	@Override
@@ -137,9 +145,7 @@ public class Main extends JavaPlugin {
 		 if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
              new SplinduxExpansion(this).register();
        }
-		 
-		
-		
+
 		//API for GadgetsMenu
 		GEconomyProvider.setMysteryDustStorage(new EconomyManager(this, "Splindux"));	
 		
@@ -152,19 +158,22 @@ public class Main extends JavaPlugin {
 		petblocks = new Configuration("petblocks.yml",this);
 		announcements = new Configuration("announcements.yml",this);
 		petshop = new Configuration("petshop.yml",this);
-		//Load of players and holograms data
+		
+		
+		//Loading of Particles, Holograms, Timelimits, Announcements, pets, players, tasks and queues
 		ParticleManager.getManager().loadEffectsAndTypes();	
 		HologramManager.getManager().loadHolograms();
 		TimeLimitManager.getManager().loadTimeLimit();
 		AnnouncementManager.getManager().loadAnnouncements();
 		PetShopManager.getManager().loadPets();	
 		DataManager.getManager().loadPlayers(false);
-		
-	
+		RankedManager.getManager().loadRankedQueues();
+		TaskManager.getManager().task();
 
 		//Default spawn of the Server
 		lobby = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true);
-		//Bug fixed, now instead of kicking players, they are getting teleported to the spawn, to avoid being stuck in dead games
+		
+		//Teleports all players that were in the arena's world, in case the server was restarted while games were being played.
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					if (p.getWorld().getName().equalsIgnoreCase("arenas")) {
 					p.teleport(lobby);
@@ -172,32 +181,28 @@ public class Main extends JavaPlugin {
 				}
 				
 		setupEconomy();
-		TaskManager.getManager().task();
+		
+	
+		//Register events and commands
 		registerEvents();
 		registerCommands();
 		
 		
 		//Load worlds
 		new BukkitRunnable() {
-
-			@Override
 			public void run() {
 				new WorldCreator("arenas").createWorld();
 				new WorldCreator("lobby").createWorld();
 				DataManager.getManager().loadParticles();
-				//new WorldCreator("construccion").createWorld();
-				
-			}
-			
+				//new WorldCreator("construccion").createWorld();	
+			}	
 		}.runTaskLater(this, 20L);
 		
+		//Load arenas
 		new BukkitRunnable() {
-		@Override
 		public void run() {
 			DataManager.getManager().loadArenas();
-
 		}
-		
 	}.runTaskLater(this, 20L);
 	
 		
@@ -270,15 +275,17 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {	
+		//Save Data
 		DataManager.getManager().savePlayers();	
 		NPCManager.getManager().removeNPCs();
 		PetShopManager.getManager().savePets();
 		TimeLimitManager.getManager().saveTimeLimit();
-		//Save Data
+		HologramManager.getManager().saveHolograms();
+	 
 		for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
 			 HologramManager.getManager().removeHolograms(sp);
 		}				
-		HologramManager.getManager().saveHolograms();
+		
 	}
 	
 	private void registerEvents() {

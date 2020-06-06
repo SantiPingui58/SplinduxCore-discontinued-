@@ -1,4 +1,4 @@
-package me.santipingui58.splindux.gui;
+package me.santipingui58.splindux.gui.game;
 
 import java.util.HashMap;
 
@@ -10,6 +10,7 @@ import me.santipingui58.splindux.game.mutation.GameMutation;
 import me.santipingui58.splindux.game.mutation.MutationType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.gui.MenuBuilder;
 import me.santipingui58.splindux.utils.Utils;
 
 

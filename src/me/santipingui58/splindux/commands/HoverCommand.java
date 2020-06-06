@@ -62,7 +62,7 @@ public class HoverCommand implements CommandExecutor {
 								}
 								duel.getAcceptedPlayers().add(sp);
 								if (duel.getAcceptedPlayers().size()>=duel.getDueledPlayers().size()) {
-								GameManager.getManager().duelGame(challenger, duel.getDueledPlayers(), duel.getArena(),duel.getType(),duel.getAllPlayers().size()/2);
+								GameManager.getManager().duelGame(challenger, duel.getDueledPlayers(), duel.getArena(),duel.getType(),duel.getAllPlayers().size()/2,false,null);
 								} else {
 									List<SpleefPlayer> list = new ArrayList<SpleefPlayer>();		
 									List<SpleefPlayer> leftToAccept = new ArrayList<SpleefPlayer>();		

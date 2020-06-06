@@ -1,5 +1,7 @@
 package me.santipingui58.splindux.game;
 
+import org.bukkit.ChatColor;
+
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.translate.Language;
@@ -10,8 +12,39 @@ public class PlayerOptions {
 	private boolean translate;
 	private Language language;
 	private boolean ads;
+	private boolean onJoinMessage;
+	private ChatColor defaultColorChat;
 	public PlayerOptions() {
 		this.translate = true;
+		this.onJoinMessage = true;
+		this.defaultColorChat = ChatColor.BLUE;
+	}
+	
+	public PlayerOptions(boolean night_vision, boolean translate, Language language, boolean ads, boolean onJoinMessage, ChatColor defaultColorChat) {
+		this.night_vision = night_vision;
+		this.translate = translate;
+		this.language = language;
+		this.ads = ads;
+		this.onJoinMessage = onJoinMessage;
+		this.defaultColorChat = defaultColorChat;
+	}
+	
+	
+	public boolean joinMessageEnabled() {
+		return this.onJoinMessage;
+	}
+	
+	public void joinMessage(boolean b) {
+		this.onJoinMessage = b;
+	}
+	
+	public ChatColor getDefaultColorChat() {
+		if (this.defaultColorChat==null) this.defaultColorChat= ChatColor.BLUE;
+		return this.defaultColorChat;
+	}
+	
+	public void setDefaultColorChat(ChatColor c) {
+		this.defaultColorChat = c;
 	}
 	
 	public boolean hasAds() {

@@ -26,4 +26,11 @@ public class RankedTeam {
 		elo = elo/this.players.size();
 		return elo;
 	}
+
+	public void newELO(int elo) {
+		for (SpleefPlayer sp : players) {
+			sp.setELO(sp.getELO()+elo);
+		}
+		
+	}
 }

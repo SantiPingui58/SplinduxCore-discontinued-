@@ -16,8 +16,8 @@ import com.comphenix.protocol.events.PacketEvent;
 
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
-import me.santipingui58.splindux.scoreboard.hologram.Hologram;
-import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
+import me.santipingui58.splindux.hologram.Hologram;
+import me.santipingui58.splindux.hologram.HologramManager;
 
 
 public class CustomPacketListener {
@@ -42,7 +42,7 @@ public class CustomPacketListener {
                 	PacketContainer packet = event.getPacket();
                 	for (Hologram h : HologramManager.getManager().getHolograms()) {
                 		try {
-                		if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp).get(me.santipingui58.splindux.scoreboard.hologram.PacketType.TYPE))) {
+                		if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp).get(me.santipingui58.splindux.hologram.PacketType.TYPE))) {
                     		if (!delay.contains(sp)) {
                     		HologramManager.getManager().changeChangeType(sp, packet.getIntegers().read(0));
                     		delay.add(sp);
@@ -53,7 +53,7 @@ public class CustomPacketListener {
                     		}.runTaskLater(Main.get(),3L);
                     		} 
                     		return;
-                    	} else if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp).get(me.santipingui58.splindux.scoreboard.hologram.PacketType.PERIOD))) {
+                    	} else if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp).get(me.santipingui58.splindux.hologram.PacketType.PERIOD))) {
                     		if (!delay.contains(sp)) {
                     		HologramManager.getManager().changeChangePeriod(sp, packet.getIntegers().read(0));
                     		delay.add(sp);

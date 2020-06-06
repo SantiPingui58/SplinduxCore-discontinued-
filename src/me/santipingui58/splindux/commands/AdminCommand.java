@@ -1,12 +1,9 @@
 package me.santipingui58.splindux.commands;
 
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
@@ -23,6 +20,7 @@ public class AdminCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
 	
+		
 		if(cmd.getName().equalsIgnoreCase("admin")){
 			final CommandSender p = sender;
 			if (p.hasPermission("*")) {
@@ -68,13 +66,7 @@ public class AdminCommand implements CommandExecutor {
 					DataManager.getManager().giveMutationTokens();
 					p.sendMessage("Gave mutation tokens");
 				}else if (args[0].equalsIgnoreCase("test")) {
-					for (Player pl : Bukkit.getOnlinePlayers()) {
-						Player player = (Player) sender;
-						if (player!=pl) {
-							player.hidePlayer(Main.get(), pl);
-							
-						}
-					}
+
 				}
 				
 			}

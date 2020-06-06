@@ -34,9 +34,11 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
@@ -52,9 +54,12 @@ import me.santipingui58.splindux.game.mutation.MutationType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
-import me.santipingui58.splindux.gui.GadgetsMenu;
-import me.santipingui58.splindux.gui.MutationTokenMenu;
-import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
+import me.santipingui58.splindux.gui.OptionsMenu;
+import me.santipingui58.splindux.gui.gadgets.GadgetsMenu;
+import me.santipingui58.splindux.gui.game.MutationTokenMenu;
+import me.santipingui58.splindux.gui.game.RankedMenu;
+import me.santipingui58.splindux.gui.game.UnrankedMenu;
+import me.santipingui58.splindux.hologram.HologramManager;
 import me.santipingui58.splindux.utils.Utils;
 import net.apcat.simplesit.SimpleSitPlayer;
 import net.apcat.simplesit.events.PlayerSitEvent;
@@ -198,6 +203,24 @@ public class ServerListener implements Listener {
 	*/
 	
 	
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEntityEvent  e) {
+		if (e.getRightClicked() instanceof Player && e.getPlayer().getWorld().getName().equalsIgnoreCase("arenas")) {
+			Player p = e.getPlayer();
+			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+			if (sp.isSpectating()) {
+				Player clicked = (Player) e.getRightClicked();
+				for (SpleefPlayer spectating : sp.getSpectating().getArena().getPlayers()) {
+					if (spectating.getPlayer().equals(clicked)) {
+						sp.getPlayer().setGameMode(GameMode.SPECTATOR);
+						sp.getPlayer().setSpectatorTarget(clicked);
+						break;
+					}
+				}
+			}
+		}
+	}
+	
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
@@ -207,8 +230,7 @@ public class ServerListener implements Listener {
 			 e.setCancelled(true);
 			 return;
 		 }
-		                                                          
-		                                                         
+                                               
 	    if (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 	    	
 	    	
@@ -272,7 +294,13 @@ public class ServerListener implements Listener {
 	    	} 
 	    		} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[1])) {
 	    			p.performCommand("ajparkour start parkour1");
-	    		}
+	    		} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[2])) {
+	    			new OptionsMenu(sp).o(p);
+	    		} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[3])) {
+	    			new RankedMenu(sp).o(p);
+	    		} else if (p.getItemInHand().equals(DataManager.getManager().lobbyitems()[4])) {
+	    			new UnrankedMenu(sp).o(p);
+	    		} 
 	    		
 	    	
 	    }
@@ -462,7 +490,16 @@ public class ServerListener implements Listener {
 	  }
 	  
 
-	  
+	  @EventHandler
+	  public void onSneak(PlayerToggleSneakEvent e) {
+			  Player p = e.getPlayer();
+			  SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+			if (p.getGameMode().equals(GameMode.SPECTATOR) && sp.isSpectating() && p.getSpectatorTarget()!=null) {
+				p.setGameMode(GameMode.ADVENTURE);
+				p.setAllowFlight(true);
+				p.setFlying(true);			
+		  }
+	  }
 	
 	  
 	  @EventHandler

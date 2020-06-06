@@ -6,11 +6,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import me.santipingui58.splindux.DataManager;
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.gui.VotesMenu;
+import me.santipingui58.splindux.gui.game.RankedMenu;
+import me.santipingui58.splindux.gui.game.SpleefDuelsMenu;
+import me.santipingui58.splindux.gui.game.SpleggDuelsMenu;
 import me.santipingui58.splindux.npc.NPCManager;
 import me.santipingui58.splindux.npc.NPCType;
 import me.santipingui58.splindux.npc.SplinduxNPC;
@@ -40,18 +42,27 @@ public class NPCListener implements Listener {
 					arena.addFFAQueue(sp);		
 					return;
 					}
-				
 			}		
 				} else if (splinduxnpc.getType().equals(NPCType.VOTES)) {
 					new VotesMenu(sp).o(p);
 				} else if (splinduxnpc.getType().equals(NPCType.FISHING)) {
-				} else {		
-					if (!sp.isInQueue()) {
-						GameManager.getManager().addDuelQueue(sp, splinduxnpc.getType().getAmount(), null, splinduxnpc.getType().getSpleefType(),splinduxnpc.getType().isRanked());
-				} else {
-					p.sendMessage("§cYou are already in a queue.");
+				} else if (splinduxnpc.getType().equals(NPCType.RANKED_SPLEEF_1V1)) {
+					new RankedMenu(sp).o(p);
+				} else if (splinduxnpc.getType().equals(NPCType.SPLEEF_DUELS)) {
+					new SpleefDuelsMenu(sp).o(p);
+				}  else if (splinduxnpc.getType().equals(NPCType.SPLEEF_DUELS)) {
+					new SpleggDuelsMenu(sp).o(p);
 				}
-				}
-	} 
-	}
+					
+			
+} 
 }
+}
+					
+					
+					//if (!sp.isInQueue()) {
+				//		GameManager.getManager().addDuelQueue(sp, splinduxnpc.getType().getAmount(), null, splinduxnpc.getType().getSpleefType(),splinduxnpc.getType().isRanked());
+				//} else {
+				//	p.sendMessage("§cYou are already in a queue.");
+			//	}
+

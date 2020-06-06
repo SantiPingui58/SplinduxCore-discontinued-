@@ -1,4 +1,4 @@
-package me.santipingui58.splindux.gui;
+package me.santipingui58.splindux.gui.game;
 
 
 
@@ -25,6 +25,7 @@ import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefDuel;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
+import me.santipingui58.splindux.gui.MenuBuilder;
 import me.santipingui58.splindux.utils.ItemBuilder;
 import me.santipingui58.splindux.utils.Utils;
 import net.md_5.bungee.api.chat.BaseComponent;

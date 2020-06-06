@@ -7,12 +7,8 @@ public enum NPCType {
 
 	FFA,
 	RANKED_SPLEEF_1V1,
-	SPLEEF_1V1,
-	SPLEEF_2V2,
-	SPLEEF_3V3,
-	SPLEGG_1V1,
-	SPLEGG_2V2,
-	SPLEGG_3V3,
+	SPLEEF_DUELS,
+	SPLEGG_DUELS,
 	VOTES,
 	FISHING;
 	
@@ -20,19 +16,11 @@ public enum NPCType {
 	public int getId() {
 		if (this.equals(FFA)) {
 			return 0;
-		} else if (this.equals(SPLEEF_1V1)) {
+		} else if (this.equals(SPLEEF_DUELS)) {
 			return 173;
-		}else if (this.equals(SPLEEF_2V2)) {
+		}else if (this.equals(SPLEGG_DUELS)) {
 			return 174;
-		}else if (this.equals(SPLEEF_3V3)) {
-			return 175;
-		}else if (this.equals(SPLEGG_1V1)) {
-			return 176;
-		}else if (this.equals(SPLEGG_2V2)) {
-			return 177;
-		}else if (this.equals(SPLEGG_3V3)) {
-			return 178;
-		} else if (this.equals(VOTES)) {
+		}else if (this.equals(VOTES)) {
 			return 179;
 		} else if (this.equals(FISHING)) {
 			return 181;
@@ -43,7 +31,7 @@ public enum NPCType {
 	}
  	
 	public SpleefType getSpleefType() {
-		if (this.equals(SPLEGG_1V1) || this.equals(SPLEGG_2V2) || this.equals(SPLEGG_3V3)) {
+		if (this.equals(SPLEGG_DUELS)) {
 			return SpleefType.SPLEGG;
 		} else if (this.equals(VOTES) || this.equals(FISHING)) {
 			return null;
@@ -62,17 +50,6 @@ public enum NPCType {
 		}
 	}
 	
-	public int getAmount() {
-		if (this.equals(SPLEEF_1V1) || this.equals(SPLEGG_1V1) || this.equals(RANKED_SPLEEF_1V1)) {
-			return 1;
-		} else if (this.equals(SPLEEF_2V2) || this.equals(SPLEGG_2V2)) {
-			return 2;
-		}  else if (this.equals(SPLEEF_3V3) || this.equals(SPLEGG_3V3)) {
-			return 3;
-		} else {
-			return 0;
-		}
-	}
 	
 	public boolean isRanked() {
 		if (this.equals(RANKED_SPLEEF_1V1)) {

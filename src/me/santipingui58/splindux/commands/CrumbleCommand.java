@@ -29,6 +29,7 @@ public class CrumbleCommand implements CommandExecutor {
 			if (sp.isInGame()) {
 				SpleefArena arena = sp.getArena();
 				if (arena.getGameType().equals(GameType.DUEL)) {
+					if (!arena.isRanked()) {
 					if (arena.getCrumbleRequest()==null) {
 					if (!arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {
 					if (args.length==0) {
@@ -60,6 +61,9 @@ public class CrumbleCommand implements CommandExecutor {
 				}
 				} else {
 					p.sendMessage("§cThere is a crumble request at the moment, cancel it or deny it to make a new one.");	
+				}
+				} else {
+					p.sendMessage("§cYou can not execute this command in a Ranked Duel.");	
 				}
 				}else {
 					p.sendMessage("§cYou need to be in a 1v1 game to execute this command.");	

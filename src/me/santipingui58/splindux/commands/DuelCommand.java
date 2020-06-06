@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
-import me.santipingui58.splindux.gui.DuelMenu;
+import me.santipingui58.splindux.gui.game.DuelMenu;
 import me.santipingui58.splindux.utils.Utils;
 
 

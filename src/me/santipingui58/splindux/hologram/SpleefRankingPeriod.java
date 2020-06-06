@@ -1,4 +1,4 @@
-package me.santipingui58.splindux.scoreboard.hologram;
+package me.santipingui58.splindux.hologram;
 
 public enum SpleefRankingPeriod {
 

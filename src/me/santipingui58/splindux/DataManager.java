@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -24,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import me.santipingui58.splindux.game.PlayerOptions;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
@@ -33,7 +35,7 @@ import me.santipingui58.splindux.particles.effect.ParticleEffectType;
 import me.santipingui58.splindux.particles.type.ParticleTypeSubType;
 import me.santipingui58.splindux.replay.BrokenBlock;
 import me.santipingui58.splindux.replay.GameReplay;
-import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
+import me.santipingui58.splindux.hologram.HologramManager;
 import me.santipingui58.splindux.stats.RankingType;
 import me.santipingui58.splindux.stats.StatsManager;
 import me.santipingui58.splindux.stats.level.LevelManager;
@@ -147,6 +149,7 @@ public class  DataManager {
 				 if (Main.data.getConfig().contains("players."+p+".stats.FFA_kills")) {
 				  FFAkills = Main.data.getConfig().getInt("players."+p+".stats.FFA_kills");
 				 }
+				 int totalonlinetime =  Main.data.getConfig().getInt("players."+p+".onlinetime");
 				 
 				 int FFAWeeklyWins = 0;
 				 int FFAWeeklyGames = 0;
@@ -156,18 +159,19 @@ public class  DataManager {
 				 int FFAMonthlyKills = 0;
 				 int dailylimit= 0;
 				 int level = 0;
-				 String country = null;
+	
 				 String ip = "";
 				 Date d = null;
+				 
+				 PlayerOptions options = null;
+				 String country = null;
 				 boolean translate = false;
 				 boolean nightVision = false;
-				 boolean ads = false;
-				 Language language = null;
-				
-				 int totalonlinetime =  Main.data.getConfig().getInt("players."+p+".onlinetime");
-				 
-				 
-				
+				 boolean ads = false;	
+				 boolean joinMessage = false;
+				 Language language = null;				
+				 ChatColor chatcolor = null;
+
 				 
 				 if (Main.data.getConfig().contains("players."+p+".dailywinlimit")) {
 					 dailylimit =  Main.data.getConfig().getInt("players."+p+".dailywinlimit");
@@ -200,26 +204,34 @@ public class  DataManager {
 					}  
 				 }
 				 
-				 if (Main.data.getConfig().contains("players."+p+".options.translate")) {
-					 translate = Main.data.getConfig().getBoolean("players."+p+".options.translate");
-				 }
-				 
-				 if (Main.data.getConfig().contains("players."+p+".options.nightvision")) {
-					 nightVision = Main.data.getConfig().getBoolean("players."+p+".options.nightvision");
-				 }
-				 
-				 if (Main.data.getConfig().contains("players."+p+".options.ads")) {
-					 ads = Main.data.getConfig().getBoolean("players."+p+".options.ads");
-				 }
-				 
 				 if (Main.data.getConfig().contains("players."+p+".country")) {
 					 country =Main.data.getConfig().getString("players."+p+".country");
-				 }
-				 if (Main.data.getConfig().contains("players."+p+".options.language")) {
+				 } 
+				 
+				 if (Main.data.getConfig().contains("players."+p+".options")) {
+					 joinMessage = Main.data.getConfig().getBoolean("players."+p+".options.join_message");
+					 if (Main.data.getConfig().contains("players."+p+".options.color")) {
+					 chatcolor = ChatColor.valueOf(Main.data.getConfig().getString("players."+p+".options.color"));		
+					 }
+					 translate = Main.data.getConfig().getBoolean("players."+p+".options.translate");
+					 nightVision = Main.data.getConfig().getBoolean("players."+p+".options.nightvision");
+					 ads = Main.data.getConfig().getBoolean("players."+p+".options.ads");
+					 if (Main.data.getConfig().contains("players."+p+".options.language")) {
 					 language = Language.valueOf(Main.data.getConfig().getString("players."+p+".options.language"));
-				 } else if (country!=null) {
-						language = languageFromCountry(country);	 
+					 } else if (country!=null){
+						 language = languageFromCountry(country);	
+					 } else {
+						 
+					 }
+					 
+				 } else {
+					options = new PlayerOptions();
 				 }
+				 
+				
+				 if (Main.data.getConfig().contains("players."+p+".options.language")) {
+					 
+				 } else 
 				 
 				 if (Main.data.getConfig().contains("players."+p+".IP")) {
 					 ip = Main.data.getConfig().getString("players."+p+".IP");
@@ -254,12 +266,13 @@ public class  DataManager {
 				 sp.setIP(ip);
 				 sp.setMutationTokens(mutations);
 				 sp.setLastLogin(d);
-				 sp.getOptions().setLanguage(language);
-				 sp.getOptions().translate(translate);
-				 sp.getOptions().nightVision(nightVision);
-				 sp.getOptions().ads(ads);
 				 sp.setCountry(country);
 				 sp.back();
+				 if (options!=null) {
+					 sp.setOptions(options);
+				 } else {
+					 sp.setOptions(new PlayerOptions(nightVision,translate,language,ads,joinMessage,chatcolor));
+				 }
 				 this.players.add(sp);
 				 if (sp.getOfflinePlayer().isOnline() && !reload_data) {
 					sp.giveLobbyItems();
@@ -356,12 +369,13 @@ public class  DataManager {
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".coins",sp.getCoins());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".dailywinlimit",sp.getDailyWinLimit());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".country",sp.getCountry());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".mutation_tokens",sp.getMutationTokens());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.translate",sp.getOptions().hasTranslate());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.ads",sp.getOptions().hasAds());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.nightvision",sp.getOptions().hasNightVision());
 		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.language",sp.getOptions().getLanguage().toString());
-		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".mutation_tokens",sp.getMutationTokens());
-		 
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.color",sp.getOptions().getDefaultColorChat().name());
+		 Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".options.join_message",sp.getOptions().joinMessageEnabled());
 			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			if (sp.getOfflinePlayer().isOnline() && sp.getLastLogin()!=null) {
 		Main.data.getConfig().set("players."+sp.getOfflinePlayer().getUniqueId()+".lastlogin", format.format(sp.getLastLogin()));
@@ -630,7 +644,11 @@ public class  DataManager {
 		
 		ItemStack gadgets = new ItemBuilder(Material.CHEST).setTitle("§d§lCosmetics").build();
 		ItemStack parkour = new ItemBuilder(Material.FEATHER).setTitle("§b§lParkour").build();
-		ItemStack[] items = {gadgets,parkour};
+		ItemStack options = new ItemBuilder(Material.REDSTONE_COMPARATOR).setTitle("§c§lOptions").build();
+		ItemStack ranked = new ItemBuilder(Material.DIAMOND_SPADE).setTitle("§6§lRanked").build();
+		ItemStack unranked = new ItemBuilder(Material.IRON_SPADE).setTitle("§b§lUnranked").build();
+		ItemStack[] items = {gadgets,parkour,options,ranked, unranked};
+		
 		return items;
 	}
 	

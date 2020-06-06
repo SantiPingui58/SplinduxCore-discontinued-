@@ -24,7 +24,7 @@ import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefDuel;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
-import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
+import me.santipingui58.splindux.hologram.HologramManager;
 import me.santipingui58.splindux.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import ru.tehkode.permissions.bukkit.PermissionsEx;

@@ -1,4 +1,4 @@
-package me.santipingui58.splindux.gui;
+package me.santipingui58.splindux.gui.gadgets.particles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.gui.MenuBuilder;
+import me.santipingui58.splindux.gui.gadgets.GadgetsMenu;
 import me.santipingui58.splindux.particles.ParticleManager;
 import me.santipingui58.splindux.particles.effect.ParticleEffect;
 import me.santipingui58.splindux.particles.effect.ParticleEffectType;

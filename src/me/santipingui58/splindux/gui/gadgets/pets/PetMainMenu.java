@@ -1,4 +1,4 @@
-package me.santipingui58.splindux.gui;
+package me.santipingui58.splindux.gui.gadgets.pets;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -7,6 +7,8 @@ import com.github.shynixn.petblocks.api.PetBlocksApi;
 import com.github.shynixn.petblocks.api.business.service.GUIService;
 
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.gui.MenuBuilder;
+import me.santipingui58.splindux.gui.gadgets.GadgetsMenu;
 import me.santipingui58.splindux.utils.ItemBuilder;
 
 

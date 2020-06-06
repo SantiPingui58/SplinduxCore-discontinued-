@@ -32,7 +32,7 @@ import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.npc.NPCManager;
 import me.santipingui58.splindux.scoreboard.PinguiScoreboard;
-import me.santipingui58.splindux.scoreboard.hologram.HologramManager;
+import me.santipingui58.splindux.hologram.HologramManager;
 import me.santipingui58.splindux.stats.RankingType;
 import me.santipingui58.splindux.stats.StatsManager;
 import me.santipingui58.splindux.timelimit.TimeLimitManager;
@@ -59,11 +59,7 @@ public class TaskManager {
 		 timeSync();
 	 }
 	 
-	 private void loadTasks() {
-	
-		 //this.syncTasks.add(new Task(TaskType.MOVE,TaskType.MOVE.getTicks()));
-		 
-		 
+	 private void loadTasks() {	 
 		 for (TaskType type : TaskType.values()) {
 			 Task task = new Task(type,type.getTicks());
 			 if (type.async()) {
@@ -74,8 +70,7 @@ public class TaskManager {
  }
 		 
 	 }
-	 
-	 
+	 	 
 	 public void timeAsync() {
 		 new BukkitRunnable() {
 				public void run() {

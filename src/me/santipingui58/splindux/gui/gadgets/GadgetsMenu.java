@@ -1,4 +1,4 @@
-package me.santipingui58.splindux.gui;
+package me.santipingui58.splindux.gui.gadgets;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -6,6 +6,10 @@ import org.bukkit.inventory.ItemStack;
 import com.yapzhenyie.GadgetsMenu.api.GadgetsMenuAPI;
 
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.gui.MenuBuilder;
+import me.santipingui58.splindux.gui.gadgets.particles.ParticleEffectsMenu;
+import me.santipingui58.splindux.gui.gadgets.particles.ParticleTypesMenu;
+import me.santipingui58.splindux.gui.gadgets.pets.PetMainMenu;
 import me.santipingui58.splindux.utils.ItemBuilder;
 
 public class GadgetsMenu extends MenuBuilder {

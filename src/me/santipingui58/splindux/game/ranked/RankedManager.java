@@ -3,7 +3,6 @@ package me.santipingui58.splindux.game.ranked;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 
@@ -25,9 +24,9 @@ public class RankedManager {
 	
 	
 	
-	public RankedQueue getRankedQueue(SpleefType spleef, GameType game, int teamSize) {
+	public RankedQueue getRankedQueue(SpleefType spleef, int teamSize) {
 		for (RankedQueue q : this.queues) {
-			if (q.getGameType().equals(game) && q.getSpleefType().equals(game) && q.getTeamSize()==teamSize) {
+			if (q.getSpleefType().equals(spleef) && q.getTeamSize()==teamSize) {
 				return q;
 			}
 		}
@@ -37,7 +36,7 @@ public class RankedManager {
 	public void loadRankedQueues() {
 		for (SpleefType spleef : SpleefType.values()) {
 				for (int i = 1;i<=3;i++) {
-					RankedQueue queue = new RankedQueue(spleef, GameType.DUEL, i);
+					RankedQueue queue = new RankedQueue(spleef, i);
 					this.queues.add(queue);
 				}
 			

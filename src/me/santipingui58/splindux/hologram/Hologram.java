@@ -1,4 +1,4 @@
-package me.santipingui58.splindux.scoreboard.hologram;
+package me.santipingui58.splindux.hologram;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,7 +89,7 @@ public class Hologram {
 		List<Integer> id =  new ArrayList<Integer>();
 		Location l = new Location(location.getWorld(),location.getX(),location.getY(),location.getZ());
 		int i = 1;
-		if (type.equals(HologramType.SPLEEFRANKING)) {	
+		if (type.equals(HologramType.SPLEEF_FFA_RANKING)) {	
 			 if (!getChangeType().containsKey(sp)) {
 				getChangeType().put(sp, SpleefRankingType.WINS);
 			 } 
@@ -219,7 +219,42 @@ public class Hologram {
 		    	 l.add(0, -0.25, 0);
 		    	 id.add(line(l,sp,"§bYou have unclaimed rewards!"));
 		    }
-		}	
+		} else if (type.equals(HologramType.SPLEEF_RANKED)) {
+			id.add(line(l,sp,"§b§lRanked Spleef 1v1 Ranking"));
+		    l.add(0, -0.25, 0);
+			HashMap<String,Integer> hashmap = new HashMap<String,Integer>();
+			hashmap = StatsManager.getManager().getRanking(RankingType.SPLEEF1VS1_ELO);
+			 boolean ranking = false;
+			Iterator<Entry<String, Integer>> it = hashmap.entrySet().iterator();
+			    while (it.hasNext()) {
+			    	Map.Entry<String,Integer> pair = (Map.Entry<String,Integer>)it.next();
+			        String name = pair.getKey();
+			        Integer wins = pair.getValue();
+				
+			        if (name.equalsIgnoreCase(sp.getOfflinePlayer().getName())) {
+				    	   ranking = true;			
+				       }
+			        if (i<=20) {
+			        	id.add(line(l,sp, "§6"+i+". §b"+name+" §7- §e" + wins));			        	
+			        	l.add(0, -0.25, 0);
+			        	i++;
+			        } else {
+			        	break;
+			        }
+			    }
+			    
+			    l.add(0, -0.25, 0);
+			    int rank = StatsManager.getManager().getRankingPosition(RankingType.SPLEEF1VS1_ELO, sp);
+			    if (!ranking) {
+			    id.add(line(l,sp,"§6§l"+rank+". §b§l"+sp.getOfflinePlayer().getName()+" §7§l- §e§l" + " " + sp.getELO()));
+			    } else {
+			    	 id.add(line(l,sp,"§f"));
+
+			    }
+			    l.add(0, -0.25, 0);
+		}
+		
+		
 	ids.put(sp, id);
 		}
 	}.runTaskLater(Main.get(), 3L);

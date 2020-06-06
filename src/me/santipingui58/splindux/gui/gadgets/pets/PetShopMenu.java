@@ -1,10 +1,11 @@
-package me.santipingui58.splindux.gui;
+package me.santipingui58.splindux.gui.gadgets.pets;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.gui.MenuBuilder;
 import me.santipingui58.splindux.petshop.PetShopManager;
 import me.santipingui58.splindux.petshop.SplinduxPet;
 import me.santipingui58.splindux.utils.ItemBuilder;

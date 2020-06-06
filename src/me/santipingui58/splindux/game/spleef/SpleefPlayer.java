@@ -25,6 +25,7 @@ import me.santipingui58.splindux.game.GameEndReason;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.PlayerOptions;
 import me.santipingui58.splindux.game.mutation.GameMutation;
+import me.santipingui58.splindux.game.spectate.SpectateManager;
 import me.santipingui58.splindux.particles.effect.ParticleEffect;
 import me.santipingui58.splindux.particles.type.ParticleType;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
@@ -370,12 +371,16 @@ public class SpleefPlayer {
 				
 				
 			} 
+			
 				arena.getQueue().remove(this);
 				
 		}
 		}
 	 
 	 public void leaveSpectate(boolean teleport) {
+		 if (isSpectating()) {
+		 SpectateManager.getManager().leaveSpectate(this);
+		 }
 		 setSpectate(null);
 		 setScoreboard(ScoreboardType.LOBBY);
 		 if (getOfflinePlayer().isOnline() && teleport) {
@@ -876,6 +881,9 @@ public class SpleefPlayer {
 		}
 		getPlayer().getInventory().setItem(3, DataManager.getManager().lobbyitems()[1]);		
 		getPlayer().getInventory().setItem(4, DataManager.getManager().lobbyitems()[0]);	
+		getPlayer().getInventory().setItem(8, DataManager.getManager().lobbyitems()[2]);	
+		getPlayer().getInventory().setItem(0, DataManager.getManager().lobbyitems()[3]);
+		getPlayer().getInventory().setItem(1, DataManager.getManager().lobbyitems()[4]);
 	}
 	
 	@SuppressWarnings("deprecation")
