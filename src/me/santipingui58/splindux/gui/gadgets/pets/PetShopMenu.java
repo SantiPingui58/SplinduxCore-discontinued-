@@ -3,11 +3,13 @@ package me.santipingui58.splindux.gui.gadgets.pets;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.cosmetics.petshop.PetShopManager;
+import me.santipingui58.splindux.cosmetics.petshop.SplinduxPet;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.gui.MenuBuilder;
-import me.santipingui58.splindux.petshop.PetShopManager;
-import me.santipingui58.splindux.petshop.SplinduxPet;
 import me.santipingui58.splindux.utils.ItemBuilder;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -18,6 +20,9 @@ public class PetShopMenu extends MenuBuilder {
 	public PetShopMenu(SpleefPlayer sp) {
 		super("§9Pet Store",6);
 		
+		new BukkitRunnable() {
+		public void run() {
+			
 		int pos = 0;
 		for (SplinduxPet pet : PetShopManager.getManager().getPets()) {
 			s(pos,pet.getItem(sp));
@@ -36,6 +41,15 @@ public class PetShopMenu extends MenuBuilder {
 		.addLore(PetShopManager.getManager().getBar())
 		.build());
 		
+		new BukkitRunnable() {
+		public void run() {
+			buildInventory();
+		}
+		}.runTask(Main.get());
+		
+		}
+		}.runTaskAsynchronously(Main.get());
+		
 	}
 
 
@@ -46,6 +60,9 @@ public class PetShopMenu extends MenuBuilder {
 			new PetMainMenu(sp).o(p);
 			return;
 		}
+		
+		
+		
 		if (slot==53) return;
 		
 			SplinduxPet pet = PetShopManager.getManager().getPetByName(stack.getItemMeta().getDisplayName());
@@ -59,7 +76,7 @@ public class PetShopMenu extends MenuBuilder {
 	
 			p.closeInventory();
 			p.sendMessage("§cYou don't have permission to purchase this pet.");
-			 p.sendMessage("§aVisit the store for more info: §bhttp://store.splindux.net/");	
+			 p.sendMessage("§aVisit the store for more info: §bhttp://store.splindux.com/");	
 		} else {
 			if (sp.getCoins()>=pet.getPrice()) {
 				sp.removeCoins(pet.getPrice());

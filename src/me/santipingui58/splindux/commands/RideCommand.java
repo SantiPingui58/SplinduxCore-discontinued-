@@ -27,14 +27,14 @@ public class RideCommand implements CommandExecutor {
 			if (p.hasPermission("splindux.ride")) {
 				if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
 					SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-			if (!sp.isInGame() && !sp.isSpectating() && !sp.isInQueue()) {
+			if (!sp.isInGame() && sp.getSpleefArenaSpectating()==null && sp.getParkourArenaSpectating()==null && !sp.isInQueue()) {
 			if (args.length == 1) {
 				final Player pa = Bukkit.getServer().getPlayer(args[0]);
 				
 				if (Bukkit.getOnlinePlayers().contains(pa)) {
 					if (!pa.equals(p)) {
 						SpleefPlayer sp2 = SpleefPlayer.getSpleefPlayer(pa);
-						if (!sp2.isInGame() && !sp2.isSpectating()) {						
+						if (!sp2.isInGame() && sp2.getSpleefArenaSpectating()==null && sp2.getParkourArenaSpectating()==null) {						
 							pa.setPassenger(p);
 						} else {
 								p.sendMessage("§cYou cannot ride this player right now.");							
@@ -57,7 +57,7 @@ public class RideCommand implements CommandExecutor {
 				} else {
 				p.sendMessage("§cYou don't have permission to execute this command.");
 				p.sendMessage("§aYou need a rank "
-						+ "§5§l[Extreme] §ato use this, visit the store for more info: §bhttp://store.splindux.net/");
+						+ "§5§l[Extreme] §ato use this, visit the store for more info: §bhttp://store.splindux.com/");
 			
 			
 		}

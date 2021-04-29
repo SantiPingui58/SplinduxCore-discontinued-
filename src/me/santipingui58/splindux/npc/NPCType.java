@@ -1,50 +1,43 @@
 package me.santipingui58.splindux.npc;
 
 import me.santipingui58.splindux.game.spleef.GameType;
-import me.santipingui58.splindux.game.spleef.SpleefType;
 
 public enum NPCType {
 
+	RANKED,
+	VERSUS,
 	FFA,
-	RANKED_SPLEEF_1V1,
-	SPLEEF_DUELS,
-	SPLEGG_DUELS,
+	TEAMS,
 	VOTES,
-	FISHING;
+	FISHING,
+	PARKOUR;
 	
 	
 	public int getId() {
-		if (this.equals(FFA)) {
-			return 0;
-		} else if (this.equals(SPLEEF_DUELS)) {
+		if (this.equals(VERSUS)) {
 			return 173;
-		}else if (this.equals(SPLEGG_DUELS)) {
+		} else if (this.equals(FFA)) {
 			return 174;
+		}else if (this.equals(TEAMS)) {
+			return 178;
 		}else if (this.equals(VOTES)) {
 			return 179;
 		} else if (this.equals(FISHING)) {
-			return 181;
-		} else if (this.equals(RANKED_SPLEEF_1V1)) {
-			return 192;
+			return 194;
+		} else if (this.equals(RANKED)) {
+			return 0;
+		} else if (this.equals(PARKOUR)) {
+			return 176;
 		}
 		return 0;
 	}
  	
-	public SpleefType getSpleefType() {
-		if (this.equals(SPLEGG_DUELS)) {
-			return SpleefType.SPLEGG;
-		} else if (this.equals(VOTES) || this.equals(FISHING)) {
-			return null;
-		} else {
-			return SpleefType.SPLEEF;
-		}
-	}
 	
 	public GameType getGameType() {
-		if (this.equals(FFA)) {
-			return GameType.FFA;
-		} else if (this.equals(VOTES) || this.equals(FISHING)) {
+		 if (this.equals(VOTES) || this.equals(FISHING) || this.equals(PARKOUR)) {
 			return null;
+		} else if (this.equals(FFA)) {
+			return GameType.FFA;
 		} else {
 			return GameType.DUEL;
 		}
@@ -52,7 +45,7 @@ public enum NPCType {
 	
 	
 	public boolean isRanked() {
-		if (this.equals(RANKED_SPLEEF_1V1)) {
+		if (this.equals(RANKED)) {
 			return true;
 		} else {
 			return false;

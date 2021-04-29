@@ -21,7 +21,7 @@ import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.spleef.GameType;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.SpleefDuel;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
@@ -41,20 +41,33 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class DuelMenu extends MenuBuilder {
 
 	public static HashMap<Player,Integer> page = new HashMap<Player,Integer>();
-	
+	public  HashMap<SpleefPlayer,List<SpleefPlayer>> cache = new HashMap<SpleefPlayer,List<SpleefPlayer>>();
 	
 	public DuelMenu(SpleefPlayer sp,List<SpleefPlayer> sp2,SpleefType type) {
-		super("§aDuel request to: §b" + getDuelTo(sp2),4);
+		super(type==null ? "§2§lSelect Spleef Type" : "§2§lSelect Map",type!=null ? 6 : 3);
+		
+		
+		new BukkitRunnable() {
+		public void run() {
+			
+		cache.put(sp, sp2);
+		
+		if (type==null) {
+			s(11,new ItemBuilder(Material.TNT).setTitle("§c§lTNT Run").addLore("§7Select Spleef Type").build());
+			s(13,new ItemBuilder(Material.DIAMOND_SPADE).setTitle("§b§lSpleef").addLore("§7Select Spleef Type").build());
+			s(15,new ItemBuilder(Material.EGG).setTitle("§e§lSplegg").addLore("§7Select Spleef Type").build());
+		} else {
+			
 		if (sp.getDuelPage()==0) {
 		int size = sp2.size()+1;
 		size = size/2;
-		int x = 1;
+		int x = 19;
 		List<String> main_arena = new ArrayList<String>();
 		
 		 
 		List<String> alph = new ArrayList<String>();
 		
-		for (SpleefArena arena : DataManager.getManager().getArenas()) {
+		for (Arena arena : DataManager.getManager().getArenas()) {
 			if (arena.getSpleefType().equals(type) && arena.getGameType().equals(GameType.DUEL))
 			alph.add(arena.getName());
 		}
@@ -63,10 +76,10 @@ public class DuelMenu extends MenuBuilder {
 		
 		java.util.Collections.sort(alph);
 		
-		List<SpleefArena> suggestedArenas = new ArrayList<SpleefArena>();
-		List<SpleefArena> allArenas = new ArrayList<SpleefArena>();
+		List<Arena> suggestedArenas = new ArrayList<Arena>();
+		List<Arena> allArenas = new ArrayList<Arena>();
 		for (String s : alph) {
-			SpleefArena arena = GameManager.getManager().getArenaByName(s);
+			Arena arena = GameManager.getManager().getArenaByName(s);
 			if (arena.getSpleefType().equals(type)) {
 				String n = arena.getName();
 				n = n.replaceAll("\\d","");
@@ -84,9 +97,9 @@ public class DuelMenu extends MenuBuilder {
 			}
 		}
 		
-		s(0,new ItemBuilder(Material.PAPER).setTitle("§aSuggested arenas for " + size+ "VS"+size).build());
+		s(18,new ItemBuilder(Material.PAPER).setTitle("§aSuggested arenas for " + size+ "VS"+size).build());
 		
-		for (SpleefArena arena : suggestedArenas) {
+		for (Arena arena : suggestedArenas) {
 			
 			int amount = GameManager.getManager().getAvailableArenasFor(arena.getName());
 			String name = arena.getName().replaceAll("\\d","");
@@ -102,6 +115,12 @@ public class DuelMenu extends MenuBuilder {
 				ItemMeta meta = item.getItemMeta();
 				meta.setLore(lore);
 				item.setItemMeta(meta);
+				
+				if (x % 9 == 0) {
+					s(x,new ItemBuilder(Material.PAPER).setTitle("§aSuggested arenas for " + size+ "VS"+size).build());
+					x++;
+				}
+				
 			s(x,item);			
 			} else {
 				s(x,new ItemBuilder(Material.BARRIER).setTitle("§c"+name).addLore("§cNo available arenas for this map").build());
@@ -117,14 +136,18 @@ public class DuelMenu extends MenuBuilder {
 			x= 18;
 		}else if (x<=26) {
 			x= 27;
+		} else if (x<=35) {
+			x = 36;
+		} else if (x<=44) {
+			x = 45;
 		}
 		
 		
-		s(x,new ItemBuilder(Material.PAPER).setTitle("§aRest of arenas").build());
+		s(x,new ItemBuilder(Material.PAPER).setTitle("§cNot recommended arenas for " + size+ "VS"+size).build());
 		x++;		
 		}
 		
-		for (SpleefArena arena : allArenas) {
+		for (Arena arena : allArenas) {
 			
 			int amount = GameManager.getManager().getAvailableArenasFor(arena.getName());
 			String name = arena.getName().replaceAll("\\d","");
@@ -140,6 +163,13 @@ public class DuelMenu extends MenuBuilder {
 				ItemMeta meta = item.getItemMeta();
 				meta.setLore(lore);
 				item.setItemMeta(meta);
+				
+				if (x % 9 == 0) {
+					s(x,new ItemBuilder(Material.PAPER).setTitle("§cNot recommended arenas for " + size+ "VS"+size).build());
+					x++;
+				}
+				
+				
 			s(x,item);			
 			} else {
 				s(x,new ItemBuilder(Material.BARRIER).setTitle("§c"+name).addLore("§cNo available arenas for this map").build());
@@ -150,9 +180,8 @@ public class DuelMenu extends MenuBuilder {
 		
 		
 		
-		ItemStack random = Utils.getUtils().getSkull("http://textures.minecraft.net/texture/d34e063cafb467a5c8de43ec78619399f369f4a52434da8017a983cdd92516a0");
+		ItemStack random = Utils.getUtils().getSkull("http://textures.minecraft.net/texture/d34e063cafb467a5c8de43ec78619399f369f4a52434da8017a983cdd92516a0","§aRandom Arena");
 		ItemMeta meta = random.getItemMeta();
-		meta.setDisplayName("§aRandom Arena");
 		List<String> lore = new ArrayList<String>();
 		lore.add("§8"+type.toString());
 		for (SpleefPlayer sp_2 : sp2) {
@@ -162,17 +191,18 @@ public class DuelMenu extends MenuBuilder {
 		meta.setLore(lore);
 		random.setItemMeta(meta);
 		
-		if (x<=8) {
-			x = 9;
-		} else if (x<=17) {
-			x= 18;
-		}else if (x<=26) {
-			x= 27;
-		}else if (x<=35) {
-			x= 36;
+
+		s(13,random);
 		}
-		s(x,random);
+	}
+		new BukkitRunnable() {
+		public void run() {
+			buildInventory();
 		}
+		}.runTask(Main.get());
+		
+		}
+		}.runTaskAsynchronously(Main.get());
 	}
 	
 
@@ -181,7 +211,18 @@ public class DuelMenu extends MenuBuilder {
 		if (stack==null) {
 			return;	
 		}
-		
+
+		if (stack.getItemMeta().getLore()!=null && stack.getItemMeta().getLore().get(0).equalsIgnoreCase("§7Select Spleef Type")) {
+			SpleefType type = null;
+			switch(stack.getItemMeta().getDisplayName()) {
+			case "§c§lTNT Run": type = SpleefType.TNTRUN; break;
+			case "§b§lSpleef": type = SpleefType.SPLEEF; break;
+			case "§e§lSplegg": type = SpleefType.SPLEGG; break;
+			}
+			
+			new DuelMenu(sp,cache.get(sp),type).o(sp.getPlayer());
+			return;
+		}
 		
 		if (stack.getItemMeta().getLore().get(0).equalsIgnoreCase("§cNo available arenas for this map")) {
 			return;
@@ -240,28 +281,22 @@ public class DuelMenu extends MenuBuilder {
 		
 	}
 	
-	private static String getDuelTo(List<SpleefPlayer> list) {
-		if (list.size()==1) {
-			return list.get(0).getOfflinePlayer().getName();
-		} else {
-			return list.size()+" players";
-		}
-	}
-	
+
 	private void sendMessage(SpleefPlayer sp, List<SpleefPlayer> sp2,SpleefType type) {
 		SpleefDuel duel = sp.getDuelByDueledPlayer(sp2.get(0));
 		if (sp2.contains(sp)) sp2.remove(sp);
 		
 		if (sp2.size()==1) {
 			String map = "Random map";
-			if (duel.getArena()==null) {
+			if (duel.getArena()!=null) {
 				map = duel.getArena();
 			}
 			
 			sp.getPlayer().sendMessage("§aYou have sent a duel request to §b" + sp2.get(0).getName()+ "§a for " + type.toString() + " in map " + map+"!");
 		sp2.get(0).getPlayer().sendMessage("§aThe Player §b" + sp.getName() + " §ahas sent you a duel request for "+ type.toString() + " in map " + map+ "! §7(This request expires in 1 minute.)");
+		
 		sp2.get(0).getPlayer().spigot().sendMessage(getInvitation(sp));	
-	
+		new AcceptDuelMenu(sp2.get(0), duel).o(sp2.get(0).getPlayer());	
 		} else {
 			int size = (sp2.size()+1)/2; 
 			String mode = size+"VS"+size;
@@ -270,6 +305,7 @@ public class DuelMenu extends MenuBuilder {
 			for (SpleefPlayer sp_2 : sp2) {
 				sp_2.getPlayer().sendMessage("§aThe Player §b" + sp.getName() + " §ahas sent you a duel request for " + mode + " "+ type.toString() + " in map " + duel.getArena()+"! §7(This request expires in 1 minute.)");
 				sp_2.getPlayer().spigot().sendMessage(getInvitation(sp));	
+				new AcceptDuelMenu(sp_2, duel).o(sp_2.getPlayer());	
 			}
 		}
 		
@@ -298,6 +334,8 @@ public class DuelMenu extends MenuBuilder {
 		cb.append(msg2);
 		return cb.create();
 	}
+
+
 	
 	
 	}

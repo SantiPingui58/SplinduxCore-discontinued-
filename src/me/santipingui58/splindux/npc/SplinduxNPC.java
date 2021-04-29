@@ -1,6 +1,7 @@
 package me.santipingui58.splindux.npc;
 
 import org.bukkit.Location;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
@@ -21,27 +22,21 @@ public class SplinduxNPC {
 	public SplinduxNPC(NPC npc,NPCType type) {
 		this.type = type;
 		this.npc = npc;
-		 createHologram();	
+		 createHologram();		 
 	}
 	
 	
 	public void createHologram() {
 		double x = npc.getStoredLocation().getBlockX()+0.5;	
-		double y =  npc.getStoredLocation().getBlockY()+3;
+		double y =  npc.getStoredLocation().getBlockY()+2.7;
 		double z = npc.getStoredLocation().getBlockZ()+0.5;	
-		if (this.type.equals(NPCType.FFA)) {
-			 y = npc.getStoredLocation().getBlockY()+2.75;	
-		} 
 		Location l = new Location (npc.getStoredLocation().getWorld(),x,y,z);
 		this.hologram = loadHologram(l);
 		hologram.clearLines();
 		
 		if (this.type.getGameType()!=null) {
-		if (this.type.equals(NPCType.FFA)) {		
-			hologram.appendTextLine("§7Playing: §a" + this.playing/2);
-		}  else if (this.type.getGameType().equals(GameType.DUEL)) {
-			hologram.appendTextLine("§7Playing: §a" + this.playing);
-			hologram.appendTextLine("§7In Queue: §a" + this.queue);
+		 if (this.type.getGameType().equals(GameType.DUEL) || this.type.getGameType().equals(GameType.FFA)) {
+				hologram.appendTextLine("§e§l0 Players");
 		} else if (this.type.equals(NPCType.FISHING)) {
 			hologram.appendTextLine("§eNPC");
 		}
@@ -50,23 +45,32 @@ public class SplinduxNPC {
 	
 	
 	public void updateHologram() {	
-		if (this.type.equals(NPCType.VOTES) || this.type.equals(NPCType.FISHING)) return;
-		if (this.type.equals(NPCType.FFA)) {	
-			if (this.playing!=GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(),0,0)) {
-				this.playing = GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(),0,0);
-			hologram.clearLines();
-			hologram.appendTextLine("§7Playing: §a" + this.playing);
-			}
-		} else {		
-			if (this.queue!= GameManager.getManager().getQueueSize(type.getSpleefType(), type.getGameType(),0,0) || 
-					this.playing!=GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(),0,0)) {
-				this.playing = GameManager.getManager().getPlayingSize(type.getSpleefType(), type.getGameType(),0,0);
-				this.queue = GameManager.getManager().getQueueSize(type.getSpleefType(), type.getGameType(),0,0);				
+		if (this.type.equals(NPCType.VOTES) || this.type.equals(NPCType.FISHING) || this.type.equals(NPCType.PARKOUR)) return;	
+		
+		
+			int ranked = this.type.equals(NPCType.RANKED) ? 1 : 0;
+			int queue = 0;
+			int playing = 0;
+				int min = this.type.equals(NPCType.TEAMS) ? 2 : 1;
+				int max = this.type.equals(NPCType.TEAMS) ? 3 : 1;
+				for (int i = min; i <= max;i++) {
+					queue = queue + GameManager.getManager().getQueueSize(null,type.getGameType(),i, ranked);
+					playing = playing + GameManager.getManager().getPlayingSize(null, type.getGameType(),i,ranked);
+				}		
+			
+			if (this.queue!= queue || 
+					this.playing!=playing) {
+				this.playing = playing;
+				this.queue = queue;			
 				hologram.clearLines();
-				hologram.appendTextLine("§7Playing: §a" + this.playing);
-				hologram.appendTextLine("§7In Queue: §a" + this.queue);
+				int i = this.playing+this.queue;
+				new BukkitRunnable() {
+					public void run() {
+				hologram.appendTextLine("§e§l" + i + " Players");
+				}
+				}.runTask(Main.get());
 			}
-		}
+		
 	}
 	
 	public Hologram loadHologram(Location l) {
@@ -75,6 +79,7 @@ public class SplinduxNPC {
 				return h;
 			}
 		}	
+
 		return HologramsAPI.createHologram(Main.get(),l);
 	}
 	

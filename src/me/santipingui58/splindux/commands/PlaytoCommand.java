@@ -6,9 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.spleef.GameType;
-import me.santipingui58.splindux.game.spleef.Request;
+import me.santipingui58.splindux.game.spleef.ArenaRequest;
 import me.santipingui58.splindux.game.spleef.RequestType;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 public class PlaytoCommand implements CommandExecutor {
@@ -26,7 +26,7 @@ public class PlaytoCommand implements CommandExecutor {
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			
 			if (sp.isInGame()) {
-				SpleefArena arena = sp.getArena();
+				Arena arena = sp.getArena();
 				if (arena.getGameType().equals(GameType.DUEL)) {
 					if (!arena.isRanked()) {
 					if (arena.getPlayToRequest()==null) {
@@ -48,7 +48,7 @@ public class PlaytoCommand implements CommandExecutor {
 							return false;
 						}
 						
-						Request request = new Request(sp, crumble,RequestType.PLAYTO);
+						ArenaRequest request = new ArenaRequest(sp, crumble,RequestType.PLAYTO);
 						arena.setPlayToRequest(request);
 						request.sendMessage();
 						}

@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.citizensnpcs.api.CitizensAPI;
 
+
 public class NPCManager {
 	private static NPCManager manager;	
 	 public static NPCManager getManager() {
@@ -37,7 +38,7 @@ public class NPCManager {
 			 SplinduxNPC npc = new SplinduxNPC(CitizensAPI.getNPCRegistry().getById(type.getId()),type);
 			 this.npcs.add(npc);
 		 }
-		 
+		  
 		 updateNPCs();
 	 }
 	 

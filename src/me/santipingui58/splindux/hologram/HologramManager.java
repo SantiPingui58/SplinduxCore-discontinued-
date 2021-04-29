@@ -11,6 +11,8 @@ import org.bukkit.Location;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.stats.SpleefRankingPeriod;
+import me.santipingui58.splindux.stats.SpleefRankingType;
 import me.santipingui58.splindux.utils.Utils;
 
 public class HologramManager {
@@ -32,7 +34,7 @@ public class HologramManager {
 		 Hologram hologram = null;
 		 for (Hologram h : this.holograms) {
 			 if (h.getLocation().getWorld().equals(sp.getPlayer().getLocation().getWorld())) {
-				 if (h.getLocation().distance(sp.getPlayer().getLocation())<=10) {
+				 if (h.getLocation().distance(sp.getPlayer().getLocation())<=3) {
 					 hologram = h;
 					 break;
 				 }
@@ -40,7 +42,7 @@ public class HologramManager {
 		 }
 		 
 		 if (hologram!=null) {
-			 for (SpleefPlayer spl : DataManager.getManager().getOnlinePlayers()) {
+			 for (SpleefPlayer spl : DataManager.getManager().getPlayers()) {
 			 hologram.delete(spl);
 			 Main.arenas.getConfig().set("holograms."+hologram.getUUID().toString(), null);
 			 }		 
@@ -65,6 +67,7 @@ public class HologramManager {
 			UUID uuid = UUID.fromString(h);
 			Location location = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("holograms."+h+".location"));
 			HologramType type = HologramType.valueOf(Main.arenas.getConfig().getString("holograms."+h+".type"));
+			if (type.equals(HologramType.SPLEEF_RANKED) || type.equals(HologramType.SPLEEF_FFA_RANKING)) continue;
 			Hologram hologram = new Hologram(uuid, location, type);
 			this.holograms.add(hologram);
 		}
@@ -77,14 +80,16 @@ public class HologramManager {
 			 Main.arenas.getConfig().set("holograms."+h.getUUID().toString()+".location", Utils.getUtils().setLoc(h.getLocation(), false));
 			 }
 			 Main.arenas.getConfig().set("holograms."+h.getUUID().toString()+".type", h.getType().toString());
+		
 		 }
-		 Main.arenas.saveConfig();
+			 Main.arenas.saveConfig();
 	 }
 	 
+		 
 	 
 	 public void updateHolograms(boolean onlyVotes) {
-		 for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {			
-			 sendHolograms(sp,onlyVotes);
+		 for (SpleefPlayer sp : DataManager.getManager().getPlayers()) {
+			 if (sp.getOfflinePlayer().isOnline()) sendHolograms(sp,onlyVotes);
 		 }
 	 }
 	 public void sendHolograms(SpleefPlayer sp,boolean onlyVotes) {
@@ -111,6 +116,7 @@ public class HologramManager {
 	 }
 	 
 	 public void changeChangeType(SpleefPlayer sp,int id) {
+		 try {
 		 Hologram hologram = getHologramByID(id,sp);
 		 
 		 if (hologram.getChangeType().get(sp).equals(SpleefRankingType.WINS)) {
@@ -124,10 +130,12 @@ public class HologramManager {
 			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA WINS");
 		 } 
 		 sendHolograms(sp,false);
+		 } catch(Exception ex) {}
 	 }
 	 
 	 
 	 public void changeChangePeriod(SpleefPlayer sp,int id) {
+		 try {
 		 Hologram hologram = getHologramByID(id,sp);
 		 
 		 if (hologram.getChangePeriod().get(sp).equals(SpleefRankingPeriod.ALL_TIME)) {
@@ -141,6 +149,7 @@ public class HologramManager {
 			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA ALL TIME");
 		 } 
 		 sendHolograms(sp,false);
+		 } catch (Exception ex) {}
 	 }
 	 
 	 

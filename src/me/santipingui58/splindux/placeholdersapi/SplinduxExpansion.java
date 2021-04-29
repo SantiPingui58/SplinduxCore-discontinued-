@@ -115,6 +115,7 @@ public class SplinduxExpansion extends PlaceholderExpansion {
         	
         	if (identifier.equals("prefix")) {
         		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(player);
+        		String ranking = sp.getRankingPosition()!=-1 ? String.valueOf(sp.getRankingPosition()) : "";     		
         		String prefix = ChatColor.translateAlternateColorCodes('&', PermissionsEx.getUser(player).getPrefix());
         		String level;
         		try {
@@ -123,10 +124,12 @@ public class SplinduxExpansion extends PlaceholderExpansion {
         			level = "[Begginer I] ";
         		}
         		prefix = prefix + "§7["+ level+"§7]";
-        		return prefix;
+        		return "( "+ranking+"º) " + prefix;
         	} else if (identifier.equalsIgnoreCase("name")) {
         		try {
         		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(player);
+        		String s = sp.getName();
+        		 s= s.replace("_", "\\\\_");
         		return sp.getName();
         		} catch (Exception ex) {
         			return player.getName();

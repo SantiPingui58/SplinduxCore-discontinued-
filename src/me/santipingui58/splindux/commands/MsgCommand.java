@@ -1,5 +1,6 @@
 package me.santipingui58.splindux.commands;
 
+import java.io.IOException;
 import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -8,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.translate.TranslateAPI;
 
 
 
@@ -38,8 +40,16 @@ public class MsgCommand implements CommandExecutor {
 			  String message = builder.toString();
 			  SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			  SpleefPlayer sreceptor = SpleefPlayer.getSpleefPlayer(receptor);
+			  p.sendMessage("§6[me -> " + sreceptor.getName() + "] §f" + message);
+			  if (!sreceptor.getOptions().getLanguage().equals(sp.getOptions().getLanguage()) && sreceptor.getOptions().hasTranslate()) {
+				  try {
+					message = TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), sreceptor.getOptions().getLanguage(), message);
+				} catch (IOException e) {
+				}
+			  }
+			  
 				receptor.sendMessage("§6[" + sp.getName() + " -> me] §f" + message);
-				p.sendMessage("§6[me -> " + sreceptor.getName() + "] §f" + message);
+				
 				respond.put(receptor, p);
 				respond.put(p, receptor);
 			} else {
@@ -64,9 +74,17 @@ public class MsgCommand implements CommandExecutor {
 			  
 			  SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			  SpleefPlayer sreceptor = SpleefPlayer.getSpleefPlayer((Player) respond.get(p));
+			  p.sendMessage("§6[me -> " + sreceptor.getName() + "] §f" + message);	
 			  
+			  if (!sreceptor.getOptions().getLanguage().equals(sp.getOptions().getLanguage())&& sreceptor.getOptions().hasTranslate()) {
+				  try {
+					message = TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), sreceptor.getOptions().getLanguage(), message);
+				} catch (IOException e) {
+				}
+			  }
+				  
 				respond.get(p).sendMessage("§6[" + sp.getName() + " -> me] §f" + message);
-				p.sendMessage("§6[me -> " + sreceptor.getName() + "] §f" + message);		
+					
 			} else {
 					p.sendMessage("§cYou don't have anyone to reply.");		
 			}

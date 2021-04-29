@@ -31,8 +31,6 @@ public class SecurityManager {
 		
 		if (sp.getPlayer().isOp() || sp.getPlayer().hasPermission("*")) {			
 			if (!Main.config.getConfig().contains("passwords."+sp.getPlayer().getUniqueId())) {
-				sp.needsToRegister();	
-				sp.needsAdminLogin();
 				new BukkitRunnable() {
 					public void run() {
 						sp.getPlayer().sendMessage("§c§l[SplinduxLogin] §cTo join the server you need to register with: §b/splinduxregister <password>");
@@ -42,8 +40,7 @@ public class SecurityManager {
 				
 			} else {		
 			Date now = new Date();
-			if (sp.getLastLogin()==null) {
-				sp.needsAdminLogin();		
+			if (sp.getLastLogin()==null) {	
 				new BukkitRunnable() {
 					public void run() {
 						sp.getPlayer().sendMessage("§c§l[SplinduxLogin] §cTo join the server you need login with: §b/splinduxlogin <password>");
@@ -52,7 +49,6 @@ public class SecurityManager {
 				
 			}	else {		
 			if (Utils.getUtils().getDateDiff(now, sp.getLastLogin(), TimeUnit.MINUTES) >=60) {
-				sp.needsAdminLogin();
 				new BukkitRunnable() {
 					public void run() {
 						sp.getPlayer().sendMessage("§c§l[SplinduxLogin] §cTo join the server you need login with: §b/splinduxlogin <password>");

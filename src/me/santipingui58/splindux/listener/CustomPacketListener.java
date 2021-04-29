@@ -37,37 +37,40 @@ public class CustomPacketListener {
             public void onPacketReceiving(PacketEvent event) {
 				if (event.getPacket()==null) return;
 				Player player = event.getPlayer();
-            	SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(player);			
+            	SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(player);	
+        		if (!delay.contains(sp)) {
+        			delay.add(sp);
                 if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {                
                 	PacketContainer packet = event.getPacket();
+                	           	
                 	for (Hologram h : HologramManager.getManager().getHolograms()) {
-                		try {
-                		if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp).get(me.santipingui58.splindux.hologram.PacketType.TYPE))) {
-                    		if (!delay.contains(sp)) {
-                    		HologramManager.getManager().changeChangeType(sp, packet.getIntegers().read(0));
-                    		delay.add(sp);
+                		if (h.getPacketList().isEmpty()) continue; 
+                			 if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp).get(me.santipingui58.splindux.hologram.PacketType.TYPE))) {
                     		new BukkitRunnable() {
                     		public void run() {
-                    			delay.remove(sp);
+                    			HologramManager.getManager().changeChangeType(sp, packet.getIntegers().read(0));
                     		}	
-                    		}.runTaskLater(Main.get(),3L);
-                    		} 
-                    		return;
+                    		}.runTaskLaterAsynchronously(Main.get(),3L);
+                    		
+                    		break;
                     	} else if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp).get(me.santipingui58.splindux.hologram.PacketType.PERIOD))) {
-                    		if (!delay.contains(sp)) {
-                    		HologramManager.getManager().changeChangePeriod(sp, packet.getIntegers().read(0));
-                    		delay.add(sp);
+
                     		new BukkitRunnable() {
                     		public void run() {
-                    			delay.remove(sp);
+                    			HologramManager.getManager().changeChangePeriod(sp, packet.getIntegers().read(0));
                     		}	
-                    		}.runTaskLater(Main.get(),3L);
-                    		} 
-                    		return;
+                    		}.runTaskLaterAsynchronously(Main.get(),3L);
+                    		
+                    		break;
                     	}
-                	} catch (Exception e) {}
                 	}
-                	
+                }
+                
+                new BukkitRunnable() {
+            		public void run() {
+            			delay.remove(sp);
+            		}	
+            		}.runTaskLaterAsynchronously(Main.get(),5L);
                 }
 			}
             

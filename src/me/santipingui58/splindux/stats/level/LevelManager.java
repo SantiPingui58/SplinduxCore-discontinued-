@@ -5,7 +5,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
@@ -43,7 +42,6 @@ public class LevelManager {
 		 if (rank.getNextRank()!=null) {
 		 if (sp.getLevel()>=rank.getNextRank().getRequiredLevel()) {
 			 levelUp(sp);
-			 DataManager.getManager().saveData(sp);
 		 }
 		 }
 	 }
@@ -58,7 +56,6 @@ public class LevelManager {
 		 setExp(sp);
 		 }
 		 
-		 DataManager.getManager().saveData(sp);
 	 }
 	 
 	 
@@ -68,7 +65,6 @@ public class LevelManager {
 		 setExp(sp);
 		 }
 		 
-		 DataManager.getManager().saveData(sp);
 	 }
 	 
 	 public void levelUp(SpleefPlayer sp) {

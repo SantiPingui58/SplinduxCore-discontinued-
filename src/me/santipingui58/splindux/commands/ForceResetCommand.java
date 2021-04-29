@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import me.santipingui58.splindux.game.GameEndReason;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.spleef.GameType;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 
@@ -29,19 +29,19 @@ public class ForceResetCommand implements CommandExecutor{
 				 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 				if (args.length==0 && p.hasPermission("splindux.staff")) {
 					
-					if (sp.isSpectating() || sp.isInGame() || sp.isInArena()) {
-						SpleefArena arena = null;
-						if(sp.isSpectating()) {
-							arena = sp.getSpectating().getArena();
+					if (sp.getSpleefArenaSpectating()!=null || sp.isInGame() || sp.isInArena()) {
+						Arena arena = null;
+						if(sp.getSpleefArenaSpectating()!=null) {
+							arena = sp.getSpleefArenaSpectating();
 						} else {
 							arena = sp.getArena();
 						}
 						
 						if (arena.getGameType().equals(GameType.DUEL)) {
-							arena.shrink();
+							GameManager.getManager().resetArenaWithCommand(arena,false);
 							for (SpleefPlayer viewers : arena.getViewers()) viewers.getPlayer().sendMessage("§cA Staff has reset the arena.");
 						} else if (arena.getGameType().equals(GameType.FFA)){
-							GameManager.getManager().endGameFFA(arena, GameEndReason.TIME_OUT);
+							GameManager.getManager().endGameFFA(GameEndReason.TIME_OUT,arena.getSpleefType());
 							for (SpleefPlayer viewers : arena.getViewers()) viewers.getPlayer().sendMessage("§cA Staff has finished the round.");
 
 						}

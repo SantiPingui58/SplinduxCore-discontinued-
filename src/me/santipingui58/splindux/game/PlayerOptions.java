@@ -14,21 +14,32 @@ public class PlayerOptions {
 	private boolean ads;
 	private boolean onJoinMessage;
 	private ChatColor defaultColorChat;
+	private String rankedArena;
+	
 	public PlayerOptions() {
 		this.translate = true;
 		this.onJoinMessage = true;
-		this.defaultColorChat = ChatColor.BLUE;
+		this.defaultColorChat = ChatColor.AQUA;
+		this.ads = true;
 	}
 	
-	public PlayerOptions(boolean night_vision, boolean translate, Language language, boolean ads, boolean onJoinMessage, ChatColor defaultColorChat) {
+	public PlayerOptions(boolean night_vision, boolean translate, Language language, boolean ads, boolean onJoinMessage, ChatColor defaultColorChat,String rankedArena) {
 		this.night_vision = night_vision;
 		this.translate = translate;
 		this.language = language;
 		this.ads = ads;
 		this.onJoinMessage = onJoinMessage;
 		this.defaultColorChat = defaultColorChat;
+		this.rankedArena = rankedArena;
 	}
 	
+	public String getRankedArena() {
+		return this.rankedArena;
+	}
+	
+	public void setRankedArena(String s) {
+		this.rankedArena = s;
+	}
 	
 	public boolean joinMessageEnabled() {
 		return this.onJoinMessage;

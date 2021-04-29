@@ -34,7 +34,9 @@ public class HologramCommand implements CommandExecutor {
 						HologramManager.getManager().createHologram(sp,HologramType.SPLEEF_FFA_RANKING); 
 						} else if (args[1].equalsIgnoreCase("onlinetime")) {
 							HologramManager.getManager().createHologram(sp,HologramType.ONLINETIME); 
-						}else if (args[1].equalsIgnoreCase("votes")) {
+						}else if (args[1].equalsIgnoreCase("ranked")) {
+							HologramManager.getManager().createHologram(sp,HologramType.SPLEEF_RANKED); 
+						} else if (args[1].equalsIgnoreCase("votes")) {
 							HologramManager.getManager().createHologram(sp,HologramType.VOTES); 
 						}
 						

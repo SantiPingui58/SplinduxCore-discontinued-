@@ -4,11 +4,12 @@ import java.util.HashMap;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.mutation.GameMutation;
 import me.santipingui58.splindux.game.mutation.MutationType;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.gui.MenuBuilder;
 import me.santipingui58.splindux.utils.Utils;
@@ -25,22 +26,33 @@ public class MutationTokenMenu extends MenuBuilder {
 	
 	public MutationTokenMenu(SpleefPlayer sp) {
 		super("§5Select a Mutation:",6);
+		
+		
+		new BukkitRunnable() {
+		public void run() {
+			
+			
 		for (MutationType type : MutationType.values()) {
 			s(type.getSlot(), type.getItem());
 		}
+	
+		s(53, Utils.getUtils().getSkull("http://textures.minecraft.net/texture/35b116dc769d6d5726f12a24f3f186f839427321e82f4138775a4c40367a49",
+				"§aYou have §5§l" + sp.getMutationTokens() + " §aMutation Tokens!"));
+		new BukkitRunnable() {
+		public void run() {
+			buildInventory();
+		}
+		}.runTask(Main.get());
 		
-		ItemStack item = Utils.getUtils().getSkull("http://textures.minecraft.net/texture/35b116dc769d6d5726f12a24f3f186f839427321e82f4138775a4c40367a49");
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName("§aYou have §5§l" + sp.getMutationTokens() + " §aMutation Tokens!");
-		item.setItemMeta(meta);
-		s(53,item);
+		}
+		}.runTaskAsynchronously(Main.get());
 	}
 	
 
 	@Override
 	public void onClick(SpleefPlayer sp, ItemStack stack, int slot) {
 		if (sp.isInArena()) {
-			SpleefArena arena = sp.getArena();
+			Arena arena = sp.getArena();
 			for (MutationType type : MutationType.values()) {
 				if (slot==type.getSlot()) {					
 					GameMutation mutation = new GameMutation(sp,type);

@@ -1,0 +1,269 @@
+helmets:
+    White_Glass:
+        color: WHITE
+        material: STAINED_GLASS
+        id: 0
+        price: 2000
+    Pink_Glass:
+        color: LIGHT_PURPLE
+        material: STAINED_GLASS
+        id: 2
+        price: 10000
+    Yellow_Glass:
+        color: YELLOW
+        material: STAINED_GLASS
+        id: 4
+        price: 10000   
+    Green_Glass:
+        color: GREEN
+        material: STAINED_GLASS
+        id: 5
+        price: 10000   
+    Blue_Glass:
+        color: BLUE
+        material: STAINED_GLASS
+        id: 11
+        price: 10000    
+    Red_Glass:
+        color: RED
+        material: STAINED_GLASS
+        id: 14
+        price: 10000   
+
+    Black_Glass:
+        color: DARK_GRAY
+        material: STAINED_GLASS
+        id: 15
+        price: 10000 
+    Cobblestone_Wall:
+        color: DARK_GRAY
+        material: COBBLESTONE_WALL
+        id: 0
+        price: 10000 
+    Leather_Helmet:
+        color: GOLD
+        material: LEATHER_HELMET
+        id: 0
+        price: 3500 
+    Anvil:
+        color: GRAY
+        material: ANVIL
+        id: 0
+        price: 4000
+    Dispenser:
+        color: GRAY
+        material: DISPENSER
+        id: 0
+        price: 4500
+    Ender_Pearl:
+        color: LIGHT_AQUA
+        material: ENDER_PEARL
+        id: 0
+        price: 5000
+    Snow_Ball:
+        color: WHITE
+        material: SNOWBALL
+        id: 0
+        price: 5000
+    Hainmail_Helmet:
+        color: WHITE
+        material: SNOWBALL
+        id: 0
+        price: 6000
+    Magma:
+        color: RED
+        material: MAGMA
+        id: 0
+        price: 6000
+    Iron_Shovel:
+        color: WHITE
+        material: IRON_SHOVEL
+        id: 0
+        price: 6000
+    Diamond_Shovel:
+        color: AQUA
+        material: DIAMOND_SHOVEL
+        id: 0
+        price: 8000
+    Glass:
+        color: WHITE
+        material: GLASS
+        id: 0
+        price: 9000
+    Pink_Glass:
+        color: LIGHT_PURPLE
+        material: STAINED_GLASS
+        id: 2
+        price: 10000
+    Yellow_Glass:
+        color: YELLOW
+        material: STAINED_GLASS
+        id: 4
+        price: 10000   
+    Green_Glass:
+        color: GREEN
+        material: STAINED_GLASS
+        id: 5
+        price: 10000   
+    Blue_Glass:
+        color: BLUE
+        material: STAINED_GLASS
+        id: 11
+        price: 10000    
+    Red_Glass:
+        color: RED
+        material: STAINED_GLASS
+        id: 14
+        price: 10000   
+    Totem:
+        color: GOLD
+        material: TOTEM_OF_UNDYING
+        id: 0
+        price: 10000 
+    Diamond:
+        color: GOLD
+        material: AQUA
+        id: 0
+        price: 12000 
+    Unicorn_Horn:
+        color: LIGHT_PURPLE
+        material: END_ROD
+        id: 0
+        price: 12500
+        epic: true
+    Iron_Helmet:
+        color: WHITE
+        material: IRON_HELMET
+        id: 0
+        price: 12500
+    Emerald:
+        color: GREEN
+        material: EMERALD
+        id: 0
+        price: 12500
+    Golden_Apple:
+        color: GOLD
+        material: GOLDEN_APPLE
+        id: 1
+        price: 12500
+    Golden_Helmet:
+        color: GOLD
+        material: GOLDEN_HELMET
+        id: 0
+        price: 13000
+    Sea_Lantern:
+        color: AQUA
+        material: SEA_LANTERN
+        id: 0
+        price: 15000
+    End_Crystal:
+        color: DARK_PURPLE
+        material: END_CRYSTAL
+        id: 0
+        price: 15000
+        vip: true
+    TNT:
+        color: RED
+        material: TNT
+        id: 0
+        price: 15000
+        epic: true
+    Beacon:
+        color: AQUA
+        material: Beacon
+        id: 0
+        price: 18000
+        epic: true
+    Diamond_Helmet:
+        color: AQUA
+        material: DIAMOND_HELMET
+        id: 0
+        price: 20000
+        vip: true
+    Nether_Star:
+        color: WHITE
+        material: NETHER_STAR
+        id: 0
+        price: 20000
+        vip: true
+    Nether_Star:
+        color: WHITE
+        material: NETHER_STAR
+        id: 0
+        price: 20000  
+    Snow:
+        color: WHITE
+        material: SNOW_BLOCK
+        id: 0
+        price: 25000
+        enchanted: true
+        extreme: true
+    Lapis_Block:
+        color: BLUE
+        material: LAPIS_BLOCK
+        id: 0
+        price: 30000
+        bold: true
+        enchanted: true
+    Redstone_Block:
+        color: RED
+        material: LAPIS_BLOCK
+        id: 0
+        price: 35000
+        bold: true
+        enchanted: true
+        perm: 'splindux.helmets.lapis_block'
+    Iron_Block:
+        color: WHITE
+        material: LAPIS_BLOCK
+        id: 0
+        price: 40000
+        bold: true
+        enchanted: true
+        perm: 'splindux.helmets.redstone_block'
+    Gold_Block:
+        color: YELLOW
+        material: GOLD_BLOCK
+        id: 0
+        price: 45000
+        bold: true
+        enchanted: true
+        perm: 'splindux.helmets.iron_block'
+    Diamond_Block:
+        color: AQUA
+        material: DIAMOND_BLOCK
+        id: 0
+        price: 55000
+        bold: true
+        enchanted: true
+        perm: 'splindux.helmets.gold_block'
+    Emerald_Block:
+        color: AQUA
+        material: EMERALD_BLOCK
+        id: 0
+        price: 75000
+        bold: true
+        enchanted: true
+        perm: 'splindux.helmets.diamond_block'
+    Ender_Dragon:
+        color: DARK_PURPLE
+        material: SKULL
+        id: 5
+        price: 100000
+        bold: true
+        extreme: true
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

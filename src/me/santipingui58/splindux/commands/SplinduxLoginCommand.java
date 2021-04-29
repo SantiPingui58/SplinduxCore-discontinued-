@@ -32,8 +32,7 @@ public class SplinduxLoginCommand implements CommandExecutor {
 				} else {
 					String password = SecurityManager.getManager().encryptThisString(args[0]);
 					if (Main.config.getConfig().getString("passwords."+p.getUniqueId()).equalsIgnoreCase(password)) {					
-					p.sendMessage("§aYou have sucessfuly logged in!");
-					sp.login();					
+					p.sendMessage("§aYou have sucessfuly logged in!");			
 				} else {
 					sp.getPlayer().kickPlayer("§4Wrong password.");
 				}

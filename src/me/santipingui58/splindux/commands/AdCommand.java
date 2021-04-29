@@ -43,7 +43,7 @@ public class AdCommand implements CommandExecutor {
 				
 			} else {
 					p.sendMessage("§cYou don't have permission to execute this command.");
-					p.sendMessage("§aYou need a §a§l[VIP] §arank or higher to use this, visit the store for more info: §bhttp://store.splindux.net/");			
+					p.sendMessage("§aYou need a §a§l[VIP] §arank or higher to use this, visit the store for more info: §bhttp://store.splindux.com/");			
 				}
 			}
 			

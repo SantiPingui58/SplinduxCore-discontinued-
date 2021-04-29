@@ -8,13 +8,15 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.cosmetics.particles.ParticleManager;
+import me.santipingui58.splindux.cosmetics.particles.type.ParticleType;
+import me.santipingui58.splindux.cosmetics.particles.type.ParticleTypeSubType;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.gui.MenuBuilder;
 import me.santipingui58.splindux.gui.gadgets.GadgetsMenu;
-import me.santipingui58.splindux.particles.ParticleManager;
-import me.santipingui58.splindux.particles.type.ParticleType;
-import me.santipingui58.splindux.particles.type.ParticleTypeSubType;
 import me.santipingui58.splindux.utils.ItemBuilder;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -24,6 +26,9 @@ public class ParticleTypesMenu extends MenuBuilder {
 	public ParticleTypesMenu(SpleefPlayer sp) {
 		super("§2§lIn Game Particle Types",4);
 		
+		new BukkitRunnable() {
+		public void run() {
+			
 		List<String> names = new ArrayList<String>();
 		
 		for (ParticleType type : ParticleManager.getManager().getTypes()) {			
@@ -38,7 +43,7 @@ public class ParticleTypesMenu extends MenuBuilder {
 			boolean bought = false;
 			boolean hasperms = true;
 			
-			if (sp.getSelectedParticleType()!=null && sp.getSelectedParticleType().equals(type)) {
+			if (sp.getParticleType()!=null && type.getType().equals(sp.getParticleType())) {
 			selected = true;			
 			}
 			if (sp.getPlayer().hasPermission("splindux.type."+type.getType().toString().toLowerCase())) {
@@ -54,7 +59,7 @@ public class ParticleTypesMenu extends MenuBuilder {
 			}
 		
 		s(35, new ItemBuilder(Material.ARROW).setTitle("§cGo Back").build());
-		if (sp.getSelectedParticleType()==null) {
+		if (sp.getParticleType()==null) {
 		s(31,new ItemBuilder(Material.GLASS).setTitle("§cNone").addEnchantment(Enchantment.ARROW_FIRE, 1).build());
 		} else {
 			s(31,new ItemBuilder(Material.GLASS).setTitle("§cNone").build());
@@ -67,6 +72,15 @@ public class ParticleTypesMenu extends MenuBuilder {
 				.addLore("")
 				.addLore("§7Particles will only be")
 				.addLore("§7displayed in FFA & Duel Games.").build());
+		
+		new BukkitRunnable() {
+		public void run() {
+			buildInventory();
+		}
+		}.runTask(Main.get());
+		
+		}
+		}.runTaskAsynchronously(Main.get());
 	}
 
 
@@ -79,7 +93,7 @@ public class ParticleTypesMenu extends MenuBuilder {
 			return;
 		} 
 		if (slot==31) {
-			sp.selectParticleType(null,false);
+			sp.setParticleTypeSubType(null);
 			sp.getPlayer().sendMessage("§aYou have selected the type §cNONE");
 			new ParticleTypesMenu(sp).o(sp.getPlayer());
 		}
@@ -87,7 +101,7 @@ public class ParticleTypesMenu extends MenuBuilder {
 		ParticleTypeSubType subtype = ParticleTypeSubType.valueOf(ChatColor.stripColor(stack.getItemMeta().getLore().get(0)));
 		ParticleType type = ParticleManager.getManager().getTypeBySubType(subtype);
 		if (sp.getPlayer().hasPermission("splindux.type."+type.getType().toString().toLowerCase())) {
-			sp.selectParticleType(type,true);
+			sp.setParticleTypeSubType(type.getType());
 			sp.getPlayer().sendMessage("§aYou have selected the type " + subtype.getName());
 			new ParticleTypesMenu(sp).o(sp.getPlayer());
 		} else if (type.needsEpic() || type.needsExtreme() || type.needsVip()) {
@@ -96,13 +110,13 @@ public class ParticleTypesMenu extends MenuBuilder {
 			(!p.hasPermission("splindux.vip") && type.needsVip())) {
 				p.closeInventory();
 				p.sendMessage("§cYou don't have permission to purchase this type.");
-				 p.sendMessage("§aVisit the store for more info: §bhttp://store.splindux.net/");	
+				 p.sendMessage("§aVisit the store for more info: §bhttp://store.splindux.com/");	
 			}
 		} else {
 			if (sp.getCoins()>=type.getType().getPrize()) {
 				sp.removeCoins(type.getType().getPrize());
 				p.sendMessage("§aYou have bought the type " + subtype.getName() +"§a!");
-				sp.selectParticleType(type,true);
+				sp.setParticleTypeSubType(type.getType());
 				PermissionsEx.getUser(sp.getPlayer()).addPermission("splindux.type."+type.getType().toString().toLowerCase());
 				new ParticleTypesMenu(sp).o(p);
 			} else {

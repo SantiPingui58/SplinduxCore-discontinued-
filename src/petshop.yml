@@ -1,0 +1,201 @@
+pets:
+    stone:
+        price: 7500
+        type: BLOCK
+        spawn: STONE
+    grass:
+        price: 7500
+        type: BLOCK
+        spawn: GRASS
+    dirt:
+        price: 7500
+        type: BLOCK
+        spawn: DIRT
+    cobblestone:
+        price: 7500
+        type: BLOCK
+        spawn: COBBLESTONE
+    wood:
+        price: 7500
+        type: BLOCK
+        spawn: LOG
+    gravel:
+        price: 7500
+        type: BLOCK
+        spawn: GRAVEL
+    oak:
+        price: 7500
+        type: BLOCK
+        spawn: WOOD
+    leaves:
+        price: 7500
+        type: BLOCK
+        spawn: LEAVES
+    glass:
+        price: 7500
+        type: BLOCK
+        spawn: GLASS
+    1_up_moshroom:
+        price: 10000
+        type: EGG
+        spawn: PARROT
+    cow:
+        price: 10000
+        type: EGG
+        spawn: COW
+    magikarp:
+        price: 10000
+        type: EGG
+        spawn: SQUID
+    sponge:
+        price: 10000
+        type: BLOCK
+        spawn: SPONGE
+    lapizlazuli:
+        price: 10000
+        type: BLOCK
+        spawn: LAPIS_BLOCK
+    sticky_piston:
+        price: 10000
+        type: BLOCK
+        spawn: STICKY_PISTON
+    geisha:
+        price: 10000
+        type: EGG
+        spawn: VILLAGER
+    bird_blue: 
+        price: 15000
+        type: EGG
+        spawn: ZOMBIE
+    hedgehog:
+        price: 15000
+        type: EGG
+        spawn: DONKEY
+    voltorb:
+        price: 15000
+        type: EGG
+        spawn: CHICKEN
+    bedrock:
+        price: 15000
+        type: BLOCK
+        spawn: BEDROCK
+    note_block:
+        price: 15000
+        type: BLOCK
+        spawn: NOTE_BLOCK
+    iron_block:
+        price: 15000
+        type: BLOCK
+        spawn: IRON_BLOCK
+    peppa_pig:
+        price: 15000
+        vip: true
+        type: EGG
+        spawn:
+    boo:
+        price: 20000
+        vip: true 
+        type: EGG
+        spawn: GHAST
+    bullet_bill:
+        price: 20000
+        vip: true
+        type: EGG
+        spawn: BAT
+    gary_the_snail:
+        price: 20000
+        type: EGG
+        vip: true    
+        spawn: PIG_ZOMBIE
+    pug:
+        price: 20000
+        type: EGG
+        spawn: WOLF
+    gold_block:
+        price: 20000
+        type: BLOCK
+        spawn: GOLD_BLOCK
+    unicorn_plushie:
+        price: 25000
+        type: EGG
+        vip: true
+        spawn: SHEEP
+    pacman:
+        price: 30000
+        type: EGG
+        spawn: BLAZE
+        extreme: true
+    diamond_block:
+        price: 30000
+        type: BLOCK
+        spawn: DIAMOND_BLOCK
+    mario:
+        price: 30000
+        type: EGG
+        epic: true
+        spawn: CHICKEN
+    notch:
+        price: 30000
+        type: EGG
+        epic: true      
+        spawn: LLAMA
+    steve:
+        price: 30000
+        type: EGG
+        epic: true      
+        spawn: ZOMBIE
+    eevee:
+        price: 40000
+        type: EGG
+        epic: true       
+        spawn: RABBIT
+    squirtle:
+        price: 40000
+        type: EGG
+        epic: true      
+        spawn: SQUID
+    r2d2:
+        price: 40000
+        type: EGG
+        epic: true     
+        spawn: VEX
+    charmander:
+        price: 40000
+        type: EGG
+        epic: true     
+        spawn: VEX
+    bolbasaour:
+        price: 40000
+        type: EGG
+        epic: true       
+        spawn: SLIME
+    kirby:
+        price: 50000
+        type: EGG
+        extreme: true   
+        spawn: PIG
+    jigglypuff:
+        price: 50000
+        type: EGG
+        extreme: true    
+        spawn: PIG
+    pikachu:
+        price: 50000
+        type: EGG
+        epic: true    
+        spawn: BLAZE
+    yoshi:
+        price: 50000
+        type: EGG
+        epic: true     
+        spawn: CREEPER
+    mario:
+        price: 50000
+        type: EGG
+        epic: true      
+        spawn: CHICKEN
+    santipingui58:
+        price: 75000
+        type: HEAD
+        extreme: true       
+        spawn: SantiPingui58

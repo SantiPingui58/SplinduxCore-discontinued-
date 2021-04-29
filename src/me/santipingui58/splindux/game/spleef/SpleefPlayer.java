@@ -14,6 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.inventivetalent.nicknamer.api.NickNamerAPI;
 
@@ -21,156 +22,252 @@ import dev.esophose.playerparticles.api.PlayerParticlesAPI;
 import me.neznamy.tab.api.TABAPI;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.cosmetics.helmets.Helmet;
+import me.santipingui58.splindux.cosmetics.helmets.HelmetManager;
+import me.santipingui58.splindux.cosmetics.particles.effect.ParticleEffectType;
+import me.santipingui58.splindux.cosmetics.particles.type.ParticleTypeSubType;
+import me.santipingui58.splindux.economy.EconomyManager;
 import me.santipingui58.splindux.game.GameEndReason;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.PlayerOptions;
 import me.santipingui58.splindux.game.mutation.GameMutation;
+import me.santipingui58.splindux.game.parkour.FinishParkourReason;
+import me.santipingui58.splindux.game.parkour.ParkourPlayer;
+import me.santipingui58.splindux.game.ranked.RankedManager;
+import me.santipingui58.splindux.game.ranked.RankedQueue;
 import me.santipingui58.splindux.game.spectate.SpectateManager;
-import me.santipingui58.splindux.particles.effect.ParticleEffect;
-import me.santipingui58.splindux.particles.type.ParticleType;
+import me.santipingui58.splindux.relationships.friends.FriendsManager;
+import me.santipingui58.splindux.relationships.friends.Friendship;
+import me.santipingui58.splindux.scoreboard.PinguiScoreboard;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
+import me.santipingui58.splindux.stats.ranking.RankingManager;
+import me.santipingui58.splindux.utils.ActionBarAPI;
 import me.santipingui58.splindux.utils.Utils;
+import me.santipingui58.splindux.vote.Rewarded;
+import me.santipingui58.splindux.vote.VoteClaims;
 import net.archangel99.dailyrewards.DailyRewards;
 import net.archangel99.dailyrewards.manager.objects.DUser;
 
 public class SpleefPlayer {
 
+	//UUID of the Player
 	private UUID uuid;
-	private int FFA_wins;
-	private int FFA_games;
-	private int FFA_kills;
-	private int ELO;
-	private int _1vs1_wins;
-	private int _1vs1_games;	
 	
-	private int monthly_FFA_wins;
-	private int monthly_FFA_games;
-	private int monthly_FFA_kills;
+	//Player stats
+	private PlayerStats playerStats;
+	
+	//Parkour Player of the SpleefPlayer
+	private ParkourPlayer parkourPlayer;
+	
 
-	
-	private int weekly_FFA_wins;
-	private int weekly_FFA_games;
-	private int weekly_FFA_kills;
-
-	private int dailywinlimit;
-	
+	//time in minutes that the server was online. 0 when the player is not online.
 	private int onlinetime;
+	
+	//Total time the player was online on the Server.
 	private int totalonlinetime;
+	
+	//Increases every minute and depends if the player was playing or not, or if he was AFK.
 	private int splinboxpoints;
 	
+	//Last login of the player
 	private Date lastlogin;
+	
+	//Date that the player joined the server for first time
 	private Date registerdate;
+	
+	//ScoreboardType of the Player, changes in certain conditions.
 	private ScoreboardType scoreboard;
+	
+	//If Player is AFK or not.
 	private boolean isafk;
+	
+	//Time the player was not moving, when reaching a certain amount, the player becomes AFK.
 	private int afktimer;
 	
+	//Timer for AFK in Game, not working properly at the moment.
 	private int afkgametimer;
+	
+	//If the player is able to fly.
 	private boolean fly;
+	
+	//IP of the player
 	private String ip;
+	
+	//2 chars Code of the player's country.
 	private String country;
 
-	
-	private String nick;
+	//Location a few ticks ago of the player.
 	private Location location;
+
+	private boolean isHidingSpectators;
 	
-	private int parkourtimer;
-	private boolean parkour;
-	private SpleefPlayer spectate;
+	//List of Duels the player sent.
 	private List<SpleefDuel> duels = new ArrayList<SpleefDuel>();
 
 	
-	private boolean adminlogin;
-	private boolean islogged;
-	private boolean register;
-	
+	//Spleef EXP amount
 	private int level;
+	
+	//Amount of Mutation Tokens the player has.
 	private int mutationTokens;
+	
+	//auxiliar variable of the Duel Page of the player. Not used currently since there aren't enough maps.
 	private int duelpage;
 	
+	//Amount of rankeds the player has.
+	private int rankeds;
+	
+	//Options of the player.
 	private PlayerOptions options;
 	
-	private ParticleEffect particleEffect;
-	private ParticleType particleType;
+	//Particles
+	private ParticleEffectType particleEffect;
+	private ParticleTypeSubType particleType;
 	
+	private VoteClaims voteClaims;
 	
-	private boolean petShop; 
+	private int rankingPosition;
+	private List<String> rankingRecords;
+	
+	private String helmet;
+	
+	private UUID tip;
+	
+	private boolean ismoving;
 	
 	public SpleefPlayer(UUID uuid) {
 		this.uuid = uuid;
 		this.scoreboard = ScoreboardType.LOBBY;
-		options = new PlayerOptions();
+		this.getPlayerStats().setELO(SpleefType.SPLEEF, 1000);
+		options = new PlayerOptions();	
+		if (this.rankingRecords ==null) this.rankingRecords = new ArrayList<String>();
+		 DataManager.getManager().addPlayer(uuid, this);
 		
+	}
+	
+	public boolean isMoving() {
+		return this.ismoving;
+	}
+	
+	public void moving(boolean b) {
+		this.ismoving = b;
+	}
+	 
+	public PlayerStats getPlayerStats() {
+		if (this.playerStats==null) this.playerStats = new PlayerStats();
+		return this.playerStats;
+	}
+	
+	public void setPlayerStats(PlayerStats playerStats) {
+		this.playerStats = playerStats;
+	}
+	
+	public UUID getUUID() {
+		return this.uuid;
+	}
+	
+	public Helmet getHelmet() {
+		return HelmetManager.getManager().getHelmetByName(helmet);
+	}
+	
+	public UUID getTippedPlayer() {
+		return this.tip;
+	}
+	
+	public void setTipPlayer(UUID uuid) {
+		this.tip = uuid;
+	}
+	public int getRankingPosition() {
+		if (this.rankingPosition==0)
+			this.rankingPosition = RankingManager.getManager().getRanking().getPosition(this);	
+		
+		return this.rankingPosition;
+	}
+	
+	
+	public List<String> getRankingRecords() {
+		return this.rankingRecords;
+	}
+	
+	public boolean isHidingSpectators() {
+		return this.isHidingSpectators;
+	}
+	
+	public void hideSpectators(boolean b) {
+		this.isHidingSpectators = b;
+	}
+	
+
+	public VoteClaims getVoteClaims() {
+		return this.voteClaims;
+	}
+	
+	public void setVoteClaims (VoteClaims voteClaims) {
+		this.voteClaims = voteClaims;
+	}
+	
+	public void loadParkourPlayer(int i,  me.santipingui58.splindux.game.parkour.PlayerStats stats) {
+		this.parkourPlayer = new ParkourPlayer(this,i,stats);
+	}
+	
+	
+	public ParkourPlayer getParkourPlayer() {
+	return this.parkourPlayer;
+	}
+	
+	public static SpleefPlayer getSpleefPlayer(UUID uuid) {
+		return getSpleefPlayer(Bukkit.getOfflinePlayer(uuid));
 	}
 	
 	
 	public static SpleefPlayer getSpleefPlayer(OfflinePlayer p) {
-
-		if (!p.isOnline()) {
-		if (!p.hasPlayedBefore() && !(p.getPlayer()==null)) {
-			return null;
-		}
-		}
+		return DataManager.getManager().getPlayer(p.getUniqueId());
 		
-		if (DataManager.getManager().getPlayersCache().containsKey(p.getName())) {
-			return DataManager.getManager().getPlayersCache().get(p.getName());
-		} else {
-		for (SpleefPlayer rp : DataManager.getManager().getPlayers()) {
-			if (rp.getOfflinePlayer().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {		
-				DataManager.getManager().getPlayersCache().put(p.getName(), rp);
-				return rp;
-			}
-		}	
-		
-		return null;
-	}
 	}
 	
 	
-
-	public boolean hasPetShopOpen() {
-		return this.petShop;
+	public int getRankeds() {
+		return this.rankeds;
 	}
 	
-	public void petShop(boolean b) {
-		this.petShop = b;
+	public void setRankeds(int i) {
+		this.rankeds = i;
 	}
 	
-	public void setParticle(ParticleEffect effect, ParticleType type) {
-		if (this.getSelectedParticleEffect()!=null && this.getSelectedParticleType() !=null) {
+	
+	
+	public void applyParticles() {
+		if (this.getParticleEffect()!=null && this.getParticleType() !=null) {
 			if (getOfflinePlayer().isOnline()) {
 		PlayerParticlesAPI.getInstance().resetActivePlayerParticles(getPlayer());
-		PlayerParticlesAPI.getInstance().addActivePlayerParticle(getPlayer(), type.typeToEffect(),effect.effectToDefaultStyles());
+		PlayerParticlesAPI.getInstance().addActivePlayerParticle(getPlayer(), this.particleType.typeToEffect(),this.particleEffect.effectToDefaultStyles());
 		}
 		}
 	}
 	
-	public ParticleEffect getSelectedParticleEffect() {
+	public ParticleEffectType getParticleEffect() {
 		return this.particleEffect;	
 	}
 	
-	public void selectParticleEffect(ParticleEffect effect, boolean message) {
-		this.particleEffect = effect;
-		if (getOfflinePlayer().isOnline()) {
-			setParticle(effect,this.particleType);	
-		if (this.particleType==null && message) {
-			getPlayer().sendMessage("§7§oRemember to also select a §a§oParticle Type");
-		}
-		}
+	
+	public void setParticleEffect(ParticleEffectType type) {
+		this.particleEffect = type;
+		applyParticles();
 	}
 	
-	public ParticleType getSelectedParticleType() {
-		return this.particleType;
+	public ParticleTypeSubType getParticleType() {
+		return this.particleType;	
 	}
 	
-	public void selectParticleType(ParticleType type,boolean message) {
+	
+	public void setParticleTypeSubType(ParticleTypeSubType type) {
 		this.particleType = type;
-		if (getOfflinePlayer().isOnline()) {
-			setParticle(this.getSelectedParticleEffect(), type);
-		if (this.getSelectedParticleEffect()==null && message) {
-			getPlayer().sendMessage("§7§oRemember to also select a §a§oParticle Effect");
-		}
-		}
+		applyParticles();
 	}
+	
+	
+	
+
 	public PlayerOptions getOptions() {
 		return this.options;
 	}
@@ -219,17 +316,32 @@ public class SpleefPlayer {
 		this.lastlogin = d;
 	}
 
+	  public void addCoins(SpleefPlayer sp, int i,boolean multiplier,boolean found) {
+		  EconomyManager.getManager().addCoins(sp, i, multiplier, found);
+	  }
 	
-	public void teleportToLobby() {
+	
+	public void teleportToLobby() {		
 		new BukkitRunnable() {
 			public void run() {
-				getPlayer().teleport(Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true));
+				if (getOfflinePlayer().isOnline()) {
+					if (getPlayer().hasPermission("splindux.fly")) {
+						getPlayer().setAllowFlight(true);
+						getPlayer().setFlying(true);
+						
+					} else {
+						getPlayer().setAllowFlight(false);
+						getPlayer().setFlying(false);	
+					}
+					getPlayer().teleport(Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true));
 			}
-		}.runTaskLater(Main.get(), 2L);
+		}
+	}.runTaskLater(Main.get(), 2L);
 	}
 	
+	
 	 public boolean isInGame() {
-		 for (SpleefArena arena : DataManager.getManager().getArenas()) {
+		 for (Arena arena : DataManager.getManager().getArenas()) {
 			 if (arena.getPlayers().contains(this)) {
 				 return true;
 			 }
@@ -248,7 +360,7 @@ public class SpleefPlayer {
 	 }
 	 
 	 public boolean isInQueue() {
-		 for (SpleefArena arena : DataManager.getManager().getArenas()) {
+		 for (Arena arena : DataManager.getManager().getArenas()) {
 			 if (arena.getQueue().contains(this)) {
 				 return true;
 			 }
@@ -259,8 +371,8 @@ public class SpleefPlayer {
 	 
 
  	 
-	 public SpleefArena getArena() {
-		 for (SpleefArena arena : DataManager.getManager().getArenas()) {
+	 public Arena getArena() {
+		 for (Arena arena : DataManager.getManager().getArenas()) {
 			 if (arena.getPlayers().contains(this) || arena.getQueue().contains(this)) {
 				 return arena;
 			 }
@@ -268,81 +380,159 @@ public class SpleefPlayer {
 		 return null;
 	 }
 	 
-	 public void leave(boolean teleport) {
-		 getPlayer().setGameMode(GameMode.ADVENTURE);	
-		leaveQueue(getArena(),teleport);    	
-		leaveSpectate(teleport);
+	public void leave(boolean teleport,boolean giveLobbyItems) {
+		new BukkitRunnable() {
+			public void run() {
+		if (getOfflinePlayer().isOnline()) {
+			getPlayer().setGameMode(GameMode.ADVENTURE);
+			getPlayer().eject();
+			ActionBarAPI.sendActionBar(getPlayer(), "");
+		}
+		}
+		}.runTask(Main.get());
+		
+		leaveQueue(getArena(),teleport,giveLobbyItems);    	
+		leaveSpectate(teleport,false,true);
+		leaveParkour();
+	
 	 }
 	 
 	 
-		public void leaveQueue(SpleefArena arena,boolean teleport) {
-			giveLobbyItems();
+	 public void leaveParkour() {
+		 if (getParkourPlayer()!=null && getParkourPlayer().getArena()!=null) {
+			 getParkourPlayer().getArena().finish(FinishParkourReason.DISCONNECTED);
+		 }
+	 }
+	 
+		public void leaveQueue(Arena arena,boolean teleport,boolean giveLobbyItems) {
 			
-			if (isInArena()) {
-			if (getPlayer().isOnline() && teleport) {
+			setScoreboard(ScoreboardType.LOBBY);
+			DataManager.getManager().getLobbyPlayers().add(getUUID());
+			DataManager.getManager().getPlayingPlayers().remove(getUUID());
+			if (getOfflinePlayer().isOnline() && giveLobbyItems) giveLobbyItems();
+			
+			
+			new BukkitRunnable() {
+				public void run() {
+					if (getOfflinePlayer().isOnline())
+			 updateScoreboard();	
+				}
+			}.runTaskLater(Main.get(), 5L);
+			
+			
+			
+			
+			for (RankedQueue queue : RankedManager.getManager().getQueues()) queue.leaveQueue(this);
+			
+			
+			
+			if (getOfflinePlayer().isOnline() && teleport) {
 				if (Main.arenas.getConfig().contains("mainlobby")) {
 					getPlayer().teleport(Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true));
 				}				
-			getPlayer().sendMessage("§aYou have left the queue.");		
-			setScoreboard(ScoreboardType.LOBBY);
+			sendMessage("§aYou have left the queue.");		
+			
 			}
-			if (arena.getPlayers().contains(this)) {
+			
+			
+			this.getDuels().clear();
+			
+			
+			if (isInArena()) {
+				SpleefPlayer player = this;
+				new BukkitRunnable() {
+					public void run() {
+				
+			if (arena.getPlayers().contains(player)) {
 				if (!arena.getResetRequest().isEmpty()) {
 				List<SpleefPlayer> resetRequest = GameManager.getManager().leftPlayersToSomething(arena.getResetRequest(), arena,false);
-				if (resetRequest.contains(this)) {
-					if (arena.getResetRequest().size()<=1) {
-						GameManager.getManager().resetArenaWithCommand(arena);
+				if (resetRequest.contains(player) && arena.getPlayers().size()>=1) {
+					if (arena.getResetRequest().size()<1) {
+						GameManager.getManager().resetArenaWithCommand(arena,false);
 					} else {
-						arena.getResetRequest().remove(this);
+						arena.getResetRequest().remove(player);
 					}
 				}
 				}
 				if (!arena.getEndGameRequest().isEmpty()) {
 				List<SpleefPlayer> endGameRequest = GameManager.getManager().leftPlayersToSomething(arena.getEndGameRequest(), arena,true);
-				if (endGameRequest.contains(this)) {
+				if (endGameRequest.contains(player)) {
 					if (arena.getEndGameRequest().size()<=1) {
 						GameManager.getManager().endGameDuel(arena, null,GameEndReason.ENDGAME);
 					} else {
-						arena.getEndGameRequest().remove(this);
+						arena.getEndGameRequest().remove(player);
 					}
 				}
 				}
 				if (arena.getGameType().equals(GameType.FFA) && teleport) {
 				getPlayer().teleport(arena.getLobby());
 				}
+				
+				
 				if (arena.getGameType().equals(GameType.DUEL)) {
-					if (arena.getDuelPlayers1().contains(this)) {
+					
+					if (arena.getDuelPlayers1().contains(player)) {
+						if (arena.getDuelPlayers1().size()<=1) {
+							arena.getDeadPlayers1().remove(player);
+							arena.getDeadPlayers2().remove(player);
+							arena.getDuelPlayers1().remove(player);
+							arena.getDuelPlayers2().remove(player);
+							arena.setDisconnectedPlayer(player);
+							GameManager.getManager().endGameDuel(arena,"Team2",GameEndReason.LOG_OFF);
+						}
+						
 						List<SpleefPlayer> alive = new ArrayList<SpleefPlayer>();
 						for (SpleefPlayer s : arena.getDuelPlayers1()) {
 							if (!arena.getDeadPlayers1().contains(s)) {
-								alive.add(s);
+								if (s.getOfflinePlayer().isOnline()) alive.add(s);
 							}
 						}
-						if (alive.contains(this)) {
-						if (alive.size()<=1) arena.point(this);
+						
+						if (alive.contains(player)) {
+							if (alive.size()<=1)  {
+								arena.getDeadPlayers1().remove(player);
+								arena.getDeadPlayers2().remove(player);
+								arena.getDuelPlayers1().remove(player);
+								arena.getDuelPlayers2().remove(player);
+								arena.getSpectators().remove(player);
+								arena.point(player);
+							
+							}
 						}
 						
-						if (arena.getDuelPlayers1().size()<=1) {
-							GameManager.getManager().endGameDuel(arena,"Team2",GameEndReason.LOG_OFF);
-						}
-					} else if (arena.getDuelPlayers2().contains(this)) {
+						
+					} else if (arena.getDuelPlayers2().contains(player)) {
+						if (arena.getDuelPlayers2().size()<=1) {
+							arena.getDeadPlayers1().remove(player);
+							arena.getDeadPlayers2().remove(player);
+							arena.getDuelPlayers1().remove(player);
+							arena.getDuelPlayers2().remove(player);
+							arena.setDisconnectedPlayer(player);
+							GameManager.getManager().endGameDuel(arena,"Team1",GameEndReason.LOG_OFF);
+						}	
 							List<SpleefPlayer> alive = new ArrayList<SpleefPlayer>();
 							for (SpleefPlayer s : arena.getDuelPlayers2()) {
 								if (!arena.getDeadPlayers2().contains(s)) {
 									alive.add(s);
 								}
 							}					
-							if (alive.contains(this)) {
-							if (alive.size()<=1) arena.point(this);
+							if (alive.contains(player)) {
+							if (alive.size()<=1)  {
+								arena.getDeadPlayers1().remove(player);
+								arena.getDeadPlayers2().remove(player);
+								arena.getDuelPlayers1().remove(player);
+								arena.getDuelPlayers2().remove(player);
+								arena.getSpectators().remove(player);
+								arena.point(player);
+							
+							}
 							} 
-							if (arena.getDuelPlayers2().size()<=1) {
-								GameManager.getManager().endGameDuel(arena,"Team1",GameEndReason.LOG_OFF);
-							}						
+					
 					}
-					arena.getDeadPlayers1().remove(this);
-					arena.getDeadPlayers2().remove(this);
-					arena.getDuelPlayers1().remove(this);
-					arena.getDuelPlayers2().remove(this);
+					arena.getDeadPlayers1().remove(player);
+					arena.getDeadPlayers2().remove(player);
+					arena.getDuelPlayers1().remove(player);
+					arena.getDuelPlayers2().remove(player);
 					
 					if (arena.getPlayToRequest()!=null) {
 						
@@ -359,12 +549,11 @@ public class SpleefPlayer {
 				
 				} else if (arena.getGameType().equals(GameType.FFA)) {
 					List<SpleefPlayer> players = new ArrayList<SpleefPlayer>();
-					arena.getFFAPlayers().remove(this);				
+					arena.getFFAPlayers().remove(player);				
 					players.addAll(arena.getFFAPlayers());
-					
 					if (players.size()<=1) {
 						if (arena.getGameType().equals(GameType.FFA)) {
-							GameManager.getManager().endGameFFA(arena, GameEndReason.WINNER);
+							GameManager.getManager().endGameFFA(GameEndReason.WINNER,arena.getSpleefType());
 						}					
 						} 
 				}
@@ -372,76 +561,63 @@ public class SpleefPlayer {
 				
 			} 
 			
-				arena.getQueue().remove(this);
+				arena.getQueue().remove(player);
 				
 		}
+		}.runTaskAsynchronously(Main.get());
+}
 		}
 	 
-	 public void leaveSpectate(boolean teleport) {
-		 if (isSpectating()) {
-		 SpectateManager.getManager().leaveSpectate(this);
-		 }
-		 setSpectate(null);
-		 setScoreboard(ScoreboardType.LOBBY);
+	 public void leaveSpectate(boolean teleport, boolean wentBackToPlay,boolean fromMasterLeave) {
+		 
+
+		 if (getSpleefArenaSpectating()!=null || getParkourArenaSpectating()!=null) {	
+ 
+		 if (!wentBackToPlay || fromMasterLeave) {
+
+		 setScoreboard(ScoreboardType.LOBBY);		 
+			DataManager.getManager().getLobbyPlayers().add(getUUID());
+			DataManager.getManager().getPlayingPlayers().remove(getUUID());
+			new BukkitRunnable() {
+				public void run() {
 		 if (getOfflinePlayer().isOnline() && teleport) {
  		 getPlayer().teleport(Main.lobby);
 		 getPlayer().setGameMode(GameMode.ADVENTURE);
+		 giveLobbyItems();
+		 }
+		 }
+			}.runTask(Main.get());
+		 }
+		 
+		 SpectateManager.getManager().leaveSpectate(this,false);
 	 }
 	 }
-	public boolean needsToRegisterQuestionmark() {
-		return this.register;
+
+
+	public Arena getSpleefArenaSpectating() {
+		for (Arena arena : DataManager.getManager().getArenas()) {
+			if (arena.getSpectators().contains(this)) {
+				return arena;
+			}
+		}
+		return null;
 	}
 	
-	public void needsToRegister() {
-		this.register = true;
+	
+	public Arena getParkourArenaSpectating() {
+		for (Arena arena : DataManager.getManager().getArenas()) {
+			if (arena.getSpectators().contains(this)) {
+				return arena;
+			}
+		}
+		return null;
 	}
-	
-	public boolean needsAdminLoginQuestionmark() {
-		return this.adminlogin;
-	}
-	
-	
-	public void needsAdminLogin() {
-		this.adminlogin = true;
-	}
-	
-	public boolean isLogged() {
-		return this.islogged;
-	}
-	
-	public void login() {
-		this.islogged = true;
-	}
-	
+
 	public OfflinePlayer getOfflinePlayer() {
 		return Bukkit.getOfflinePlayer(this.uuid);
 	}
 	
-	public List<SpleefPlayer> getSpectators() {
-		List<SpleefPlayer> list = new ArrayList<SpleefPlayer>();
-		for (SpleefPlayer sp : DataManager.getManager().getPlayers()) {
-			if (sp.isSpectating()) {
-				if (sp.getSpectating().equals(this)) {
-					list.add(sp);
-				}
-			}
-		}
-		return list;
-	}
-	public void setSpectate(SpleefPlayer spectate) {
-		this.spectate = spectate;
-	}
-	
-	public SpleefPlayer getSpectating() {
-		return this.spectate;
-	}
-	
-	public boolean isSpectating() {
-		if (this.spectate==null) {
-			return false;
-		} 
-		return true;
-	}
+
 	
 	public boolean isGameDead() {
 		if (isInGame()) {
@@ -480,32 +656,7 @@ public class SpleefPlayer {
 		}
 		return null;
 	}
-	
-	public int getParkourTimer() {
-		return this.parkourtimer;
-	}
-	
-	public void resetParkourTimer() {
-		this.parkourtimer = 0;
-	}
-	
-	public void addParkourTimer() {
-		this.parkourtimer = this.parkourtimer + 1;
-	}
-	
-	public boolean isInParkour() {
-		return this.parkour;
-	}
-	
-	public void joinParkour() {
-		resetParkourTimer();
-		this.parkour = true;
-	}
-	
-	public void leaveParkour() {
-		this.parkour = false;
-		resetParkourTimer();
-	}
+
  	public String getCountry() {		
 		return this.country;
 	}
@@ -513,27 +664,7 @@ public class SpleefPlayer {
 	public void setCountry(String s) {
 		this.country = s;
 	}
-	public int getMonthlyFFAWins() {
-		return this.monthly_FFA_wins;
-	}
-	public void setMonthlyFFAWins(int i) {
-		this.monthly_FFA_wins = i;
-	}
-	
-	public int getMonthlyFFAGames() {
-		return this.monthly_FFA_games;
-	}
-	public void setMonthlyFFAGames(int i) {
-		this.monthly_FFA_games = i;
-	}
-	
-	public int getMonthlyFFAKills() {
-		return this.monthly_FFA_kills;
-	}
-	public void setMonthlyFFAKills(int i) {
-		this.monthly_FFA_kills = i;
-	}
-	
+
 	public void addGameAFKTimer() {
 		this.afkgametimer = this.afkgametimer+1;
 	}
@@ -552,28 +683,7 @@ public class SpleefPlayer {
 	public void setAFKTimer(int i) {
 		this.afktimer = i;
 	}
-	
-	public int getWeeklyFFAWins() {
-		return this.weekly_FFA_wins;
-	}
-	public void setWeeklyFFAWins(int i) {
-		this.weekly_FFA_wins = i;
-	}
-	
-	public int getWeeklyFFAGames() {
-		return this.weekly_FFA_games;
-	}
-	public void setWeeklyFFAGames(int i) {
-		this.weekly_FFA_games = i;
-	}
-	
-	public int getWeeklyFFAKills() {
-		return this.weekly_FFA_kills;
-	}
-	public void setWeeklyFFAKills(int i) {
-		this.weekly_FFA_kills = i;
-	}
-	
+
 	public int getTotalOnlineTime() {
 		return this.totalonlinetime;
 	}
@@ -612,9 +722,8 @@ public class SpleefPlayer {
 	public void addOnlineTime() {
 		splinboxPoints();
 		this.onlinetime++;
-		if (this.onlinetime%60==0) {
 		this.totalonlinetime++;
-		}
+		
 	}
 	public Location getLocation() {
 		return this.location;
@@ -623,21 +732,7 @@ public class SpleefPlayer {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-	public String getNick() {
-		return this.nick;
-	}
-	
-	public boolean hasNick() {
-		if (this.nick!=null) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	public void deleteNick() {
-		this.nick = null;
-	}
+
 	public boolean isAfk() {
 		return this.isafk;
 	}
@@ -651,14 +746,22 @@ public class SpleefPlayer {
 	}
 	public void fly() {
 		this.fly = true;
+		new BukkitRunnable() {
+			public void run() {
 		getPlayer().setAllowFlight(true);
 		getPlayer().setFlying(true);
+		}
+		}.runTask(Main.get());
 	}
 	public void stopfly() {
 		this.fly = false;
+	
+		new BukkitRunnable() {
+			public void run() {
 		getPlayer().setAllowFlight(false);
 		getPlayer().setFlying(false);
-		
+		}
+		}.runTask(Main.get());
 	}
 	
 
@@ -690,6 +793,9 @@ public class SpleefPlayer {
 		}
 	}
 	}
+	
+	
+	
 	public ScoreboardType getScoreboard() {
 		return this.scoreboard;
 	}
@@ -703,106 +809,24 @@ public class SpleefPlayer {
 		return Bukkit.getPlayer(this.uuid);
 	}
 	
-	public double getWinGameRatio() {
-		if (this.FFA_games==0) {
-			return (double) this.FFA_wins;
-		} else {
-			return (double) this.FFA_wins/this.FFA_games;
-		}
-	}
-	
-	public double getKillGameRatio() {
-		if (this.FFA_games==0) {
-			return (double) this.FFA_kills;
-		} else {
-			return (double) this.FFA_kills/this.FFA_games;
-		}
-	}
-	public int getFFAWins() {
-		return this.FFA_wins;
-	}
-	
-	public void setFFAWins(int i) {
-		this.FFA_wins = i;
-	}
-	
-	
-	public void setDailyWinLimit(int i) {
-		this.dailywinlimit = i;
-	}
-	
-	public int getDailyWinLimit() {
-		return this.dailywinlimit;
-	}
-	public void addFFAWin() {
-		this.FFA_wins = this.FFA_wins+1;
-		this.monthly_FFA_wins = this.monthly_FFA_wins+1;
-		this.weekly_FFA_wins = this.weekly_FFA_wins+1;	
-	}
-	public void addFFAKill() {
-		this.FFA_kills = this.FFA_kills+1;
-		this.monthly_FFA_kills = this.monthly_FFA_kills+1;
-		this.weekly_FFA_kills = this.weekly_FFA_kills+1;
-	}
-	
-	public void addFFAGame() {
-		this.FFA_games = this.FFA_games+1;
-		this.monthly_FFA_games = this.monthly_FFA_games+1;
-		this.weekly_FFA_games = this.weekly_FFA_games+1;
-	}
-	public int getFFAGames() {
-		return this.FFA_games;
-	}
-	
-	public int getFFAKills() {
-		return this.FFA_kills;
-	}
-	public void setFFAKills(int i) {
-		this.FFA_kills = i;
-	}
-	public void setFFAGames(int i) {
-		this.FFA_games = i;
-	}
-	
-	public int getELO() {
-		return this.ELO;
-	}
-	
-	public void setELO(int i) {
-		this.ELO = i;
-	}
-	
-	public int get1vs1Games() {
-		return this._1vs1_games;
-	}
-	
-	public void set1vs1Games(int i) {
-		this._1vs1_games = i;
-	}
-	
-	public void add1vs1Games() {
-		this._1vs1_games = this._1vs1_games+1;
-	}
-	public int get1vs1Wins() {
-		return this._1vs1_wins;
-	}
-	
-	public void set1vs1Wins(int i) {
-		this._1vs1_wins = i;
-	}
-	
-	public void add1vs1Wins() {
-		this._1vs1_wins++;
-	}
-	
-	public int getTotalGames() {
-	return	this._1vs1_games + this.FFA_games;
-	}
-	
-
 	public boolean hasUnclaimedRewards() {
-		DUser duser = DailyRewards.getInstance().getUserManager().getOrLoadUser(getPlayer());
-		return duser.hasActiveReward();
+		
+		for (Rewarded rewarded : Rewarded.values()) {
+			try {
+		if (getVoteClaims().hasClaimed(this, rewarded)) return true;
+		} catch(Exception ex) {
+			continue;
+		}
+			}
+		
+		try {
+			DUser duser = DailyRewards.getInstance().getUserManager().getOrLoadUser(getPlayer());
+			return duser.hasActiveReward();
+			} catch(Exception ex) {
+				return false;
+			}
+			
+	
 	}
 	
 	public int getCoins() {
@@ -818,12 +842,14 @@ public class SpleefPlayer {
 		 Main.econ.withdrawPlayer(Bukkit.getOfflinePlayer(uuid), i);
 	}
 	
-	public void giveGameItems() {
-		for(PotionEffect effect : getPlayer().getActivePotionEffects())	{
-		    getPlayer().removePotionEffect(effect.getType());
-		}
-		getPlayer().getInventory().clear();
-		SpleefArena arena = getArena();
+	
+	public void giveShovel() {
+		
+		SpleefPlayer sp = this;
+		new BukkitRunnable() {
+			public void run() {
+		Arena arena = getArena();
+		if (!getOfflinePlayer().isOnline()) return;
 		if (arena.getSpleefType().equals(SpleefType.SPLEEF)) {
 		if (getPlayer().hasPermission("splindux.diamondshovel")) {
 			getPlayer().getInventory().setItem(0, DataManager.getManager().gameitems()[1]);
@@ -832,7 +858,7 @@ public class SpleefPlayer {
 		}
 		} else if (arena.getSpleefType().equals(SpleefType.SPLEGG)) {
 			getPlayer().getInventory().setItem(0, DataManager.getManager().gameitems()[9]);
-		}
+		} else if (arena.getSpleefType().equals(SpleefType.TNTRUN)) return;
 		
 		if (arena.getGameType().equals(GameType.FFA) && arena.getSpleefType().equals(SpleefType.SPLEEF)) {
 			if (!arena.isInEvent()) {
@@ -852,44 +878,82 @@ public class SpleefPlayer {
 			}
 			
 			for (GameMutation mutation : arena.getInGameMutations()) {
-				mutation.giveMutationItems(this);
+				mutation.giveMutationItems(sp);
 			}
-		} else if (arena.getGameType().equals(GameType.DUEL) && arena.getDuelPlayers1().size()>=2 && arena.getDuelPlayers2().size()>=2) {
-
-			if (arena.getDuelPlayers1().contains(this)) {
-				getPlayer().getInventory().setHelmet(DataManager.getManager().gameitems()[7]);
-				getPlayer().getInventory().setItem(8, new ItemStack(Material.INK_SACK,1,(byte) 4));
-			} else if (arena.getDuelPlayers2().contains(this)) {
-				getPlayer().getInventory().setHelmet(DataManager.getManager().gameitems()[8]);
-				getPlayer().getInventory().setItem(8, new ItemStack(Material.INK_SACK,1,(byte) 1));
-			}
-		
 		}
+			}
+		}.runTask(Main.get());
+	}
+	
+	public void giveGameItems() {
+		SpleefPlayer sp = this;
+		new BukkitRunnable() {
+			public void run() {
+		if (!getOfflinePlayer().isOnline()) return;
+		for(PotionEffect effect : getPlayer().getActivePotionEffects())	{
+		    getPlayer().removePotionEffect(effect.getType());
+		}
+		if (getOptions().hasNightVision()) {
+			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,Integer.MAX_VALUE,1));
+		}
+		
+		clearGameInventory();
+		Arena arena = getArena();
+		if (arena==null) return;
+		if (getHelmet()!=null) {
+		getPlayer().getInventory().setHelmet(getHelmet().getItem(sp, true));
+		}
+		
+		 if (arena.getGameType().equals(GameType.DUEL)) {
+
+				
+				if (arena.getDuelPlayers1().size()>=2 && arena.getDuelPlayers2().size()>=2) {
+			if (arena.getDuelPlayers1().contains(sp)) {
+				getPlayer().getInventory().setChestplate(DataManager.getManager().gameitems()[7]);
+				getPlayer().getInventory().setItem(8, new ItemStack(Material.INK_SACK,1,(byte) 4));
+			} else if (arena.getDuelPlayers2().contains(sp)) {
+				getPlayer().getInventory().setChestplate(DataManager.getManager().gameitems()[8]);
+				getPlayer().getInventory().setItem(8, new ItemStack(Material.INK_SACK,1,(byte) 1));
+			
+			}
+			}
+		 }
+			}
+		 }.runTask(Main.get());
+		
 		
 		
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void giveLobbyItems() {
+		new BukkitRunnable() {
+			public void run() {
 		for(PotionEffect effect : getPlayer().getActivePotionEffects())	{
 		    getPlayer().removePotionEffect(effect.getType());
 		}
 		getPlayer().playEffect(getPlayer().getLocation(), Effect.RECORD_PLAY, 0);
 		getPlayer().setGameMode(GameMode.ADVENTURE);
-		if (!getPlayer().getWorld().getName().equalsIgnoreCase("world")) {	
+		if (!getPlayer().getWorld().getName().equalsIgnoreCase("world") || !getPlayer().getWorld().getName().equalsIgnoreCase("lobby")) {	
 		getPlayer().getInventory().clear();
 		}
+		if (!getPlayer().getWorld().getName().equalsIgnoreCase("lobby")) {
 		getPlayer().getInventory().setItem(3, DataManager.getManager().lobbyitems()[1]);		
 		getPlayer().getInventory().setItem(4, DataManager.getManager().lobbyitems()[0]);	
 		getPlayer().getInventory().setItem(8, DataManager.getManager().lobbyitems()[2]);	
 		getPlayer().getInventory().setItem(0, DataManager.getManager().lobbyitems()[3]);
 		getPlayer().getInventory().setItem(1, DataManager.getManager().lobbyitems()[4]);
+		getPlayer().getInventory().setItem(7, DataManager.getManager().lobbyitems()[5]);
+	}
+			}
+		}.runTask(Main.get());
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void giveQueueItems(boolean giveShovel,boolean giveMutations) {
-	
-		getPlayer().getInventory().clear();
+	public void giveQueueItems(boolean giveShovel,boolean giveMutations, boolean giveSpectate) {
+	new BukkitRunnable() {
+		public void run() {
+		clearGameInventory();
 		if (giveShovel) {
 			getPlayer().setGameMode(GameMode.SURVIVAL);
 		if (getPlayer().hasPermission("splindux.diamondshovel")) {
@@ -900,6 +964,9 @@ public class SpleefPlayer {
 		} else {
 			getPlayer().setGameMode(GameMode.ADVENTURE);
 		}
+		
+		if (giveSpectate) 	getPlayer().getInventory().setItem(6, DataManager.getManager().spectateitems()[0]);
+		
 		for(PotionEffect effect : getPlayer().getActivePotionEffects())	{
 		    getPlayer().removePotionEffect(effect.getType());
 		}
@@ -911,14 +978,139 @@ public class SpleefPlayer {
 		getPlayer().getInventory().setItem(8, DataManager.getManager().queueitems()[1]);
 		getPlayer().getInventory().setItem(4, DataManager.getManager().lobbyitems()[0]);	
 	}
+	}.runTask(Main.get());
+	}
 
-
+	public void giveSpectateItems() {
+		getPlayer().getInventory().clear();
+		getPlayer().getInventory().setItem(8, DataManager.getManager().spectateitems()[0]);
+	}
+	
+	
+	
+	
 	public String getName() {
 		 if (NickNamerAPI.getNickManager().isNicked(getOfflinePlayer().getUniqueId())) {
 			 return "~"+ NickNamerAPI.getNickManager().getNick(getOfflinePlayer().getUniqueId());
 		 }
 		 return getOfflinePlayer().getName();
 	}
+
 	
+	public boolean isSpectating() {
+		return this.getSpleefArenaSpectating()!=null;
+	}
+
+	public void sendMessage(String message) {
+		if (getOfflinePlayer().isOnline()) {
+		if (Bukkit.isPrimaryThread()) {
+			getPlayer().sendMessage(message);
+		} else {
+			new BukkitRunnable() {
+				public void run() {
+					getPlayer().sendMessage(message);
+				}
+			}.runTask(Main.get());
+		}
+		
+			
+		}
+		
+	}
 	
+
+	public void setHelmet(String string) {
+		this.helmet = string;
+		
+	}
+
+	public void updateScoreboard() {
+		 PinguiScoreboard.getScoreboard().scoreboard(this);	
+	}
+
+	public void clearGameInventory() {
+
+		if (!getOfflinePlayer().isOnline()) return;
+		Player player = getPlayer();	
+		ItemStack[] armorContents = player.getInventory().getArmorContents().clone(); //Clone instance of ItemStack[]
+		player.getInventory().clear(); //Clear inventory
+		player.getInventory().setArmorContents(armorContents); //Set armor using the clone instance.
+		player.updateInventory(); //Update... but its not necesary all time.
+				
+	}
+
+
+
+	public void addDuelGames(SpleefType type) {
+		getPlayerStats().setDuelGames(type, getPlayerStats().getDuelGames(type)+1);
+		
+	}
+
+
+	public void addFFAKill(SpleefType type) {
+		getPlayerStats().setFFAKills(type, getPlayerStats().getFFAKills(type)+1);
+		getPlayerStats().setWeeklyFFAKills(type, getPlayerStats().getWeeklyFFAKills(type)+1);
+		getPlayerStats().setMonthlyFFAKills(type, getPlayerStats().getMonthlyFFAKills(type)+1);
+		
+	}
+	
+	public void addFFAGame(SpleefType type) {
+		getPlayerStats().setFFAGames(type, getPlayerStats().getFFAGames(type)+1);
+		getPlayerStats().setWeeklyFFAGames(type, getPlayerStats().getWeeklyFFAGames(type)+1);
+		getPlayerStats().setMonthlyFFAGames(type, getPlayerStats().getMonthlyFFAGames(type)+1);
+	}
+	
+	public void addFFAWin(SpleefType type) {
+		getPlayerStats().setFFAWins(type, getPlayerStats().getFFAWins(type)+1);
+		getPlayerStats().setWeeklyFFAWins(type, getPlayerStats().getWeeklyFFAWins(type)+1);
+		getPlayerStats().setMonthlyFFAWins(type, getPlayerStats().getMonthlyFFAWins(type)+1);
+	}
+	
+	public void hidePlayer(SpleefPlayer sp) {
+		if (getOfflinePlayer().isOnline() && sp.getOfflinePlayer().isOnline()) getPlayer().hidePlayer(Main.get(), sp.getPlayer());
+	}
+	public void showPlayer(SpleefPlayer sp) {
+		if (getOfflinePlayer().isOnline() && sp.getOfflinePlayer().isOnline()) getPlayer().showPlayer(Main.get(), sp.getPlayer());
+	}
+
+
+	public List<UUID> getFriends() {
+		List<UUID> friends = new ArrayList<UUID>();
+		for (Friendship fr : FriendsManager.getManager().getFriendships()) {
+			if (fr.getPlayer1().compareTo(this.uuid)==0) friends.add(fr.getPlayer2());
+			if (fr.getPlayer2().compareTo(this.uuid)==0) friends.add(fr.getPlayer1());
+		}
+		return friends;
+	}
+
+	public boolean isinParkour() {
+		if (this.getParkourPlayer()!=null) {
+			return this.getParkourPlayer().getArena()!=null;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isOnline() {
+		return getOfflinePlayer().isOnline();
+	}
+
+	public void teleport(Location l) {
+		if (getOfflinePlayer().isOnline()) {
+		if (Bukkit.isPrimaryThread()) {
+			getPlayer().teleport(l);
+		} else {
+			new BukkitRunnable() {
+				public void run() {
+					getPlayer().teleport(l);
+				}
+			}.runTask(Main.get());
+		}
+		}
+		
+	}
+
+
+
 }
+

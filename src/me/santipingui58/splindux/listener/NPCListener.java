@@ -1,18 +1,17 @@
 package me.santipingui58.splindux.listener;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import me.santipingui58.splindux.DataManager;
-import me.santipingui58.splindux.game.spleef.GameType;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.gui.VotesMenu;
+import me.santipingui58.splindux.gui.game.parkour.ParkourMenu;
+import me.santipingui58.splindux.gui.game.FFAMenu;
 import me.santipingui58.splindux.gui.game.RankedMenu;
-import me.santipingui58.splindux.gui.game.SpleefDuelsMenu;
-import me.santipingui58.splindux.gui.game.SpleggDuelsMenu;
+import me.santipingui58.splindux.gui.game.TeamsMenu;
+import me.santipingui58.splindux.gui.game.VersusMenu;
 import me.santipingui58.splindux.npc.NPCManager;
 import me.santipingui58.splindux.npc.NPCType;
 import me.santipingui58.splindux.npc.SplinduxNPC;
@@ -26,34 +25,32 @@ public class NPCListener implements Listener {
 		NPC npc = e.getNPC();
 		Player p = e.getClicker();
 		 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-		
-		 if (ChatColor.getLastColors(npc.getName()).equalsIgnoreCase("§c")) {
-			p.sendMessage("§cComing soon..."); 
-			return;
-		 }
-		 
-		 
-		//FFA
+
 		 SplinduxNPC splinduxnpc = NPCManager.getManager().getSplinduxNPCBy(npc.getId());
 		if (splinduxnpc!=null) {
-			if (splinduxnpc.getType().equals(NPCType.FFA)) {	
-			for (SpleefArena arena : DataManager.getManager().getArenas()) {
-				if (arena.getGameType().equals(GameType.FFA)) {
-					arena.addFFAQueue(sp);		
-					return;
-					}
-			}		
-				} else if (splinduxnpc.getType().equals(NPCType.VOTES)) {
+			NPCType type = splinduxnpc.getType();
+			 if (type.equals(NPCType.VOTES)) {
 					new VotesMenu(sp).o(p);
-				} else if (splinduxnpc.getType().equals(NPCType.FISHING)) {
-				} else if (splinduxnpc.getType().equals(NPCType.RANKED_SPLEEF_1V1)) {
-					new RankedMenu(sp).o(p);
-				} else if (splinduxnpc.getType().equals(NPCType.SPLEEF_DUELS)) {
-					new SpleefDuelsMenu(sp).o(p);
-				}  else if (splinduxnpc.getType().equals(NPCType.SPLEEF_DUELS)) {
-					new SpleggDuelsMenu(sp).o(p);
-				}
+				} else if (type.equals(NPCType.FISHING)) {
+				} else {
 					
+					if (DataManager.getManager().areQueuesClosed() && !p.hasPermission("splindux.staff")) {
+						p.sendMessage("§cQueues are currently closed.");
+						return;
+					}
+					
+				if (type.equals(NPCType.RANKED)) {
+					new RankedMenu(sp).o(p);
+				} else if (type.equals(NPCType.FFA)) {
+					new FFAMenu(sp,null, null).o(sp.getPlayer());
+				}  else if (type.equals(NPCType.TEAMS)) {
+					new TeamsMenu(sp).o(sp.getPlayer());
+				}  else if (type.equals(NPCType.VERSUS)) {
+					new VersusMenu(sp).o(sp.getPlayer());
+				} else if (type.equals(NPCType.PARKOUR)) {
+					new ParkourMenu(sp).o(p);
+				}
+		}
 			
 } 
 }

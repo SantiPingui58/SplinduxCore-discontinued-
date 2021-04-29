@@ -25,7 +25,7 @@ public class FlyCommand implements CommandExecutor {
             Player p = (Player) sender;
 			if (p.hasPermission("splindux.fly")) {
 				 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-				 if (!sp.isInGame()) {
+				 if (!sp.isInArena() && sp.getParkourPlayer().getArena()==null) {
 				if (sp.isFlying()) {
 					sp.stopfly();
 					p.sendMessage("§cFly is now disabled!");
@@ -45,7 +45,7 @@ public class FlyCommand implements CommandExecutor {
 				 }
 			} else {
                 p.sendMessage("§cYou do not have permission to execute this command.");
-                p.sendMessage("§aYou need a §1§l[Epic] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.net/");	
+                p.sendMessage("§aYou need a §1§l[Epic] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.com/");	
 			}
 			}
 		

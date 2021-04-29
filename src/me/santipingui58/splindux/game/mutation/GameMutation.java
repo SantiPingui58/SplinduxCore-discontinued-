@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.fawe.FAWESplinduxAPI;
 import me.santipingui58.splindux.DataManager;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.translate.Main;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -31,7 +31,7 @@ public class GameMutation {
 	private UUID uuid;
 	private MutationType type;
 	private SpleefPlayer owner;
-	private SpleefArena arena;
+	private Arena arena;
 	private MutationState state;
 	private List<SpleefPlayer> voted = new ArrayList<SpleefPlayer>();
 	private int votes;
@@ -69,7 +69,7 @@ public class GameMutation {
 		this.state = state;
 	
 	}
-	public SpleefArena getArena() {
+	public Arena getArena() {
 		return this.arena;
 	}
 	
@@ -77,7 +77,7 @@ public class GameMutation {
 		return this.owner;
 	}
 	
-	public void setArena(SpleefArena arena) {
+	public void setArena(Arena arena) {
 		this.arena = arena;
 		this.arena.getAllMutations().add(this);
 	}
@@ -104,7 +104,6 @@ public class GameMutation {
 	
 	public void crumbleSpleef() {
 		this.arena.crumbleArena(70);
-		for (SpleefPlayer sp : arena.getFFAPlayers()) sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP,100,5));
 	}
 	
 	public void miniSpleef() {
@@ -116,11 +115,14 @@ public class GameMutation {
 		a = a.add(15,0,15);
 		b = b.add(-15,0,-15);
 		FAWESplinduxAPI.getAPI().placeBlocks(a, b, Material.SNOW_BLOCK);
+		new BukkitRunnable() {
+			public void run () {
 		for (SpleefPlayer sp : arena.getFFAPlayers()) {
 			sp.getPlayer().teleport(arena.getMainSpawn());
 			sp.getPlayer().getInventory().clear();
 		}
-
+			}
+		}.runTaskLater(Main.get(), 2L);
 	}
 	
 	
@@ -179,7 +181,7 @@ public class GameMutation {
 	
 	
 	
-	public void sendMutationRequest(SpleefArena arena) {
+	public void sendMutationRequest(Arena arena) {
 		List<GameMutation> list = new ArrayList<GameMutation>();
 		list.addAll(arena.getVotingMutations());
 		list.addAll(arena.getQueuedMutations());

@@ -1,0 +1,17 @@
+english:
+    use-of-command: '&aUse of command: %command%'
+    need-rank: '&cYou don't have permission to execute this command.\n &aYou need a %rank% &arank or higher to use this, visit the store for more info: &bhttp://store.splindux.com/'
+    invalid-number: '&a %value% &cisn't a valid number.'
+    player-does-not-exist: '&cThe player &b%player% &cdoesn't exist'
+    player-may-be-offline: '&cThe player &b%player% &cisn't online or doesn't exist'
+    need-to-be-in-FFA: '&cYou need to be in a FFA Game to do this.'
+    need-to-be-in-Duels: '&cYou need to be in a FFA Game to do this.'
+    adcommand:
+        ads-set-to: '&aAds set to &b %value%&a!'
+    afkcommand:
+        no-longer-afk: '&7You are not longer AFK'
+        afk: '&7You are now AFK'
+    betcommand:
+    player-not-in-your-game: '&cThe player is currently not playing your game.'
+        
+        

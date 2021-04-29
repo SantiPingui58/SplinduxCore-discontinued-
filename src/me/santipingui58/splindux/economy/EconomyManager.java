@@ -3,15 +3,8 @@ package me.santipingui58.splindux.economy;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.yapzhenyie.GadgetsMenu.api.GadgetsMenuAPI;
-import com.yapzhenyie.GadgetsMenu.economy.GEconomyProvider;
-import com.yapzhenyie.GadgetsMenu.player.OfflinePlayerManager;
-import com.yapzhenyie.GadgetsMenu.player.PlayerManager;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
@@ -19,24 +12,22 @@ import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.utils.WeightedRandomList;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-public class EconomyManager extends GEconomyProvider {
+public class EconomyManager /*extends GEconomyProvider*/ {
 
 	
 
 
-	public EconomyManager(Plugin plugin, String storage) {
-		super(plugin, storage);
-	}
+//	public EconomyManager(Plugin plugin, String storage) {
+	//	super(plugin, storage);
+	//}
 
+	
 	
 	private static EconomyManager pm;
-	
-	
-	
 	  public static EconomyManager getManager() {
 	        if (pm == null)
-	            pm = new EconomyManager(Main.get(), "Splindux");
-
+	           // pm = new EconomyManager(Main.get(), "Splindux");
+	        	pm = new EconomyManager();
 	        return pm;
 	    }
 
@@ -44,8 +35,9 @@ public class EconomyManager extends GEconomyProvider {
 	
 	  
 	  public void checkSplinboxes() {
-		  for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
-			  if (sp.getSplinboxPoints()>=25000) {
+		  for (SpleefPlayer sp : DataManager.getManager().getPlayers()) {
+			  if (!sp.getOfflinePlayer().isOnline()) continue;
+			  if (sp.getSplinboxPoints()>=500) {
 				  sp.resetSplinboxPoints();
 
 				   int r = new Random().nextInt((100 - 1) + 1) + 1;
@@ -53,19 +45,19 @@ public class EconomyManager extends GEconomyProvider {
 				   
 				  
 				  if (sp.getPlayer().hasPermission("splindux.extreme")) {
-					  if (r<55) {
+					  if (r<35) {
 						  luck =true;
 					  }
 				  } else if (sp.getPlayer().hasPermission("splinudux.epic")) {
-					  if (r<50) {
+					  if (r<30) {
 						  luck =true;
 					  }
 				  }else if (sp.getPlayer().hasPermission("splinudux.vip")) {
-					  if (r<45) {
+					  if (r<25) {
 						  luck =true;
 					  }
 				  }else {
-					  if (r<40) {
+					  if (r<20) {
 						  luck =true;
 					  } 
 				  }
@@ -77,22 +69,13 @@ public class EconomyManager extends GEconomyProvider {
 				  itemDrops.addEntry("2",   25.0);
 				  itemDrops.addEntry("3", 20.0);
 				  itemDrops.addEntry("4",   15.0);
-				  itemDrops.addEntry("5",  15.0);
-				  
-				  String i = itemDrops.getRandom();
-				  
-				  Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gmysteryboxes give " + sp.getOfflinePlayer().getName()+ " 1 "  + i);
-				  
-				  int in = Integer.parseInt(i);
-				  String stars = "";
-				  int x = 0;
-				  while (x<in) {
-					  stars = stars + "✰";
-					  x++;
-				  }
-				  
-				  Bukkit.broadcastMessage("§fThe player §b" + sp.getName() + "§f has found a §bSplinBox §e" + stars + "§f!");
-				  
+				  itemDrops.addEntry("5",  15.0);			  
+				  new BukkitRunnable() {
+					  public void run() {
+						  Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ultracosmetics give key 1 " + sp.getOfflinePlayer().getName());
+				 Bukkit.broadcastMessage("§fThe player §b" + sp.getName() + "§f has found a §bSplinKey §f!");
+					  }
+				  }.runTask(Main.get());
 				  
 				  }
 			  }
@@ -112,8 +95,13 @@ public class EconomyManager extends GEconomyProvider {
 	  }
 	  
 	  
+	  public void addSplinboxes(SpleefPlayer sp, int amount, int level) {
+		 // Player p = sp.getPlayer();
+		 // MysteryBoxType type = MysteryBoxType.valueOf("NORMAL_MYSTERY_BOX_"+level);
+		 // getPlayerManager(p).giveMysteryBoxes(type, null, false, null, amount);
+	  }
 	
-	  public void addCoins(SpleefPlayer sp, Integer i,boolean multiplier,boolean found) {
+	  public void addCoins(SpleefPlayer sp, int i,boolean multiplier,boolean found) {
 	  
 
 			if (multiplier) {
@@ -138,53 +126,13 @@ public class EconomyManager extends GEconomyProvider {
 	  } 
 		
 		
-		
-	//}
 
-	  public PlayerManager getPlayerManager(Player player) {
-		    PlayerManager playerManager = GadgetsMenuAPI.getPlayerManager(player);
-			return playerManager;
-		}
+	  
+	 // public PlayerManager getPlayerManager(Player player) {
+	//	    PlayerManager playerManager = GadgetsMenuAPI.getPlayerManager(player);
+	//		return playerManager;
+	//	}
 	  
 	  
-	@Override
-	public void addMysteryDust(OfflinePlayerManager pm, int i) {
-		
-		OfflinePlayer p = pm.getPlayer();
-		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-		sp.addCoins(i);
-	}
-
-	@Override
-	public int getMysteryDust(OfflinePlayerManager pm) {
-		OfflinePlayer p = pm.getPlayer();
-		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-		return sp.getCoins();
-	}
-
-	@Override
-	public void removeMysteryDust(OfflinePlayerManager pm, int i) {		
-		OfflinePlayer p = pm.getPlayer();
-		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-		sp.removeCoins(i);		
-	}
-
-	@Override
-	public void setMysteryDust(OfflinePlayerManager arg0, int arg1) {
-		
-	}
-
-	@Override
-	public int syncMysteryDust(OfflinePlayerManager arg0) {
-		return 0;
-	}
-
-
-
-
-	
-	
-	
-	
 	
 }

@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import me.santipingui58.splindux.game.GameEndReason;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.spleef.GameType;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.utils.Utils;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -33,7 +33,7 @@ public class EndGameCommand implements CommandExecutor {
 			Player p = (Player) sender;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			if (sp.isInGame()) {
-				SpleefArena arena =sp.getArena(); 
+				Arena arena =sp.getArena(); 
 				if (arena.getGameType().equals(GameType.DUEL)) {
 					if (!arena.getEndGameRequest().contains(sp)) {
 						arena.getEndGameRequest().add(sp);
@@ -59,7 +59,7 @@ public class EndGameCommand implements CommandExecutor {
 
 	
 	
-	private void sendRequest(SpleefArena arena,SpleefPlayer sp) {	
+	private void sendRequest(Arena arena,SpleefPlayer sp) {	
 		
 	List<SpleefPlayer> list = GameManager.getManager().leftPlayersToSomething(arena.getEndGameRequest(), arena,false);
 		

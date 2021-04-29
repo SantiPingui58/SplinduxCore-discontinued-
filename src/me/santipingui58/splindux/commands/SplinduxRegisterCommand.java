@@ -30,8 +30,7 @@ public class SplinduxRegisterCommand implements CommandExecutor {
 				} else {
 					String password = SecurityManager.getManager().encryptThisString(args[0]);
 					Main.config.getConfig().set("passwords."+sp.getPlayer().getUniqueId(), password);
-					p.sendMessage("§aYou have sucessfuly registered!");
-					sp.login();					
+					p.sendMessage("§aYou have sucessfuly registered!");				
 				}
 			}
 			}

@@ -24,7 +24,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
-import me.santipingui58.splindux.Main;
 
 public class Configuration {
 	
@@ -37,10 +36,10 @@ public class Configuration {
 		if (!fileName.contains(".yml")) {
 			fileName = fileName + ".yml";
 		}
-		file = new File(Main.get().getDataFolder(), fileName);
+		file = new File(plugin.getDataFolder(), fileName);
 		if(!file.exists()) {
 			 file.getParentFile().mkdirs();
-	            Main.get().saveResource(fileName, false);
+	            plugin.saveResource(fileName, false);
 		} 
 		
 		fileConfig = new YamlConfiguration();

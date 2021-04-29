@@ -9,8 +9,9 @@ import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.spleef.GameType;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.utils.Utils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -32,13 +33,13 @@ public class ResetCommand implements CommandExecutor {
 			Player p = (Player) sender;
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			if (sp.isInGame()) {
-				SpleefArena arena = sp.getArena(); 
-				if (arena.getGameType().equals(GameType.DUEL)) {
+				Arena arena = sp.getArena(); 
+				if (arena.getGameType().equals(GameType.DUEL) && arena.getSpleefType().equals(SpleefType.SPLEEF)) {
 					if (!arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {
 					if (!arena.getResetRequest().contains(sp)) {
 						arena.getResetRequest().add(sp);
 					if (arena.getResetRequest().size()>=arena.getPlayers().size()-arena.getDeadPlayers1().size()+arena.getDeadPlayers2().size()) {
-						GameManager.getManager().resetArenaWithCommand(arena);
+						GameManager.getManager().resetArenaWithCommand(arena,false);
 					} else {
 						sendRequest(arena,sp);
 					}
@@ -61,12 +62,12 @@ public class ResetCommand implements CommandExecutor {
 
 	
 	
-	private void sendRequest(SpleefArena arena,SpleefPlayer sp) {	
+	private void sendRequest(Arena arena,SpleefPlayer sp) {	
 		
 	List<SpleefPlayer> list = GameManager.getManager().leftPlayersToSomething(arena.getResetRequest(), arena,false);
 		
 		if (list.isEmpty()) {
-			GameManager.getManager().resetArenaWithCommand(arena);
+			GameManager.getManager().resetArenaWithCommand(arena,false);
 		} else {
 		
 		for (SpleefPlayer players : arena.getViewers()) {			

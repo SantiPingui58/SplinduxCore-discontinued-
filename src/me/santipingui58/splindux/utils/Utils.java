@@ -1,6 +1,7 @@
 package me.santipingui58.splindux.utils;
 
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -11,9 +12,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.FishHook;
@@ -24,11 +29,14 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.santipingui58.splindux.DataManager;
+import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import net.minecraft.server.v1_12_R1.EntityFishingHook;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
@@ -45,9 +53,43 @@ public class Utils {
 	        	manager = new Utils();
 	        return manager;
 	    }
-	
 	 
-	 public void sendTitles(Player player, String titletext,String subtitletext,int fadeIn, int stay, int fadeOut) {
+	 
+	 public ItemStack getSkull(OfflinePlayer off) {
+		 ItemStack leader = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
+			SkullMeta meta = (SkullMeta) leader.getItemMeta();
+			meta.setOwningPlayer(off);
+			leader.setItemMeta(meta);
+			return leader;
+	 }
+	 
+	 
+	 public List<Block> getNearbyBlocks(Location loc, int radius) {
+		    ArrayList<Block> blocks = new ArrayList<Block>();
+		   
+		    for (int x = (loc.getBlockX()-radius); x <= (loc.getBlockX()+radius); x++) {
+		            for (int z = (loc.getBlockZ()-radius); z <= (loc.getBlockZ()+radius); z++) {
+		                Location l = new Location(loc.getWorld(), x, loc.getBlockY(), z);
+		                if (!l.getBlock().getType().equals(Material.AIR)) {
+		                    blocks.add(l.getBlock());      
+		                }
+		            }
+		        
+		    }
+		    return blocks;
+	 }
+	
+	 public List<Block> getBlockBelow(Player player) {
+		    Block block = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
+		   return getNearbyBlocks(block.getLocation(),1);
+
+	 }
+	 
+	 public void sendTitles(List<SpleefPlayer> players, String titletext,String subtitletext,int fadeIn, int stay, int fadeOut) {
+		 new BukkitRunnable() {
+			 public void run () {
+				 for (SpleefPlayer sp : players) {
+					 Player player = sp.getPlayer();
 			IChatBaseComponent chatTitle = ChatSerializer.a("{\"text\": \"" + titletext + "\"}");
 			IChatBaseComponent chatSubtitle = ChatSerializer.a("{\"text\": \"" + subtitletext + "\"}");
 			
@@ -58,7 +100,29 @@ public class Utils {
 			((CraftPlayer) player).getHandle().playerConnection.sendPacket(title);
 	        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subtitle);
 			((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
-	    
+				 }
+		 }
+	 }.runTask(Main.get());
+	}
+	 
+	 public void sendTitles(SpleefPlayer sp, String titletext,String subtitletext,int fadeIn, int stay, int fadeOut) {
+		 new BukkitRunnable() {
+			 public void run () {
+				 
+					 Player player = sp.getPlayer();
+			IChatBaseComponent chatTitle = ChatSerializer.a("{\"text\": \"" + titletext + "\"}");
+			IChatBaseComponent chatSubtitle = ChatSerializer.a("{\"text\": \"" + subtitletext + "\"}");
+			
+			PacketPlayOutTitle title = new PacketPlayOutTitle(EnumTitleAction.TITLE, chatTitle);
+			PacketPlayOutTitle subtitle = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, chatSubtitle);
+			
+			PacketPlayOutTitle length = new PacketPlayOutTitle(fadeIn,stay,fadeOut);
+			((CraftPlayer) player).getHandle().playerConnection.sendPacket(title);
+	        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subtitle);
+			((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
+				 
+		 }
+	 }.runTask(Main.get());
 	}
 	 
 	 //Put the specific title and lore to an item
@@ -95,7 +159,7 @@ public class Utils {
 	 //Gets nearest player to another player. Used for FFA Kills system
 	 public SpleefPlayer getNearestPlayer(SpleefPlayer sp) {
 		 SpleefPlayer nearest = null;
-		 for (SpleefPlayer online : DataManager.getManager().getOnlinePlayers()) {
+		 for (SpleefPlayer online : DataManager.getManager().getPlayers()) {
 			 if (online.getPlayer().getLocation().getWorld().getName().equalsIgnoreCase(sp.getPlayer().getWorld().getName())) {
 				 if (nearest==null) {
 					 nearest = online;
@@ -146,6 +210,7 @@ public class Utils {
 	    if (pitch) {
 	      return loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + "," + loc.getYaw() + "," + loc.getPitch();
 	    }
+	    
 	    return loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
 	  }
 	  
@@ -323,21 +388,6 @@ public class Utils {
 	    }
 		
 		
-		public  boolean isUnicode(String s) {
-		      if (s == null) // checks if the String is null {
-		          return false;
-		       
-		       int len = s.length();
-		       for (int i = 0; i < len; i++) {
-		          // checks whether the character is not a letter
-		          // if it is not a letter ,it will return false
-		          if ((Character.isLetter(s.charAt(i)) == false)) {
-		             return false;
-		          }
-		       }
-		       return true;
-		    }
-
 		
 		
 		public void setBiteTime(FishHook hook, int time) {
@@ -367,16 +417,29 @@ public class Utils {
 		}
 		
 		
+		public  Vector rotateVectorAroundY(Vector vector, double degrees) {
+		    double rad = Math.toRadians(degrees);
+		   
+		    double currentX = vector.getX();
+		    double currentZ = vector.getZ();
+		   
+		    double cosine = Math.cos(rad);
+		    double sine = Math.sin(rad);
+		   
+		    return new Vector((cosine * currentX - sine * currentZ), vector.getY(), (sine * currentX + cosine * currentZ));
+		}
+		
 		
 		
 		//Minecraft saves all skins, even if they aren't being used by a player. That way we can get custom heads with a weird code (Base64). This method converts Base64 urls to the Head Item.
 		//It was used before for the ranking per countries.
-		public ItemStack getSkull(String url) {
+		public ItemStack getSkull(String url,String title) {
 	        ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
 	        if(url.isEmpty())return head;
 	       
 	       
 	        SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+	        headMeta.setDisplayName(title);
 	        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
 	        byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
 	        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
@@ -415,7 +478,11 @@ public class Utils {
 		 
 		//Converts seconds to years,months,weeks days, and hours. Used in the Online time Ranking
 		public String minutesToDate(int i) {
-			int years =  i / 525600;
+			
+			i = i/60;
+			return i+" hours";
+			
+			/*int years =  i / 525600;
 			int months = (i % 525600) / 43800;
 			int weeks = ((i % 525600) % 43800) / 10080;
 			int days = (((i % 525600) % 43800) % 10080) / 1140;
@@ -434,9 +501,73 @@ public class Utils {
 				 return "Less than an hour.";
 			 }
 			
-				  
+		*/		  
 		 }
 		
-		
+	
+		public int getIDByChatColor(ChatColor c) {
+			switch(c) {
+			case WHITE: return 0;
+			case GOLD: return 1;
+			case AQUA: return 3;
+			case BLACK: return 15;
+			case DARK_AQUA: return 9;
+			case DARK_BLUE: return 11;
+			case DARK_GRAY: return 7;
+			case DARK_GREEN: return 13;
+			case DARK_PURPLE: return 10;
+			case RED: return 14;
+			case GRAY: return 8;
+			case GREEN: return 5;
+			case LIGHT_PURPLE: return 6;
+			case YELLOW: return 4;
+			default: break;
+			}
+			return 16;
+		}
+
+		public List<Location> getRadioBlocks(SpleefPlayer p, int radius) {
+			Location standing = p.getPlayer().getLocation().clone().subtract(0,1,0);
+		    return getRadioBlocks(standing,radius);
+		}
+		public List<Location> getRadioBlocks(Location l, int radius) {
+			Location standing = l;
+		    List<Location> locations = new ArrayList<Location>();
+		    locations.add(standing);
+		    if (radius==0) return locations;
+	
+		    Location north = standing.clone().add(1,0,0);
+		    Location south = standing.clone().add(-1,0,0);
+		    Location west = standing.clone().add(0,0,1);
+		    Location east = standing.clone().add(0,0,-1);	    
+		    locations.add(north);
+		    locations.add(south);
+		    locations.add(west);
+		    locations.add(east);
+		    List<Location> list = new ArrayList<Location>();
+		    for (Location li : locations) {
+		    	if (!li.getBlock().getType().equals(Material.AIR)) {
+		    		list.add(li);
+		    	}
+		    }
+	        return list;
+		}
 	  
+		public String getStringMoney(int money) {
+			
+			if (money>=1000000) {
+				double i = (double) money/ (double) 1000000;
+				String d =  new DecimalFormat("#.##").format(i);
+				return d+"M";
+			} else if (money >=1000){
+				double i = (double)money/(double) 1000;
+				String d =  new DecimalFormat("#.##").format(i);
+				return d+"K";
+			}else  {
+				return String.valueOf(money);
+			}
+		}
+		
 }
+
+

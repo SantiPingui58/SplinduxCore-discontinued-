@@ -1,6 +1,5 @@
 package me.santipingui58.splindux.task;
 
-
 public class Task {
 
 	private int tick;

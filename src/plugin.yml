@@ -1,0 +1,109 @@
+name: SplinduxCore
+main: me.santipingui58.splindux.Main
+version: 2.8.5
+softdepend: [ DiscordSRV,Votifier,SplinduxHikariAPI]
+commands:
+  setup:
+    description: setup
+  fly:  
+    description: fly
+  ping:
+    description: ping
+  leaderboard:
+    description: leaderboard
+  rank:
+    description: rank
+  msg:
+    description: msg
+    aliases: [tell,message,whisper,w]
+  r:
+    description: r
+    aliases: [reply]
+  afk:
+    description: afk
+  admin:
+    description: admin
+  holo:
+    description: holo
+  parkour:
+    description: parkour
+  reset:
+    description: reset
+  duel:
+    description: duel
+  hover:
+    description: hover
+  spawn:
+    description: spawn
+    aliases: [leave,salir,lobby,l,hub]
+  spectate:
+    aliases: [spect, spec,espectar]
+    description: espectate
+  ride:
+    description: ride
+  endgame:
+    description: endgame
+  splinduxregister:
+    description: register
+  splinduxlogin:
+    description: splinduxlogin
+  stats:
+    description: stats
+  matches:
+    description: matches
+  hologram:
+    description: hologram
+  level:
+    description: level
+  reino:
+    description: reino
+  playto:
+    description: playto
+  crumble:
+    description: crumble
+  translate:
+    description: translate
+  help:
+    description: help
+    aliases: [ayuda,h] 
+  ffaevent:
+    description: ffaevent
+  staffchat:
+    description: staffchat
+    aliases: [sc]
+  mutationtoken:
+    description: mutationtoken
+  forcereset:
+    description: forcereset  
+  coins:
+    description: coins  
+  head:
+    description: head  
+  ad:
+    description: ad  
+  staff:
+    description: staff  
+  tournament:
+    description: tournament  
+  tip:
+    description: tip  
+  ranking:
+    description: ranking  
+  forcefinish:
+    description: forcefinish
+  parkoursetup:
+    description: parkoursetup   
+  bet:
+    description: bet   
+  nightvision:
+    description: nightvision
+  guild:
+    description: nightvision
+  guildchat:
+    description: nightvision
+    aliases: [gchat,gc]
+  friends:
+    description: nightvision
+    aliases: [fr,friend,f]
+  forceshrink:
+    description: f

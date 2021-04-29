@@ -38,6 +38,7 @@ public class ItemBuilder {
        this(mat, 1);
     }
 
+    
     public ItemBuilder(Material mat, int amount) {
        this(mat, amount, (short) 0);
     }

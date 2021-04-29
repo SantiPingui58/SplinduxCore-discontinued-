@@ -1,0 +1,6 @@
+bounty-limit: 50000
+bounty-broadcast: 1000000
+bounty-time-limit: 300
+head-drop-chance: 10
+prefix-enabled: false
+plugin-chat-prefix: '&5[&e&lBountyHunters&5]'

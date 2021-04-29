@@ -1,23 +1,22 @@
 package me.santipingui58.splindux.task;
 
-import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.spleef.GameType;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.game.spleef.Arena;
 
 public class ArenaNewStartTask {
 
 	
-	private SpleefArena arena;
-	private int task;
+	private Arena arena;
 	private int time;
-	public ArenaNewStartTask(SpleefArena arena) {
+	public ArenaNewStartTask(Arena arena) {
 		task();
 		if (arena.isInEvent()) {
-			this.time = 15;
+			this.time = 10;
 		} else {
 		this.time = 5;
 		}
@@ -27,11 +26,10 @@ public class ArenaNewStartTask {
 	
 	private void task() {
 		
-		task = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.get(), new Runnable() {
-		          
-               @Override
-               public void run() {
-            	   int size = 3;
+		
+		new BukkitRunnable() {
+			public void run() {
+				   int size = 3;
             	   if (arena.getGameType().equals(GameType.DUEL)) {
             		   size = 2;
             	   }
@@ -39,20 +37,17 @@ public class ArenaNewStartTask {
             		   
             	   if (time==0) {
                   arena.startGame(false);
-               	Bukkit.getScheduler().cancelTask(task);
+               	cancel();
             	   } 
             	   time--;
             	   } else {
             		   arena.setState(GameState.LOBBY);
-            			Bukkit.getScheduler().cancelTask(task);
-            			for (SpleefPlayer p : arena.getQueue()) {
-        					p.getPlayer().sendMessage("§cThere are not enough players to start! Countdown cancelled.");
-        				}
+            			cancel();
+            			GameManager.getManager().sendSyncMessage(arena.getQueue(), GameManager.getManager().getGamePrefix(arena)+"§cThere are not enough players to start! Countdown cancelled.");
             	   }
             	   
-               
-               }
-		 }, 10, 20L);
+			}
+		}.runTaskTimerAsynchronously(Main.get(), 0L, 20L);
 		
 	}
 }

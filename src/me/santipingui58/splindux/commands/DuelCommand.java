@@ -9,8 +9,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
-import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.gui.game.DuelMenu;
 import me.santipingui58.splindux.utils.Utils;
 
@@ -28,28 +28,29 @@ public class DuelCommand implements CommandExecutor{
 			return true;
 			
 } else if(cmd.getName().equalsIgnoreCase("duel")){
+	
+	if (DataManager.getManager().areQueuesClosed() && ! sender.hasPermission("splindux.staff")) {
+		sender.sendMessage("§cQueues are currently closed.");
+		return false;
+	}
+	
+
 	final Player p = (Player) sender;
 	 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-	if (args.length==0) {
-		sender.sendMessage("§aUse of command: /duel Spleef/Splegg <Players>");
-	} else {
-		SpleefType type = null;
-		if (args[0].equalsIgnoreCase("Spleef")) {
-			type = SpleefType.SPLEEF;
-		} else if (args[0].equalsIgnoreCase("Splegg")) {
-			type = SpleefType.SPLEGG;
-		} else {
-			sender.sendMessage("§aUse of command: /duel Spleef/Splegg <Players>");
-			return false;
-		} 
-		
-		if (args.length<2) {
-			sender.sendMessage("§aUse of command: /duel Spleef/Splegg <Players>");
+	 
+		if (sp.isInGame() || sp.getParkourPlayer().getArena()!=null) {
+			sender.sendMessage("§cYou cant use this command in game.");
 			return false;
 		}
 		
+	if (args.length==0) {
+		sender.sendMessage("§aUse of command: /duel <Players>");
+	} else {
+		
+	
+		
 		StringBuilder builder = new StringBuilder();
-	    for (int i = 1; i < args.length; i++)
+	    for (int i = 0; i < args.length; i++)
 	    {
 	      builder.append(args[i]).append(" ");
 	    }
@@ -65,17 +66,17 @@ public class DuelCommand implements CommandExecutor{
 		
 		if (list.size()+1>=6 && !p.hasPermission("splindux.vip")) {
 			p.sendMessage("§cYou do not have permission to duel players for a 3V3, you can use the NPCs at lobby instead.");
-            p.sendMessage("§aYou need a §a§l[VIP] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.net/");	
+            p.sendMessage("§aYou need a §a§l[VIP] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.com/");	
 			return false;	
 		}
 		if (list.size()+1>=8 && !p.hasPermission("splindux.epic")) {
 			p.sendMessage("§cYou do not have permission to duel players for a 4V4, you can use the NPCs at lobby instead.");
-            p.sendMessage("§aYou need a §1§l[Epic] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.net/");	
+            p.sendMessage("§aYou need a §1§l[Epic] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.com/");	
 			return false;
 			
 		}
 		if (list.size()+1>=10 && !p.hasPermission("splindux.extreme")) {
-            p.sendMessage("§aYou need a §5§l[Extreme] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.net/");	
+            p.sendMessage("§aYou need a §5§l[Extreme] §aRank or higher to use this, visit the store for more info: §bhttp://store.splindux.com/");	
 			return false;
 			
 		}
@@ -96,7 +97,7 @@ public class DuelCommand implements CommandExecutor{
 				  players.add(op.getName());
 					 SpleefPlayer dueled = SpleefPlayer.getSpleefPlayer(op);
 				  if (!sp.hasDueled(dueled)) {
-					  if (!dueled.isInGame()) {
+					  if (!dueled.isInGame() && !dueled.isinParkour()) {
 						  sp2.add(dueled);
 				  } else {
 						sender.sendMessage("§cThis player §b"+ dueled.getName() +" is already in game.");
@@ -122,7 +123,7 @@ public class DuelCommand implements CommandExecutor{
 			return false;
 		}
 	  
-	  new DuelMenu(sp,sp2,type).o(p);
+	  new DuelMenu(sp,sp2,null).o(p);
 	  
 	}
 }

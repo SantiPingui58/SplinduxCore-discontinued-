@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -24,22 +21,28 @@ import me.santipingui58.splindux.game.GameEndReason;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.death.DeathReason;
-import me.santipingui58.splindux.game.mutation.GameMutation;
-import me.santipingui58.splindux.game.mutation.MutationType;
+import me.santipingui58.splindux.game.parkour.FinishParkourReason;
+import me.santipingui58.splindux.game.parkour.ParkourArena;
+import me.santipingui58.splindux.game.parkour.ParkourManager;
+import me.santipingui58.splindux.game.parkour.ParkourMode;
+import me.santipingui58.splindux.game.ranked.RankedManager;
 import me.santipingui58.splindux.game.spleef.GameType;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.npc.NPCManager;
-import me.santipingui58.splindux.scoreboard.PinguiScoreboard;
 import me.santipingui58.splindux.hologram.HologramManager;
-import me.santipingui58.splindux.stats.RankingType;
-import me.santipingui58.splindux.stats.StatsManager;
-import me.santipingui58.splindux.timelimit.TimeLimitManager;
+import me.santipingui58.splindux.task.tasks.ActionBarTask;
+import me.santipingui58.splindux.task.tasks.ArenaTask;
+import me.santipingui58.splindux.task.tasks.HighMoveTask;
+import me.santipingui58.splindux.task.tasks.LowMoveTask;
+import me.santipingui58.splindux.task.tasks.MinuteTask;
+import me.santipingui58.splindux.task.tasks.OnlineTask;
+import me.santipingui58.splindux.task.tasks.RankingTask;
+import me.santipingui58.splindux.task.tasks.ScoreboardTask;
+import me.santipingui58.splindux.task.tasks.TabTask;
+import me.santipingui58.splindux.vote.timelimit.TimeLimitManager;
 import me.santipingui58.splindux.utils.Utils;
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
-import net.citizensnpcs.npc.skin.SkinnableEntity;
 
 
 public class TaskManager {
@@ -55,8 +58,17 @@ public class TaskManager {
 	 private List<Task> syncTasks = new ArrayList<Task>();	
 	 public void task() {
 		 loadTasks();
-		 timeAsync();
-		 timeSync();
+		// timeAsync();
+		 //timeSync();
+		 new ArenaTask();
+		 new HighMoveTask();
+		 new LowMoveTask();
+		 new MinuteTask();
+		 new OnlineTask();
+		 new RankingTask();
+		 new ScoreboardTask();
+		 new TabTask();
+		 new ActionBarTask();
 	 }
 	 
 	 private void loadTasks() {	 
@@ -83,7 +95,7 @@ public class TaskManager {
 						}
 					}
 			}
-			}.runTaskTimerAsynchronously(Main.get(), 0, 5);
+			}.runTaskTimerAsynchronously(Main.get(), 0, 4L);
 	 }
 	 
 	 
@@ -91,8 +103,7 @@ public class TaskManager {
 		 Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.get(), new Runnable() {
 			@Override
 			public void run() {
-				for (Task task : syncTasks) {
-					//Bukkit.broadcastMessage(""+task.getCurrentTick());
+				for (Task task : syncTasks) {					
 					if (task.getCurrentTick()>=task.getTick()) {
 						task.resetCurrentTick();
 						getVoid(task);
@@ -102,7 +113,7 @@ public class TaskManager {
 				}
 			}
 	          
-		 }, 0, 5L);
+		 }, 0, 4L);
 	
 	 }
 	 
@@ -111,17 +122,16 @@ public class TaskManager {
 		default:break;
 		case ARENA: arenaTask();return;
 		case MINUTE: minuteTask();return;
-		case MOVE:moveTask();return;
+		case HIGH_MOVE:highPriorityMoveTask();return;
+		case LOW_MOVE:lowPriorityMoveTask();return;
 		case ONLINE: onlineTask();return;
-		case SCOREBOARD: scoreboardTask();return;
-		case RANKING: rankingTask();return;
 		case TAB: tabTask();return;
 		 }
 		 
 	 }
 	 
 	 private void arenaTask() {
-		 for (SpleefArena arena : DataManager.getManager().getArenas()) {
+		 for (Arena arena : DataManager.getManager().getArenas()) {
 	    		if (arena.getState().equals(GameState.GAME)) {	
 	    			if (arena.getGameType().equals(GameType.DUEL)) {
 	    				arena.addTotalTime();
@@ -134,14 +144,35 @@ public class TaskManager {
 	    					} else if (arena.getTime()==3 || arena.getTime()==2 || arena.getTime()==1) {
 	    						for (SpleefPlayer sp : arena.getViewers()) sp.getPlayer().sendMessage("§bAutomatic reset of the arena in " +arena.getTime() +"!");
 	    					}
+	    					
+	    					
+	    					if (arena.getTimedMaxTime()>0) {
+	    						if (arena.getTotalTime()==20*arena.getTimedMaxTime()) {
+	    							int diff = arena.getPoints1()-arena.getPoints2();
+	    							if (diff>0) {
+	    								GameManager.getManager().endGameDuel(arena, "Team1", GameEndReason.WINNER);
+	    							} else if (diff<0) {
+	    								GameManager.getManager().endGameDuel(arena, "Team2", GameEndReason.WINNER);
+	    							} else {
+	    								if (arena.canTie()) {
+	    								GameManager.getManager().endGameDuel(arena, null, GameEndReason.TIE);
+	    								} else {
+	    									GameManager.getManager().sendSyncMessage(arena.getViewers(), "§6§lGold Point! &bWinner of this point wins the match.");
+	    									GameManager.getManager().playToWithCommand(arena, arena.getPoints1()+1);
+	    								}
+	    							}
+	    						}
+	    					}
 	    				}
+	    				
+	    				
 	    			}
 	    			
 	    		}
 
 	    		if (arena.getTime()==0) {
 	    			if (arena.getGameType().equals(GameType.FFA)) {
-	    			GameManager.getManager().endGameFFA(arena,GameEndReason.TIME_OUT);
+	    			GameManager.getManager().endGameFFA(GameEndReason.TIME_OUT,arena.getSpleefType());
 	    			} else if (arena.getGameType().equals(GameType.DUEL)) {
 	    				GameManager.getManager().timeReset1vs1(arena);
 	    			}
@@ -152,12 +183,16 @@ public class TaskManager {
 	private void minuteTask() {
 		  TimeLimitManager.getManager().time();
    	   AnnouncementManager.getManager().time();
+   	   RankedManager.getManager().updateQueues();
+   	  ParkourManager.getManager().calculateProbabilities();
 	}
 	
 	@SuppressWarnings("deprecation")
 	private void onlineTask() {
-    	for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {
+    	for (SpleefPlayer sp : DataManager.getManager().getPlayers()) {
+    		if (sp.getOfflinePlayer().isOnline()) {
     		sp.addOnlineTime();    		
+    	}
     	}
     	EconomyManager.getManager().checkSplinboxes();
     	Date date = new Date();
@@ -173,42 +208,12 @@ public class TaskManager {
             }
                             
             DataManager.getManager().giveMutationTokens();
-
+            DataManager.getManager().giveRankeds();
             
         }
 	}
 	
-	private void scoreboardTask() {
-		for (Player p : Bukkit.getOnlinePlayers()) {	   		    		
-    		PinguiScoreboard.getScoreboard().scoreboard(p);	
-    		
-    		}
-	}
 	
-	private void rankingTask() {
-		StatsManager.getManager().updateRankings();
-    	DataManager.getManager().savePlayers();
-    	boolean b = false;
-    	String name = "";
-    	 for (Map.Entry<String, Integer> entry : StatsManager.getManager().getRanking(RankingType.SPLEEFFFA_WINS_WEEKLY).entrySet()) {
-    		 if (!b) {
-    			 b = true;
-    			 name = entry.getKey();
-    		 } else {
-    			 break;
-    		 }
-    	 }
-    	 
-    	 try {
-    	NPC npc = CitizensAPI.getNPCRegistry().getById(0);
-    	SkinnableEntity entity = (SkinnableEntity) npc.getEntity();
-    	if (!name.isEmpty() && !name.equalsIgnoreCase("")) {
-    	entity.setSkinName(name);
-    } else {
-    	entity.setSkinName("SantiPingui58");
-    }
-    	}catch(Exception e) {}
-	}
 	
 	private int holograms;
 	private void tabTask() {
@@ -219,180 +224,267 @@ public class TaskManager {
     		   HologramManager.getManager().updateHolograms(false);
     	   } else {
     		   HologramManager.getManager().updateHolograms(true);
-    		   }
-    	   
+    		   }	   
     	 
 	}
 	
-	private void moveTask() {
-		  
-    	for (SpleefPlayer sp : DataManager.getManager().getOnlinePlayers()) {  
 
-    		//Check if an admin is already logged in to move.
-    		//Not used.
-  		  if (sp.needsAdminLoginQuestionmark() && !sp.isLogged()) {
-    			sp.getPlayer().teleport(Main.lobby);
-		 } 
-  		  //To prevent spectators to get away from players on the game, if they are 40 blocks away from the player they are spectating, they get teleported to them.
-    		if (sp.isSpectating()) {
-    			if (sp.getSpectating().getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 40) {
-    				sp.getPlayer().teleport(sp.getSpectating().getLocation());
-    			}
-    		}
-    		//Set the old player location
-    		if (sp.getLocation()==null) {
-    			if (sp.getPlayer().isOnline()) {
-    			sp.setLocation(sp.getPlayer().getLocation());
-    			}
-    		}
-    		//World named world is where the Lobby is
-    		if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("world")) {
-    			Location spawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true);
-    			//Check if the player is in a 200 blocks radio or in positive Y value, otherwise teleport them to the spawn.
-    			if (sp.getPlayer().getLocation().getY() < 0  || sp.getPlayer().getLocation().distance(spawn)>200) {
-    				sp.getPlayer().teleport(spawn);
-    			}
-    			if (sp.getPlayer().getLocation().getY()<115 && sp.isFlying() && !sp.getPlayer().hasPermission("splindux.admin")) {
-    			sp.stopfly();
-    			}
+	
+	
+	private void lowPriorityMoveTask() {
+		for (Player p : Bukkit.getOnlinePlayers()) {			
+			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+		spectatorDistance(sp);
+		setLocation(sp);
+		if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("world")) {
+			lobbyDistance(sp);
+			
+		} else if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("arenas")) {
+			if (sp.isInGame()) {
+			deadPlayerDistance(sp);		
+		}
+		}
+		
+		
+		afkCheck(sp);
+		
+		//Remove fire at any moment
+		sp.getPlayer().setFireTicks(0);
+		sp.setLocation(sp.getPlayer().getLocation());
+		potions(sp);
+	}
+	}
+	
+
+
+	private void highPriorityMoveTask() {
+    	for (Player p : Bukkit.getOnlinePlayers()) {  
+    		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+    		if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("parkour")) {
+    			parkour(sp);
+    		} else if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("arenas")) {
     			
-    		}
-    		
-    		if (sp.isInGame()) {
-    			SpleefArena arena = sp.getArena();
-    			//To prevent dead players to go away from alive players, if they are 30 blocks away from any player alive, they get teleported to the closest one.
-	    		//Can get glitched if  alive players are more than 30 blocks away from each other.
-    			if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) {
-    				List<SpleefPlayer> alive = new ArrayList<SpleefPlayer>();
-    				for (SpleefPlayer players : arena.getPlayers()) {
-    					if (!arena.getDeadPlayers1().contains(players) && !arena.getDeadPlayers2().contains(players)) {
-    						alive.add(players);
-    					}
-    				}
-    				
-    				for (SpleefPlayer a : alive) {
-    					if (a.getPlayer().getLocation().distance(sp.getPlayer().getLocation()) > 40) {
-    						sp.getPlayer().teleport(a.getPlayer());
-    						break;
-    					}
-    				}
-    			}
-    			//Snow Run Mutation
-    			if (arena.getState().equals(GameState.GAME)) {
-    			for (GameMutation mutation : arena.getInGameMutations()) {
-    				if (mutation.getType().equals(MutationType.SNOW_RUN)) {
-    					sp.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).setType(Material.AIR);		    					 
-    				}
-    			}
-    			}
-    		}
-    		
-    		//AFK System
-    		if (sp.isAfk()) {
-    			if (!sp.getLocation().equals(sp.getPlayer().getLocation())) {
-    			sp.back();
-    			sp.setAFKTimer(0);
-    			if (sp.getPlayer().hasPermission("splindux.afk")) {
-    			sp.getPlayer().sendMessage("§7You are not longer AFK");	
-    			}
-    			}
-    			
-    		} else {
-    			if (sp.getLocation().equals(sp.getPlayer().getLocation())) {
-    			sp.setAFKTimer(sp.getAFKTimer()+1);
-    			if (sp.getAFKTimer()>=3500) {
-    				sp.afk();
-    				if (sp.getPlayer().hasPermission("splindux.afk")) {
-    				sp.getPlayer().sendMessage("§7You are now AFK");	
-    				}
-    			}
-    			} else {
-    				sp.setAFKTimer(0);
-    			}
-    		}
-    		//Remove fire at any moment
-    		sp.getPlayer().setFireTicks(0);
-    		
-    		
-    		//Check if the player in FFA is AFK, currently not being developed.
-    		if (sp.isInGame() || sp.isInQueue()) {
-    			if (sp.getArena()!=null) {
-    			SpleefArena arena = sp.getArena();
-    			if (arena.getGameType().equals(GameType.FFA)) {
-    			if (sp.getLocation().getYaw()==sp.getPlayer().getLocation().getYaw() && sp.getLocation().getPitch()==sp.getPlayer().getLocation().getPitch()) {
-	    			sp.addGameAFKTimer();
-	    			if (sp.getGameAFKTimer()>1600) {		    				
-	    				sp.leaveQueue(arena,true);
-	    				sp.getPlayer().sendMessage("§cYou got off from the game because you were afk too long!");
-	    			}
-	    		} else {
-	    			sp.setGameAFKTimer(0);
-	    		}
-    		}
-    		}
-    		}
-    		sp.setLocation(sp.getPlayer().getLocation());
-    		//Check if the player fell, by checking if their Y value is lower than the arena Y value.
-    		if (sp.isInGame()) {
-    			SpleefArena arena = sp.getArena();
-    			if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) continue;
-    			
-    			if (sp.getPlayer().getLocation().getBlockY()<arena.getArena1().getBlockY()) {	 
-    				if (arena.getState().equals(GameState.GAME)) {
-    					
-    					LinkedHashMap<DeathReason, SpleefPlayer> reason = new LinkedHashMap<DeathReason,SpleefPlayer>();
-    					if (arena.getGameType().equals(GameType.FFA)) {
-    						 reason = GameManager.getManager().getDeathReason(sp);
-    					}
-    				GameManager.getManager().fell(sp,reason);
-    				
-    			}else  {
-    				if (arena.getGameType().equals(GameType.DUEL)) {
-    					if (arena.getDuelPlayers2().contains(sp)) {
-    						sp.getPlayer().teleport(arena.getShrinkedDuelSpawn2());
-    					} else {
-    						sp.getPlayer().teleport(arena.getShrinkedDuelSpawn1());
-    					}
-    				}
-    			}
+    			if (sp.isInGame()) {
+    				//deleteFloorTimer(sp);
+    				//snowRunMutation(sp);
+    				fellCheck(sp);
     			} 
-    		}
-    		
-    		if (sp.isInQueue()) {
-    			SpleefArena arena = sp.getArena();		    			
-    			if (arena.getGameType().equals(GameType.FFA) && arena.getState().equals(GameState.LOBBY)) {
-    				if (sp.getPlayer().getLocation().getBlockY()<arena.getArena1().getBlockY()) {	 
-    					Location l = new Location(arena.getMainSpawn().getWorld(),arena.getMainSpawn().getBlockX(),arena.getMainSpawn().getBlockY()+15,arena.getMainSpawn().getBlockZ());
-    					sp.getPlayer().teleport(l);
-    				}
-    			}
-    		}
-    		if (sp.getPlayer().getActivePotionEffects().size()>0) {
-    			for (PotionEffect effect : sp.getPlayer().getActivePotionEffects()) {
-    				if (effect.getType().equals(PotionEffectType.INVISIBILITY)) {
-    					PlayerParticlesAPI.getInstance().togglePlayerParticleVisibility(sp.getPlayer(),true);
-    					new BukkitRunnable() {	    			
-    				            @Override
-    				            public void run() {
-    				            	boolean b = true;
-    				            	if (sp.getPlayer().getActivePotionEffects().size()>0) {
-    					    			for (PotionEffect effect : sp.getPlayer().getActivePotionEffects()) {
-    					    				if (effect.getType().equals(PotionEffectType.INVISIBILITY)) {
-    					    					b = false;
-    					    				}
-    					    			}
-    					    				}
-    				            	
-    				            	if (b) {
-    				            		PlayerParticlesAPI.getInstance().togglePlayerParticleVisibility(sp.getPlayer(),false);
-    				            		cancel();
-    				            	}
-    				            }
-    				        }.runTaskTimer(Main.get(), 0L, 5);
-    				}
     			
+    			if (sp.isInArena()) {
+    				practiceFFA(sp);
     			}
     		}
     	}
 	}
-} 
+	
+	
+	private void practiceFFA(SpleefPlayer sp) {
+		if (sp.isInQueue()) {
+			Arena arena = sp.getArena();		    			
+			if (arena.getGameType().equals(GameType.FFA) && arena.getState().equals(GameState.LOBBY)) {
+				if (sp.getPlayer().getLocation().getBlockY()<arena.getArena1().getBlockY()) {	 
+					Location l = new Location(arena.getMainSpawn().getWorld(),arena.getMainSpawn().getBlockX(),arena.getMainSpawn().getBlockY()+15,arena.getMainSpawn().getBlockZ());
+					sp.getPlayer().teleport(l);
+				}
+			}
+		}
+		
+	}
+
+	//Check if the player fell, by checking if their Y value is lower than the arena Y value.
+	private void fellCheck(SpleefPlayer sp) {
+		Arena arena = sp.getArena();
+		if (!arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {
+		
+		if (sp.getPlayer().getLocation().getBlockY()<arena.getArena1().getBlockY()) {	 
+			if (arena.getState().equals(GameState.GAME)) {
+				
+				LinkedHashMap<DeathReason, SpleefPlayer> reason = new LinkedHashMap<DeathReason,SpleefPlayer>();
+				if (arena.getGameType().equals(GameType.FFA)) {
+					 reason = GameManager.getManager().getDeathReason(sp);
+				}
+
+			GameManager.getManager().fell(sp,reason);
+			
+		}else  {
+			if (arena.getGameType().equals(GameType.DUEL)) {
+				if (arena.getDuelPlayers2().contains(sp)) {
+					sp.getPlayer().teleport(arena.getShrinkedDuelSpawn2());
+				} else {
+					sp.getPlayer().teleport(arena.getShrinkedDuelSpawn1());
+				}
+			}
+		}
+		} 		
+		}
+	}
+
+	
+
+
+	private void potions(SpleefPlayer sp) {
+		if (sp.getPlayer().getActivePotionEffects().size()>0) {
+			for (PotionEffect effect : sp.getPlayer().getActivePotionEffects()) {
+				if (effect.getType().equals(PotionEffectType.INVISIBILITY)) {
+					PlayerParticlesAPI.getInstance().togglePlayerParticleVisibility(sp.getPlayer(),true);
+					new BukkitRunnable() {	    			
+				            @Override
+				            public void run() {
+				            	boolean b = true;
+				            	if (sp.getPlayer().getActivePotionEffects().size()>0) {
+					    			for (PotionEffect effect : sp.getPlayer().getActivePotionEffects()) {
+					    				if (effect.getType().equals(PotionEffectType.INVISIBILITY)) {
+					    					b = false;
+					    				}
+					    			}
+					    				}
+				            	
+				            	if (b) {
+				            		PlayerParticlesAPI.getInstance().togglePlayerParticleVisibility(sp.getPlayer(),false);
+				            		cancel();
+				            	}
+				            }
+				        }.runTaskTimer(Main.get(), 0L, 5);
+				}
+			
+			}
+		}
+		
+	}
+
+	private void deadPlayerDistance(SpleefPlayer sp) {
+		Arena arena = sp.getArena();
+		//To prevent dead players to go away from alive players, if they are 30 blocks away from any player alive, they get teleported to the closest one.
+		//Can get glitched if  alive players are more than 30 blocks away from each other.
+		if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) {
+			//To prevent spectators to get away from players on the game, if they are 40 blocks away from the player they are spectating, they get teleported to them.
+			if (sp.isSpectating()) {    	
+				if (arena.getLobby().getWorld().getName().equalsIgnoreCase(sp.getPlayer().getLocation().getWorld().getName())) {
+				if (arena.getLobby().distanceSquared(sp.getPlayer().getLocation()) > 40*40) {
+					sp.getPlayer().teleport(arena.getLobby());
+				}
+				} else {
+				}
+			}
+		}
+		
+	}
+
+	private void lobbyDistance(SpleefPlayer sp) {
+		Location spawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true);
+		//Check if the player is in a 200 blocks radio or in positive Y value, otherwise teleport them to the spawn.
+		
+		if (sp.getPlayer().getLocation().getY() < 0  || sp.getPlayer().getLocation().distanceSquared(spawn)>200*200) {
+			
+			sp.getPlayer().teleport(spawn);
+		}
+		
+	}
+	
+	private void parkour(SpleefPlayer sp) {
+		ParkourArena pk_arena = sp.getParkourPlayer().getArena();   
+		if (pk_arena!=null) {
+		int dif = Math.abs(pk_arena.getCurrentStart().getBlockY()-sp.getPlayer().getLocation().getBlockY());
+		if (sp.getPlayer().isOnGround() && pk_arena.getCurrentFinish().distanceSquared(sp.getPlayer().getLocation()) <=1.25) {
+			pk_arena.doJump();   				
+		} else if (pk_arena.getCurrentStart().getBlockY()>sp.getPlayer().getLocation().getBlockY() && dif>3) {
+			sp.getPlayer().teleport(Utils.getUtils().getCenter(pk_arena.getCurrentStart()));
+			
+			
+			sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP,10,127));
+			pk_arena.setFails(pk_arena.getFails()+1);
+			sp.getPlayer().setWalkSpeed(0);
+			new BukkitRunnable() {
+
+				@Override
+				public void run() {
+					sp.getPlayer().setWalkSpeed(0.2F);
+					
+				}
+				
+			}.runTaskLater(Main.get(), 10L);
+			
+			if (pk_arena.getFails()>=3 && pk_arena.getMode().equals(ParkourMode.MOST_JUMPS)) {
+				pk_arena.finish(FinishParkourReason.LOST);
+			}
+		}
+	}
+		
+		
+		
+	}
+	
+	private void spectatorDistance(SpleefPlayer sp) {
+		//To prevent spectators to get away from players on the game, if they are 40 blocks away from the player they are spectating, they get teleported to them.
+				if (sp.isSpectating()) {    	
+					Arena arena = sp.getSpleefArenaSpectating();
+					if (arena.getLobby().getWorld().getName().equalsIgnoreCase(sp.getPlayer().getLocation().getWorld().getName())) {
+					if (arena.getLobby().distanceSquared(sp.getPlayer().getLocation()) > 40*40) {
+						sp.getPlayer().teleport(arena.getLobby());
+					}
+					} else {
+					}
+				}
+	}
+
+	private void setLocation(SpleefPlayer sp) {
+		//Set the old player location
+				if (sp.getLocation()==null) {
+					if (sp.getPlayer().isOnline()) {
+					sp.setLocation(sp.getPlayer().getLocation());
+					}
+				}
+	}
+	
+	
+	private void afkCheck(SpleefPlayer sp) {
+		//AFK System
+				if (sp.isAfk()) {
+					if (!sp.getLocation().equals(sp.getPlayer().getLocation())) {
+					sp.back();
+					sp.setAFKTimer(0);
+					if (sp.getPlayer().hasPermission("splindux.afk")) {
+					sp.getPlayer().sendMessage("§7You are not longer AFK");	
+					}
+					}
+					
+				} else {
+					if (sp.getLocation().equals(sp.getPlayer().getLocation())) {
+					sp.setAFKTimer(sp.getAFKTimer()+1);
+					if (sp.getAFKTimer()>=3500) {
+						sp.afk();
+						if (sp.getPlayer().hasPermission("splindux.afk")) {
+						sp.getPlayer().sendMessage("§7You are now AFK");	
+						}
+					}
+					} else {
+						sp.setAFKTimer(0);
+					}
+				}
+	}
+	
+	
+	
+	
+
+	
+	    
+		  
+	
+
+	
+	/* private void deleteFloorTimer(SpleefPlayer sp) {
+			if (sp.isInGame() && sp.getArena().getState().equals(GameState.GAME)) {
+			            Player player = sp.getPlayer();
+
+			            if ((!player.getGameMode().equals(GameMode.SPECTATOR)) && (!player.getGameMode().equals(GameMode.CREATIVE))) {
+			           
+			            	getBlockUnderPlayer(player.getLocation().getBlockY() + 1,player.getLocation()).setType(Material.AIR);
+			              //FAWESplinduxAPI.getAPI().placeBlocks(standingBlock.getLocation(), standingBlock.getLocation(), Material.AIR);
+			            }
+			            }		        
+		}
+		
+		*/
+
+}

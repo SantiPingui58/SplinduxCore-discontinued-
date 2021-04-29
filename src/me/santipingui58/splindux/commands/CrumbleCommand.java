@@ -5,9 +5,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.spleef.GameType;
-import me.santipingui58.splindux.game.spleef.Request;
+import me.santipingui58.splindux.game.spleef.ArenaRequest;
 import me.santipingui58.splindux.game.spleef.RequestType;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 
@@ -27,7 +27,7 @@ public class CrumbleCommand implements CommandExecutor {
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			
 			if (sp.isInGame()) {
-				SpleefArena arena = sp.getArena();
+				Arena arena = sp.getArena();
 				if (arena.getGameType().equals(GameType.DUEL)) {
 					if (!arena.isRanked()) {
 					if (arena.getCrumbleRequest()==null) {
@@ -42,7 +42,7 @@ public class CrumbleCommand implements CommandExecutor {
 							crumble = Integer.parseInt(args[0]);
 							if (crumble>=10 && crumble<=90) {
 								
-								Request request = new Request(sp, crumble,RequestType.CRUMBLE);
+								ArenaRequest request = new ArenaRequest(sp, crumble,RequestType.CRUMBLE);
 								arena.setCrumbleRequest(request);
 								request.sendMessage();
 							} else {

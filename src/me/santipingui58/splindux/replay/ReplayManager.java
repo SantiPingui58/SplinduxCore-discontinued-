@@ -2,9 +2,9 @@ package me.santipingui58.splindux.replay;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import me.santipingui58.splindux.DataManager;
-import me.santipingui58.splindux.game.spleef.SpleefArena;
+import me.santipingui58.splindux.game.parkour.ParkourArena;
+import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 public class ReplayManager {
@@ -17,18 +17,23 @@ public class ReplayManager {
 	    }
 	 
 	 
-	 //Manager to handle the Replay System.
-	 //Not being developed yet
 	 
-	public String getName(SpleefArena arena) {
+	public String getDuelName(Arena arena) {
 		 Date now = new Date();
 			SimpleDateFormat format = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");
 		String string = format.format(now);
 		return string + "_" + teamName(arena)[0]+"_vs_" + teamName(arena)[1];
 	}
 	
+	public String getParkourName(String playerName, ParkourArena arena) {
+		Date now = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");
+		String string = format.format(now);
+		return string + "_" + playerName+"_Level_"+arena.getLevel().getLevel();
+	}
 	
-	public String[] teamName(SpleefArena arena) {
+	
+	public String[] teamName(Arena arena) {
 		String p1 = null;
 		 String p2 = null;
 		 for (SpleefPlayer sp1 : arena.getDuelPlayers1()) {
@@ -49,6 +54,7 @@ public class ReplayManager {
 		 String[] r = {p1,p2};
 		return r;
 	}
+	
 	public GameReplay createReplay(String name) {
 		GameReplay replay = new GameReplay(name);
 		DataManager.getManager().getReplays().add(replay);
