@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
@@ -110,18 +111,26 @@ public class ParkourManager {
 	 
 
 	 public void joinLevel(ParkourPlayer pp, Level level,ParkourMode mode) {
-		 SpleefPlayer sp = pp.getPlayer();
+		 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(pp.getPlayer());
 		 Player p = sp.getPlayer();
 		 UUID u = p.getUniqueId();
-			p.sendMessage("§aYou are now playing §2Level " + level.getLevel());
-			 pp.createArena(level,mode);	 
-			p.setGameMode(GameMode.ADVENTURE);
-			p.getInventory().clear();
+		 
+		 new BukkitRunnable() {
+				public void run() {
+					sp.getPlayer().setFlying(false);
+					sp.getPlayer().setAllowFlight(false);
+					p.sendMessage("§aYou are now playing §2Level " + level.getLevel());
+					p.setGameMode(GameMode.ADVENTURE);
+					p.getInventory().clear();
+				}
+			}.runTask(Main.get());
+	
+		 
 			 sp.setScoreboard(ScoreboardType.PARKOUR);
 			 DataManager.getManager().getLobbyPlayers().remove(u);
 				DataManager.getManager().getPlayingPlayers().add(u);
-			 pp.getPlayer().getPlayer().setFlying(false);
-			 pp.getPlayer().getPlayer().setAllowFlight(false);
+				 pp.createArena(level,mode);	
+			
 	 }
 	 
 	 

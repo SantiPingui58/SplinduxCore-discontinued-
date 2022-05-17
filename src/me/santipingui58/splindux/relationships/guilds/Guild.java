@@ -174,6 +174,7 @@ public class Guild {
 	}
 	
 	
+	
 	public String getAchronym() {
 		return this.achronym;
 	}
@@ -350,8 +351,8 @@ public void broadcast(String msg) {
 	}
 }
 
-public void renegociate(Player p,GuildPlayer gp, int salary) {
-	String[] args = {String.valueOf(salary), p.getName(),Bukkit.getOfflinePlayer(gp.getUUID()).getName()};
+public void renegociate(GuildPlayer gp, int salary) {
+	String[] args = {Bukkit.getOfflinePlayer(gp.getUUID()).getName(),String.valueOf(salary),Bukkit.getOfflinePlayer(this.leader).getName()};
 	List<UUID> se = new ArrayList<UUID>();
 	se.add(this.leader);
 	List<UUID> re = new ArrayList<UUID>();
@@ -375,19 +376,26 @@ public int getLevel() {
 
 
 public int getValue() {
+	int value = getValueWithoutPlayers();
+	for (GuildPlayer gp : this.getPlayers()) {
+		value = value + gp.getValue();
+	}
+	
+	
+return value;
+}
+
+
+public int getValueWithoutPlayers() {
 	int value = this.coins;
 	
-	for (GuildPlayer gp : this.getPlayers()) {
-		value = value + gp.getSalary();
-	}
-	value = value + (this.getMembers().size()*this.getMemberFee()*30);
-	
-	for (int i = this.level; i>=1;i-- ) {
-		value = value + getLevelPrice(i);
-	}
+for (int i = this.level; i>=1;i-- ) {
+	value = value + getLevelPrice(i);
+}
 	
 	return value;
 }
+
 
 
 public int getNextLevelPrice() {

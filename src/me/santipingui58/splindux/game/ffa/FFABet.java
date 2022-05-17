@@ -1,4 +1,4 @@
-package me.santipingui58.splindux.game;
+package me.santipingui58.splindux.game.ffa;
 
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 

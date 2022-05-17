@@ -52,13 +52,13 @@ public class Jump {
 	
 	
 	public void load(ParkourArena arena,ParkourPlayer pp,Location location) {
+		File file = new File( Main.get().getDataFolder(),"schematics/"+ name+".schematic");
 		new BukkitRunnable() {
-			public void run() {
-		 File file = new File( Main.get().getDataFolder(),"schematics/"+ name+".schematic");
+			public void run() {	 
 		UUID uuid = FAWESplinduxAPI.getAPI().pasteSchematic(file, location,true);
 		arena.getJumpSchematics().add(uuid);
 		}
-		}.runTask(Main.get());
+		}.runTaskLater(Main.get(),1L);
 
 		}
 	

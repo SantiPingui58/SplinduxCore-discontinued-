@@ -3,8 +3,11 @@ package me.santipingui58.splindux.utils;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -54,11 +57,27 @@ public class Utils {
 	        return manager;
 	    }
 	 
+	 public String time(int s) {
+			
+			int minutes = s / 60;
+			int seconds = s % 60;
+
+			return String.format("%02d:%02d",  minutes, seconds);
+		  }
 	 
 	 public ItemStack getSkull(OfflinePlayer off) {
 		 ItemStack leader = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
 			SkullMeta meta = (SkullMeta) leader.getItemMeta();
 			meta.setOwningPlayer(off);
+			leader.setItemMeta(meta);
+			return leader;
+	 }
+	 
+	 public ItemStack getSkull(OfflinePlayer off,String string) {
+		 ItemStack leader = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
+			SkullMeta meta = (SkullMeta) leader.getItemMeta();
+			meta.setOwningPlayer(off);
+			meta.setDisplayName(string);
 			leader.setItemMeta(meta);
 			return leader;
 	 }
@@ -90,6 +109,32 @@ public class Utils {
 			 public void run () {
 				 for (SpleefPlayer sp : players) {
 					 Player player = sp.getPlayer();
+			IChatBaseComponent chatTitle = ChatSerializer.a("{\"text\": \"" + titletext + "\"}");
+			IChatBaseComponent chatSubtitle = ChatSerializer.a("{\"text\": \"" + subtitletext + "\"}");
+			
+			PacketPlayOutTitle title = new PacketPlayOutTitle(EnumTitleAction.TITLE, chatTitle);
+			PacketPlayOutTitle subtitle = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, chatSubtitle);
+			
+			PacketPlayOutTitle length = new PacketPlayOutTitle(fadeIn,stay,fadeOut);
+			((CraftPlayer) player).getHandle().playerConnection.sendPacket(title);
+	        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subtitle);
+			((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
+				 }
+		 }
+	 }.runTask(Main.get());
+	}
+	 
+	 public void sendTitles(Collection<? extends Player> players, String titletext,String subtitletext,int fadeIn, int stay, int fadeOut) {
+		List<SpleefPlayer> spleefPlayers = new ArrayList<SpleefPlayer>();
+		for (Player p : players) spleefPlayers.add(SpleefPlayer.getSpleefPlayer(p));
+		sendTitles(spleefPlayers,titletext,subtitletext,fadeIn,stay,fadeOut);
+	 }
+	 
+	 
+	 public void sendBroadcastTitle(String titletext,String subtitletext,int fadeIn, int stay, int fadeOut) {
+		 new BukkitRunnable() {
+			 public void run () {
+				 for (Player player : Bukkit.getOnlinePlayers()) {
 			IChatBaseComponent chatTitle = ChatSerializer.a("{\"text\": \"" + titletext + "\"}");
 			IChatBaseComponent chatSubtitle = ChatSerializer.a("{\"text\": \"" + subtitletext + "\"}");
 			
@@ -144,7 +189,22 @@ public class Utils {
 		 return item;
 	 }
 	 
+	 
+	 public SpleefPlayer getFromSet(Collection<SpleefPlayer> collection) {
+		 for (SpleefPlayer s : collection) {
+			 return s;
+		 }
+		return null;
+	 }
 
+		public <T> Set<T> newShuffledSet(Collection<T> collection) {
+		    List<T> shuffleMe = new ArrayList<T>(collection);
+		    Collections.shuffle(shuffleMe);
+		    return new LinkedHashSet<T>(shuffleMe);
+		}
+		
+		
+	 
 	 //Check if a set has duplicate values on it
 	 public <T> boolean hasDuplicate(Iterable<T> all) {
 		    Set<T> set = new HashSet<T>();
@@ -300,21 +360,6 @@ public class Utils {
 		    d = d < 0 ? d - .5 : d + .5;
 		    return d;
 		}
-		
-		
-		
-		
-		
-		
-		//Convert seconds to mm:ss
-		public String time(int s) {
-			
-			int minutes = s / 60;
-			int seconds = s % 60;
-
-			return String.format("%02d:%02d",  minutes, seconds);
-		  }
-		
 		
 		
 		

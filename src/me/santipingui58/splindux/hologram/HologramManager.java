@@ -1,19 +1,32 @@
 package me.santipingui58.splindux.hologram;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
+import java.util.Map.Entry;
+import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import me.santipingui58.splindux.DataManager;
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import com.gmail.filoghost.holographicdisplays.api.VisibilityManager;
+
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.stats.RankingEnum;
 import me.santipingui58.splindux.stats.SpleefRankingPeriod;
 import me.santipingui58.splindux.stats.SpleefRankingType;
+import me.santipingui58.splindux.stats.StatsManager;
 import me.santipingui58.splindux.utils.Utils;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class HologramManager {
 
@@ -24,144 +37,191 @@ public class HologramManager {
 	        return manager;
 	    }
 	
-	 private List<Hologram> holograms = new ArrayList<Hologram>();
-	 private HashMap<SpleefPlayer,Boolean> oldHasRewards = new HashMap<SpleefPlayer,Boolean>();
-	 public List<Hologram> getHolograms() {
-		 return this.holograms;
+	 private HashMap <UUID,Set<Hologram>> staticHolograms = new HashMap<UUID,Set<Hologram>>();
+	 
+	 private RankingHologram game_stats;
+	 private RankingHologram player_stats;
+	 
+	 public List<RankingHologram> getHolograms() {
+		 RankingHologram[] holograms = {game_stats,player_stats};
+ 		 List<RankingHologram> s = Arrays.asList(holograms);
+ 		 return s;
 	 }
 	 
-	 public void deleteHologram(SpleefPlayer sp) {
-		 Hologram hologram = null;
-		 for (Hologram h : this.holograms) {
-			 if (h.getLocation().getWorld().equals(sp.getPlayer().getLocation().getWorld())) {
-				 if (h.getLocation().distance(sp.getPlayer().getLocation())<=3) {
-					 hologram = h;
-					 break;
-				 }
-			 }
-		 }
-		 
-		 if (hologram!=null) {
-			 for (SpleefPlayer spl : DataManager.getManager().getPlayers()) {
-			 hologram.delete(spl);
-			 Main.arenas.getConfig().set("holograms."+hologram.getUUID().toString(), null);
-			 }		 
-			 this.holograms.remove(hologram);
-			 
-		 } else {
-			 sp.getPlayer().sendMessage("§cCouldnt find an hologram in 10 blocks.");
-		 }
-	 }
-	 
-	 public void createHologram(SpleefPlayer sp,HologramType type) {
-		 Hologram hologram = new Hologram(UUID.randomUUID(), sp.getPlayer().getLocation(), type);
-		 this.holograms.add(hologram);
-		saveHolograms();	
-		updateHolograms(false);
-	 }
-	 
+
 	 public void loadHolograms() {
 		 if (Main.arenas.getConfig().contains("holograms")) {
-		 Set<String> holograms = Main.arenas.getConfig().getConfigurationSection("holograms").getKeys(false);
-		for (String h : holograms) {
-			UUID uuid = UUID.fromString(h);
-			Location location = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("holograms."+h+".location"));
-			HologramType type = HologramType.valueOf(Main.arenas.getConfig().getString("holograms."+h+".type"));
-			if (type.equals(HologramType.SPLEEF_RANKED) || type.equals(HologramType.SPLEEF_FFA_RANKING)) continue;
-			Hologram hologram = new Hologram(uuid, location, type);
-			this.holograms.add(hologram);
-		}
+			Location location1 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("holograms.game_stats.location"));
+			Location location2 = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("holograms.player_stats.location"));
+			game_stats = new RankingHologram(location1,HologramType.GAME_STATS);
+			 player_stats = new RankingHologram(location2,HologramType.PLAYER_STATS);
+		
+	 } else {
+		 game_stats = new RankingHologram(new Location(Bukkit.getWorld("world"),0,0,0),HologramType.GAME_STATS);
+		 player_stats = new RankingHologram(new Location(Bukkit.getWorld("world"),0,0,0),HologramType.PLAYER_STATS);
+		 saveHolograms();
 	 }
+		 
+		// createHologram(StaticRankingType.SPLEEF_ELO, new Location(Bukkit.getWorld("world"),0,144,0));
 		 }
 	 
 	 public void saveHolograms() {
-		 for (Hologram h : holograms) {
-			 if (h.getLocation()!=null) {
-			 Main.arenas.getConfig().set("holograms."+h.getUUID().toString()+".location", Utils.getUtils().setLoc(h.getLocation(), false));
-			 }
-			 Main.arenas.getConfig().set("holograms."+h.getUUID().toString()+".type", h.getType().toString());
-		
-		 }
+		 for (RankingHologram h : getHolograms()) 
+			 Main.arenas.getConfig().set("holograms."+h.getType().toString().toLowerCase()+".location", Utils.getUtils().setLoc(h.getLocation(), false));
 			 Main.arenas.saveConfig();
 	 }
 	 
 		 
 	 
-	 public void updateHolograms(boolean onlyVotes) {
-		 for (SpleefPlayer sp : DataManager.getManager().getPlayers()) {
-			 if (sp.getOfflinePlayer().isOnline()) sendHolograms(sp,onlyVotes);
-		 }
-	 }
-	 public void sendHolograms(SpleefPlayer sp,boolean onlyVotes) {
-		 for (Hologram h : this.holograms) {
-			 if (onlyVotes) {
-				 if (!h.getType().equals(HologramType.VOTES)) continue;
-				 if (!this.oldHasRewards.containsKey(sp)) {
-					 this.oldHasRewards.put(sp, sp.hasUnclaimedRewards());
-				 }	 
-				 if (this.oldHasRewards.get(sp)!=sp.hasUnclaimedRewards()) {
-					 this.oldHasRewards.put(sp, sp.hasUnclaimedRewards());
-					 h.spawn(sp);
-				 }			 
-			 } else { 
-			 h.spawn(sp);
-		 }
-			 }
+	 public RankingHologram getHologram(HologramType type) {
+		 if (type.equals(HologramType.GAME_STATS)) return this.game_stats;
+		 return this.player_stats;
 	 }
 	 
-	 public void removeHolograms(SpleefPlayer sp) {
-		 for (Hologram h : this.holograms) {
-			 h.delete(sp);
-		 }
+	 public void moveHologram(SpleefPlayer sp, RankingHologram hologram) {
+		 hologram.setLocation(sp.getLocation());
+		 updateHolograms();
+		 saveHolograms();
 	 }
 	 
-	 public void changeChangeType(SpleefPlayer sp,int id) {
-		 try {
-		 Hologram hologram = getHologramByID(id,sp);
-		 
-		 if (hologram.getChangeType().get(sp).equals(SpleefRankingType.WINS)) {
-			 hologram.getChangeType().put(sp, SpleefRankingType.KILLS);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA KILLS");
-		 } else  if (hologram.getChangeType().get(sp).equals(SpleefRankingType.KILLS)) {
-			 hologram.getChangeType().put(sp, SpleefRankingType.GAMES);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA GAMES");
-		 } else  if (hologram.getChangeType().get(sp).equals(SpleefRankingType.GAMES)) {
-			 hologram.getChangeType().put(sp, SpleefRankingType.WINS);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA WINS");
-		 } 
-		 sendHolograms(sp,false);
-		 } catch(Exception ex) {}
-	 }
-	 
-	 
-	 public void changeChangePeriod(SpleefPlayer sp,int id) {
-		 try {
-		 Hologram hologram = getHologramByID(id,sp);
-		 
-		 if (hologram.getChangePeriod().get(sp).equals(SpleefRankingPeriod.ALL_TIME)) {
-			 hologram.getChangePeriod().put(sp, SpleefRankingPeriod.MONTHLY);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA MONTHLY");
-		 } else  if (hologram.getChangePeriod().get(sp).equals(SpleefRankingPeriod.MONTHLY)) {
-			 hologram.getChangePeriod().put(sp, SpleefRankingPeriod.WEEKLY);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA WEEKLY");
-		 } else  if (hologram.getChangePeriod().get(sp).equals(SpleefRankingPeriod.WEEKLY)) {
-			 hologram.getChangePeriod().put(sp, SpleefRankingPeriod.ALL_TIME);
-			 sp.getPlayer().sendMessage("§aChanged to: §bSpleefFFA ALL TIME");
-		 } 
-		 sendHolograms(sp,false);
-		 } catch (Exception ex) {}
-	 }
-	 
-	 
-	 
-	 public Hologram getHologramByID(int id,SpleefPlayer sp) {
-		 for (Hologram h : this.holograms) {
-			 for (int i : h.getIDList().get(sp)) {
-				 if (i==id) {
-					 return h;
+	 public void updateHolograms() {
+		 new BukkitRunnable() {
+			 public void run() {
+		 for (Player p : Bukkit.getOnlinePlayers()) {
+			 for (RankingHologram h : getHolograms()) {
+				 updateHologram(p.getUniqueId(),h);
 				 }
-			 }
 		 }
-		 return null;
+			 }
+	 }.runTaskAsynchronously(Main.get());
+		 
+	 }
+	 
+	 
+	 
+	 public void updateHologram(UUID sp, RankingHologram hologram) {
+		 HologramViewer viewer = HologramViewer.getHologramViewer(sp, hologram.getType());
+		 hologram.update(viewer);
+	 }
+	 
+	 public void showHolograms(UUID sp) {
+		 new BukkitRunnable() {
+			 public void run() {
+		 for (RankingHologram h : getHolograms()) {
+			 HologramViewer viewer = HologramViewer.getHologramViewer(sp, h.getType());
+			 h.update(viewer);
+			 }
+			 }
+	 }.runTaskAsynchronously(Main.get());
+	 }
+	 
+	 public void hideHolograms(UUID sp) {
+		 for (RankingHologram h : getHolograms()) {
+			 HologramViewer viewer = HologramViewer.getHologramViewer(sp, h.getType());
+			 h.delete(viewer);
+			 }
+			 }
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 public void primaryButton(HologramViewer viewer,RankingHologram hologram) {	 
+		 HologramSubType type = null;
+		 for (Map.Entry<HologramSubType,HologramSubType> entry : viewer.getHologramSubType().getPrevAndNext().entrySet()) {
+			 type = entry.getValue();
+			 break;
+		 }		 
+		viewer.setHologramSubType(type);
+		if (type.equals(HologramSubType.DUELS))  {
+			viewer.setSpleefRankingType(SpleefRankingType.ELO);
+		} else if (type.equals(HologramSubType.FFA)) {
+			viewer.setSpleefRankingType(SpleefRankingType.WINS);
+		}
+		updateHologram(viewer.getPlayer(),hologram);
+	 }
+	 
+	 
+	 public void secondaryButton(HologramViewer viewer,RankingHologram hologram) {	 
+		 SpleefRankingPeriod type = null;	 
+		 for (Map.Entry<SpleefRankingPeriod,SpleefRankingPeriod> entry : viewer.getPeriod().getPrevAndNext().entrySet()) {
+			 type = entry.getValue();
+			 break;
+		 }		 
+		viewer.setPeriod(type);
+		updateHologram(viewer.getPlayer(),hologram);
+	 }
+	 
+	 
+	 public void cleanHologramCache(UUID sp) {
+		 for (RankingHologram rh : this.getHolograms())  {
+			 rh.getViewersCache().remove(sp);
+		 }
+	 }
+	 
+	 
+
+	 public void deleteStaticHolograms(SpleefPlayer sp) {
+		 for (Hologram h : staticHolograms.get(sp.getUUID())) {
+			 h.delete();
+			 Bukkit.broadcastMessage("a");
+		 }
+		 staticHolograms.get(sp.getUUID()).clear();
+		
+	 }
+	 
+	 public void addHologramTo(SpleefPlayer sp, Hologram hologram) {
+		 	if (!staticHolograms.containsKey(sp.getUUID())) staticHolograms.put(sp.getUUID(), new HashSet<Hologram>());
+		 	Set<Hologram> holograms = staticHolograms.get(sp.getUUID());
+		 	holograms.add(hologram);
+		 	 staticHolograms.put(sp.getUUID(), holograms);
+		 	 Bukkit.broadcastMessage("b");
+	 }
+	 
+	 public void createHologram(SpleefPlayer sp, StaticRankingType type,Location location) {
+		 Hologram hologram = HologramsAPI.createHologram(Main.get(), location);
+		 Bukkit.broadcastMessage("dsadsa");
+		addHologramTo(sp,hologram);
+	
+		 VisibilityManager visibilityManager = hologram.getVisibilityManager();
+		 visibilityManager.showTo(sp.getPlayer());
+		 visibilityManager.setVisibleByDefault(false);
+		 hologram.appendTextLine(sp.getName());
+		
+		 int i = 1;
+		 if (type.equals(StaticRankingType.SPLEEF_ELO) || type.equals(StaticRankingType.YT_ELO)) {
+			 LinkedHashMap<UUID,Integer> hashmap = new LinkedHashMap<UUID,Integer>(StatsManager.getManager().getRanking(RankingEnum.SPLEEF1VS1_ELO));
+				LinkedHashMap<UUID, Integer> it = StatsManager.getManager().getTop20HashMap(hashmap, 0,  RankingEnum.SPLEEF1VS1_ELO);
+				if (type.equals(StaticRankingType.YT_ELO)) {
+					 hologram.appendTextLine("§b§lCLASIFICATORIAS - RANKING YOUTUBERS");
+					 HashMap<UUID,Integer> toAdd = new HashMap<UUID,Integer>();
+					 for (Entry<UUID, Integer> entry : it.entrySet()) {
+						try {
+							if (PermissionsEx.getUser(Bukkit.getOfflinePlayer(entry.getKey()).getName()).has("splindux.media")) toAdd.put(entry.getKey(), entry.getValue());
+						} catch(Exception ex) {}
+					 }
+					 it.clear();
+					 it.putAll(toAdd);
+					 
+				} else {
+					 hologram.appendTextLine("§b§lCLASIFICATORIAS - RANKING");
+				}
+					for (Entry<UUID, Integer> entry : it.entrySet()) {
+					    UUID key = entry.getKey();
+					    int value = entry.getValue();	
+					   String  prefix = "";
+					    try {
+					    	prefix = PermissionsEx.getUser(Bukkit.getOfflinePlayer(entry.getKey()).getName()).getPrefix();
+					    } catch(Exception ex) {}
+
+					   	 hologram.appendTextLine("§6"+i+" " +prefix +" §b"+Bukkit.getOfflinePlayer(key).getName()+" §8- §e" + value + " ELO");
+					    i++;
+				}
+	
+					
+					
+		 }
 	 }
 }

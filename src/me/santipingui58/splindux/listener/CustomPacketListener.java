@@ -1,8 +1,5 @@
 package me.santipingui58.splindux.listener;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -15,14 +12,14 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 
 import me.santipingui58.splindux.Main;
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
-import me.santipingui58.splindux.hologram.Hologram;
 import me.santipingui58.splindux.hologram.HologramManager;
+import me.santipingui58.splindux.hologram.HologramViewer;
+import me.santipingui58.splindux.hologram.RankingHologram;
+import net.minecraft.server.v1_12_R1.EntityArmorStand;
 
 
 public class CustomPacketListener {
 
-	private List<SpleefPlayer> delay = new ArrayList<SpleefPlayer>();
 	
 	public CustomPacketListener() {
 		packet();
@@ -37,43 +34,67 @@ public class CustomPacketListener {
             public void onPacketReceiving(PacketEvent event) {
 				if (event.getPacket()==null) return;
 				Player player = event.getPlayer();
-            	SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(player);	
-        		if (!delay.contains(sp)) {
-        			delay.add(sp);
                 if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {                
                 	PacketContainer packet = event.getPacket();
-                	           	
-                	for (Hologram h : HologramManager.getManager().getHolograms()) {
-                		if (h.getPacketList().isEmpty()) continue; 
-                			 if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp).get(me.santipingui58.splindux.hologram.PacketType.TYPE))) {
-                    		new BukkitRunnable() {
-                    		public void run() {
-                    			HologramManager.getManager().changeChangeType(sp, packet.getIntegers().read(0));
-                    		}	
-                    		}.runTaskLaterAsynchronously(Main.get(),3L);
-                    		
-                    		break;
-                    	} else if (packet.getIntegers().read(0).equals(h.getPacketList().get(sp).get(me.santipingui58.splindux.hologram.PacketType.PERIOD))) {
+                	packet.getBlocks();
+                	int id = packet.getIntegers().read(0);
+                	for (RankingHologram h : HologramManager.getManager().getHolograms()) {
+                		try {
+                		HologramViewer viewer = HologramViewer.getHologramViewer(player.getUniqueId(), h.getType());
+                		if (viewer==null) continue;
+                		EntityArmorStand armorStand =   viewer.getArmorStand(id, h.getType());
+                		if (armorStand==null) continue;   		
+                	
+                		
+                		new BukkitRunnable() {
+            				public void run() {
+                		if (viewer.isPrimaryButton(id, h.getType())) {
+                			HologramManager.getManager().primaryButton(viewer, h);
+                			return;
+                				}
+                		if (viewer.isSecondaryButton(id, h.getType())) {
+                			HologramManager.getManager().secondaryButton(viewer, h);
+                			return;
+                				}
+                			}
+                		}.runTask(Main.get());
 
-                    		new BukkitRunnable() {
-                    		public void run() {
-                    			HologramManager.getManager().changeChangePeriod(sp, packet.getIntegers().read(0));
-                    		}	
-                    		}.runTaskLaterAsynchronously(Main.get(),3L);
-                    		
-                    		break;
-                    	}
+
+                		} catch(Exception ex2) {}
                 	}
+                	
                 }
                 
-                new BukkitRunnable() {
-            		public void run() {
-            			delay.remove(sp);
-            		}	
-            		}.runTaskLaterAsynchronously(Main.get(),5L);
-                }
+                
+                
 			}
             
-        });
+        }
+		);
+		
+		/*
+		protocolManager.addPacketListener(new PacketAdapter(Main.get(),
+                ListenerPriority.NORMAL,
+                new PacketType[] { PacketType.Play.Client.TAB_COMPLETE }) {
+			@Override
+			 public void onPacketReceiving(PacketEvent event) {
+				 if (event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE)
+	                    try {
+	                        PacketContainer packet = event.getPacket();
+	                        String message = (packet.getSpecificModifier(String.class).read(0)).toLowerCase();
+	                        // The following is a boolean function that returns true if the command should be cancelled
+	                        if(CommonScripts.commandIsNotInThree(event.getPlayer(), message)){
+	                            // Cancel the event
+	                            event.setCancelled(true);
+	                        }
+	                    } catch (Exception e) {
+	                        Main.get().getLogger().info(ChatColor.RED + "Error in Packet Listener");
+	                    }
+			}
+            
+        }
+		);
+	*/
+		
 	}
 }

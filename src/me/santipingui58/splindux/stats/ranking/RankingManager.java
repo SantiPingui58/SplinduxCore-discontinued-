@@ -9,17 +9,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,7 +34,6 @@ import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.parkour.ParkourManager;
 import me.santipingui58.splindux.game.parkour.ParkourPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
-import me.santipingui58.splindux.stats.RankingEnum;
 import me.santipingui58.splindux.stats.StatsManager;
 import me.santipingui58.splindux.stats.level.LevelManager;
 
@@ -45,7 +48,7 @@ public class RankingManager {
 	
 		private Ranking ranking;
 		private HashMap<UUID,List<String>> records = new HashMap<UUID,List<String>>();
-		
+		private HashMap<UUID,List<String>> players = new HashMap<UUID,List<String>>();
 	
 		public void loadParkourGlobalTop() {
 			new BukkitRunnable() {
@@ -82,10 +85,10 @@ public class RankingManager {
 		 
 		
 		
-		private void addRecord(SpleefPlayer sp,String record) {
-			if (!records.containsKey(sp.getUUID())) records.put(sp.getUUID(), new ArrayList<String>());
+		private void addRecord(UUID sp,String record) {
+			if (!records.containsKey(sp)) records.put(sp, new ArrayList<String>());
 			
-			records.get(sp.getUUID()).add(record);
+			records.get(sp).add(record);
 			
 		}
 		
@@ -143,7 +146,7 @@ public class RankingManager {
 			    
 			    Main.ranking.getConfig().set("ranking."+i+".records", list);
 			    Main.ranking.getConfig().set("ranking."+i+".country", sp.getCountry() !=null ? sp.getCountry() : "Unkown");
-			    Main.ranking.getConfig().set("ranking."+i+".oldposition", ranking.getPosition(sp));
+			    Main.ranking.getConfig().set("ranking."+i+".oldposition", ranking.getPosition(sp.getUUID()));
 			    i++;
 				
 			}
@@ -162,18 +165,18 @@ public class RankingManager {
 		for (Entry<UUID, Integer> entry : ranking.getRanking().entrySet()) {
 		    UUID uuid = entry.getKey();
 		    int p = entry.getValue();
-		    SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(uuid);
+		    
 		    Main.ranking.getConfig().set("ranking."+i+".uuid", uuid.toString());
 		    Main.ranking.getConfig().set("ranking."+i+".name", Bukkit.getOfflinePlayer(uuid).getName());
 		    Main.ranking.getConfig().set("ranking."+i+".points", p);
 		    List<String> list = records.get(uuid);		 
-		    if (list!=null)sp.getRankingRecords().addAll(list);
+		    //if (list!=null) sp.getRankingRecords().addAll(list);
 		    
 		    Main.ranking.getConfig().set("ranking."+i+".records", list);
 		    try {
-		    Main.ranking.getConfig().set("ranking."+i+".country", sp.getCountry() !=null ? sp.getCountry() : "Unkown");
+		   // Main.ranking.getConfig().set("ranking."+i+".country", sp.getCountry() !=null ? sp.getCountry() : "Unkown");
     
-		    Main.ranking.getConfig().set("ranking."+i+".oldposition", oldRanking.getPosition(sp));
+		    Main.ranking.getConfig().set("ranking."+i+".oldposition", oldRanking.getPosition(uuid));
 		    } catch(Exception ex) {
 		    	new BukkitRunnable() {
 		    		public void run() {
@@ -193,12 +196,7 @@ public class RankingManager {
 	}
 	
 	public void calculate() { 
-		
-		new BukkitRunnable() {
-			public void run() {
-	}
-			}.runTask(Main.get());	
-			
+			Ranking newRanking = new Ranking();
 		new BukkitRunnable() {
 			public void run() {
 				loadRanking();
@@ -209,31 +207,27 @@ public class RankingManager {
 					public void run() {
 		boolean isEndOfSeason =isEndOfSeason();
 		isEndOfSeason = false;
-		//SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(Bukkit.getPlayer("SantiPingui58"));
-		//Bukkit.getPlayer("SantiPingui58").sendMessage(""+ranking.getRanking().get(sp.getUUID()));
 		
-		//guildsSeason();
-		
-		if (isEndOfSeason) {
+		if (isEndOfSeason) 
 			decreasePoints();			
-		}	
-				//Bukkit.getPlayer("SantiPingui58").sendMessage(""+ranking.getRanking().get(sp.getUUID()));
+		tournaments(newRanking);		
+		 monthlyFFA(newRanking);	
+		 guildsSeason(newRanking);
+		if (isEndOfSeason) rankedELO(newRanking);		
 		
-		tournaments();		
-				//Bukkit.getPlayer("SantiPingui58").sendMessage(""+ranking.getRanking().get(sp.getUUID()));
-		 monthlyFFA();	
-					//Bukkit.getPlayer("SantiPingui58").sendMessage(""+ranking.getRanking().get(sp.getUUID()));
-		if (isEndOfSeason) rankedELO();		
-				//Bukkit.getPlayer("SantiPingui58").sendMessage(""+ranking.getRanking().get(sp.getUUID()));
-		spleefRankMultiply();
-				//Bukkit.getPlayer("SantiPingui58").sendMessage(""+ranking.getRanking().get(sp.getUUID()));
-		Ranking oldRanking = new Ranking();
-		oldRanking.setRanking(ranking.getRanking());
+		spleefRankMultiply(newRanking);
+		
+		for (Entry<UUID, Integer> entry : newRanking.getRanking().entrySet()) {
+		    UUID key = entry.getKey();
+		    int value = entry.getValue();
+		  if (ranking.getRanking().containsKey(key)) ranking.getRanking().put(key, ranking.getRanking().get(key)+value);
+		}
+		
 		ranking.setRanking(StatsManager.getManager().sortByValueLinked(ranking.getRanking()));
 		ranking.remove0();
-		saveRanking(oldRanking);
+		saveRanking(ranking);
 			}
-				}.runTaskLaterAsynchronously(Main.get(), 120L);
+				}.runTaskLaterAsynchronously(Main.get(), 20L);
 			}
 		}.runTaskAsynchronously(Main.get());
 	}
@@ -241,10 +235,7 @@ public class RankingManager {
 	
 	
 	private void loadAllPlayers() {
-		for (UUID uuid : HikariAPI.getManager().getAllPlayers()) {
-		 new SpleefPlayer(uuid);
-			HikariAPI.getManager().loadData(uuid);					
-		}
+		this.players.putAll(HikariAPI.getManager().getAllPlayers());
 	}
 	
 	
@@ -262,132 +253,170 @@ public class RankingManager {
 	}
 	
 	public void decreasePoints() {
-		for (Entry<UUID, Integer> entry : ranking.getRanking().entrySet()) {
+		for (Entry<UUID, Integer> entry : ranking.getRanking().entrySet()) { 
 		    UUID sp = entry.getKey();
 		    int p = entry.getValue();
-		    ranking.getRanking().put(sp, p/4);
+		    ranking.getRanking().put(sp, p/6);
 		}
 	}
 	
 	
-	private void spleefRankMultiply() {
-		DataManager.getManager().getPlayers().forEach((sp)-> {
-			int playerPoints = 0;
-			if (ranking.getRanking().containsKey(sp.getUUID())) playerPoints = ranking.getRanking().get(sp.getUUID());
-			int rank = LevelManager.getManager().getRank(sp).getInt();
-			double multiply  =1 + ((rank-1)*0.0125);
+	
+	@SuppressWarnings("deprecation")
+	private void spleefRankMultiply(Ranking ranking) {
+		 Calendar thirtyDaysAgo = Calendar.getInstance();  
+		  thirtyDaysAgo.add(Calendar.DAY_OF_MONTH, -30);  
+	       Date thirtyDaysAgoDate = thirtyDaysAgo.getTime();
+	
+		
+		
+		for (Entry<UUID, List<String>> entry : this.players.entrySet()) {
+		 UUID sp = entry.getKey();
+		 List<String> list = entry.getValue();
+		 int level = Integer.valueOf(list.get(0));
+		 
+		 Date date = null;
+		 try {
+			 date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse(list.get(1));
+		} catch (ParseException e) {
+			continue;
+		}
+		 
+			if(thirtyDaysAgoDate.after(date)) continue;
+
+		 int playerPoints = 0;
+		 
+     	if (ranking.getRanking().containsKey(sp)) playerPoints = ranking.getRanking().get(sp);
+			int rank = LevelManager.getManager().getRank(level).getInt();	 
+			double multiply  = 1 + ((rank-1)*0.0125);
 			playerPoints = (int) (playerPoints*multiply);
-			ranking.getRanking().put(sp.getUUID(), playerPoints);
-		}); 
+			if (Bukkit.getOfflinePlayer("SantiPingui58").getUniqueId().compareTo(sp)==0)  {
+				Bukkit.getLogger().info("santi multiply :"+multiply);
+				Bukkit.getLogger().info("santi level :"+level);	
+			}	
+			ranking.getRanking().put(sp, playerPoints);	
+		}
 	}
 	
-	public void rankedELO() {
-		 StatsManager sm = StatsManager.getManager();
-			List<String> top10 = StatsManager.getManager().getTop10Names(sm.getRanking(RankingEnum.SPLEEF1VS1_ELO), 0, RankingEnum.SPLEEF1VS1_ELO);
-			top10.clear();
-			top10.add("_woozzi_");
-			top10.add("TheRioo");
-			top10.add("Bratishkin_");
-			top10.add("HA3AR41K1");
-			top10.add("TotallyAwesome5");
-			top10.add("B00mbl4");	
-			top10.add("MyNameisVan_");
-			top10.add("SirPatata");
-			top10.add("CubitoTurtle17");
-			top10.add("messengers");
-			DataManager.getManager().getPlayers().forEach((sp)-> {
+	public void rankedELO(Ranking ranking) {
+		// StatsManager sm = StatsManager.getManager();
+			//List<String> top10 = StatsManager.getManager().getTop10Names(sm.getRanking(RankingEnum.SPLEEF1VS1_ELO), 0, RankingEnum.SPLEEF1VS1_ELO);
+		List<String> top10 = new ArrayList<String>();
+		
+		top10.add("Wezuh"); //Extreme
+		top10.add("Triffuny"); // Epic
+		top10.add("SantiPingui58"); // Epic
+		top10.add("Sudzo"); // Epic
+		top10.add("JetFire_JTFR"); //Vip
+		top10.add("slenderbrine100"); // VIP
+		top10.add("ShadowFlames"); // VIP
+		top10.add("kiwata");
+		top10.add("panter_bebrus");
+		top10.add("hi_im_nazar");
+			for (UUID sp : this.players.keySet()) {
 				int playerPoints = 0;
-				if (ranking.getRanking().containsKey(sp.getUUID())) playerPoints = playerPoints + ranking.getRanking().get(sp.getUUID());		
+				if (ranking.getRanking().containsKey(sp)) playerPoints = playerPoints + ranking.getRanking().get(sp);		
 				
-				if (top10.contains(sp.getOfflinePlayer().getName())) {
-					int position = top10.indexOf(sp.getOfflinePlayer().getName())+1;
+				if (top10.contains(Bukkit.getOfflinePlayer(sp).getName())) {
+					int position = top10.indexOf(Bukkit.getOfflinePlayer(sp).getName())+1;
 					playerPoints = playerPoints + 750 + ((10-position)*250);
 					addRecord(sp,"&7- &a#"+position + " at Ranked ELO");
 				} else {
 					playerPoints = playerPoints + 50;
 				}
-				ranking.getRanking().put(sp.getUUID(), playerPoints);
-			}); 
+				ranking.getRanking().put(sp, playerPoints);
+			}
 	}
 	
-	public void guildsSeason() {
+	public void guildsSeason(Ranking ranking) {
 		HashMap<String,Integer> hashmap = new HashMap<String,Integer>();
-		hashmap.put("aprada_",4000);
-		hashmap.put("JetFire_JTFR",3000);
-		hashmap.put("hosikuzuru",1750);
-		hashmap.put("Triffuny",1750);
-		hashmap.put("Mcdia",1500);
-		hashmap.put("MyNameIsVan_",1250);
-		hashmap.put("Neil_",1750);
-		hashmap.put("PulpitoDelicioso",1250);
-		hashmap.put("MESHOK_S_G08NOM_",2500);
-		hashmap.put("CubitoTurtle17",1750);
-		hashmap.put("Alexelpro_04",1750);
-		hashmap.put("russianhoe",2000);
-		hashmap.put("_woozzi_",4000);
-		hashmap.put("livanecsboruvky",4000);
-		hashmap.put("Jakubusso",2000);
-		hashmap.put("Troubina",3000);
-		hashmap.put("Wezaz",1500);
-		hashmap.put("TheRioo",3500);
-		hashmap.put("Mathieu1969",1750);
-		hashmap.put("ShadowFlames",1500);
-		hashmap.put("HA3AR41K1",4000);
-		hashmap.put("lostyt555",3500);
-		hashmap.put("SantiPingui58",4000);
-		hashmap.put("slenderbrine100",3000);
-		hashmap.put("SirPatata",3000);
-		hashmap.put("hikarilof",3500);
-		hashmap.put("Bratishkin_",1250);
-		hashmap.put("Luntario",1750);
-		
-		DataManager.getManager().getPlayers().forEach((sp)-> {
+		hashmap.put("SantiPingui58",1250);
+		hashmap.put("iKeffsito",125);
+		hashmap.put("JetFire_JTFR",1250);
+		hashmap.put("FipoRk",1250);
+		hashmap.put("lostyt666",1000);
+		hashmap.put("obivan_kenobi",750);
+		hashmap.put("Sudzo",1500);
+		hashmap.put("thoget",1500);
+		hashmap.put("makimeer",1500);
+		hashmap.put("Flycherr",1000);
+		hashmap.put("Triffuny",1500);
+		hashmap.put("pancircus",1500);
+		hashmap.put("onjosh",750);
+		hashmap.put("hikarilof",250);
+		hashmap.put("kiwata",250);
+		hashmap.put("AppAlInG_BOxER ",250);
+		hashmap.put("hi_im_Nazar",1000);
+		hashmap.put("__YMKA167__",1000);
+		hashmap.put("iferus7",1000);
+		hashmap.put("Paapr3",1000);
+		hashmap.put("Barmink",1000);
 
-			int playerPoints = 0;
-			if (ranking.getRanking().containsKey(sp.getUUID())) playerPoints = playerPoints +ranking.getRanking().get(sp.getUUID());
-			
-			ranking.getRanking().put(sp.getUUID(), playerPoints);
-			if (hashmap.containsKey(sp.getOfflinePlayer().getName())) {
-				playerPoints = playerPoints + hashmap.get(sp.getOfflinePlayer().getName());
-			} 
-			
-			ranking.getRanking().put(sp.getUUID(), playerPoints);
-		});
+		
+		for (Map.Entry<String, Integer> entry : hashmap.entrySet()) {
+		    String name = entry.getKey();
+		    int points = entry.getValue();
+		    @SuppressWarnings("deprecation")
+			OfflinePlayer player = Bukkit.getOfflinePlayer(name);
+		    if (!ranking.getRanking().containsKey(player.getUniqueId())) ranking.getRanking().put(player.getUniqueId(), 0);
+		    ranking.getRanking().put(player.getUniqueId(), ranking.getRanking().get(player.getUniqueId())+points);
+		}
 
 	}
-	private void monthlyFFA() {
-		StatsManager sm = StatsManager.getManager();
-		List<String> top10 = StatsManager.getManager().getTop10Names(sm.getRanking(RankingEnum.SPLEEFFFA_WINS_MONTHLY), 0, RankingEnum.SPLEEFFFA_WINS_MONTHLY);
-		top10.clear();
-		top10.add("_wozzi_");
-		top10.add("thogeth");
-		top10.add("tsenumom");
-		top10.add("Suunny_");
-		top10.add("TheRioo");
-		top10.add("Cheburekin123");	
-		top10.add("_Nualst_");
-		top10.add("Neyron__");
-		top10.add("SexMashina_");
+	private void monthlyFFA(Ranking ranking) {
+		//StatsManager sm = StatsManager.getManager();
+		//List<String> top10 = StatsManager.getManager().getTop10Names(sm.getRanking(RankingEnum.SPLEEFFFA_WINS_MONTHLY), 0, RankingEnum.SPLEEFFFA_WINS_MONTHLY);	
+		List<String> top10 = new ArrayList<String>();
 		
-		DataManager.getManager().getPlayers().forEach((sp)-> {
+		
+		top10.add("SantiPingui58");
+		top10.add("__YMKA167__");
+		top10.add("Paapr3");
+		top10.add("hi_im_Nazar");
+		top10.add("iferus7");
+		top10.add("JeffEatsPie");
+		top10.add("kiwata");
+		top10.add("aprada");
+		top10.add("TheMoritex");
+		top10.add("ShadowFlames");
+		
+		
+		 
+		 Calendar thirtyDaysAgo = Calendar.getInstance();  
+		  thirtyDaysAgo.add(Calendar.DAY_OF_MONTH, -30);  
+	       Date thirtyDaysAgoDate = thirtyDaysAgo.getTime();
+		for (Entry<UUID, List<String>> entry : this.players.entrySet()) {
+			 UUID sp = entry.getKey();
+			 List<String> list = entry.getValue();
 
-			int playerPoints = 0;
-			if (ranking.getRanking().containsKey(sp.getUUID())) playerPoints = playerPoints +ranking.getRanking().get(sp.getUUID());
 			
-			ranking.getRanking().put(sp.getUUID(), playerPoints);
-			if (top10.contains(sp.getOfflinePlayer().getName())) {
-				int position = top10.indexOf(sp.getOfflinePlayer().getName())+1;
-				playerPoints = playerPoints + 750 + ((10-position)*250);
+			 Date date = null;
+			 try {
+				 date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").parse(list.get(1));
+			} catch (ParseException e) {
+				continue;
+			}
+			 
+			 
+				if(thirtyDaysAgoDate.after(date)) continue;
+			
+			int playerPoints = 0;
+			if (ranking.getRanking().containsKey(sp)) playerPoints = playerPoints +ranking.getRanking().get(sp);
+			
+			ranking.getRanking().put(sp, playerPoints);
+			if (top10.contains(Bukkit.getOfflinePlayer(sp).getName())) {
+				int position = top10.indexOf(Bukkit.getOfflinePlayer(sp).getName())+1;
+				playerPoints = playerPoints + 100 + ((10-position)*100);
 				addRecord(sp,"&7- &a#"+position + " at Monthly FFA");
 			} else {
-				playerPoints = playerPoints + 50;
+		        	playerPoints = playerPoints + 50;
 			}
 			
-			ranking.getRanking().put(sp.getUUID(), playerPoints);
-		});
+			ranking.getRanking().put(sp, playerPoints);
+		}
 	}
 	
-	public void tournaments() {
+	public void tournaments(Ranking ranking) {
 		Set<String> tournaments  = Main.tournaments.getConfig().getConfigurationSection("tournaments").getKeys(false);
 		
 		for (String t : tournaments) {
@@ -411,13 +440,13 @@ public class RankingManager {
 				
 					switch(position) {
 					case 1: 
-						addRecord(p,"&7- &b&l"+getTournamentName(t)+" Winner"); 
+						addRecord(p.getUUID(),"&7- &b&l"+getTournamentName(t)+" Winner"); 
 						break;
 					case 2: 
-						addRecord(p,"&7- &6#2 at " +getTournamentName(t)); 
+						addRecord(p.getUUID(),"&7- &6#2 at " +getTournamentName(t)); 
 					break;
 					case 3: 
-						addRecord(p,"&7- &f#3 at " +getTournamentName(t)); 
+						addRecord(p.getUUID(),"&7- &f#3 at " +getTournamentName(t)); 
 					break;
 					}
 					if (position<=10) {
@@ -439,18 +468,18 @@ public class RankingManager {
 					}		
 					int multiplier = league.equalsIgnoreCase("A") ?  2 : 1;
 						if (position<=winner) {
-							addRecord(p,"&7- &b&l"+getTournamentName(t)+" Winner");
-							playerPoints = playerPoints + (5000/(3-multiplier));
+							addRecord(p.getUUID(),"&7- &b&l"+getTournamentName(t)+" Winner");
+							playerPoints = playerPoints + (2500/(3-multiplier));						
 						} else if (position<=finalist) {
-							addRecord(p,"&7- &6"+getTournamentName(t)+" Finalist");
-							playerPoints = playerPoints + (3000/(3-multiplier));
+							addRecord(p.getUUID(),"&7- &6"+getTournamentName(t)+" Finalist");
+							playerPoints = playerPoints + (1500/(3-multiplier));
 						} else if (position<=semifinalist) {
-							addRecord(p,"&7- &f"+getTournamentName(t)+" Semifinalist");
-							playerPoints = playerPoints + (1500/(3-multiplier));;
+							addRecord(p.getUUID(),"&7- &f"+getTournamentName(t)+" Semifinalist");
+							playerPoints = playerPoints + (1250/(3-multiplier));;
 						} else if (position<=quarterfinalist) {
 							playerPoints = playerPoints + (750/(3-multiplier));
 						} else {
-							playerPoints = playerPoints + (300/(3-multiplier));
+							playerPoints = playerPoints + (500/(3-multiplier));
 						}		
 				}
 				if (!weekly) playerPoints = playerPoints*4;

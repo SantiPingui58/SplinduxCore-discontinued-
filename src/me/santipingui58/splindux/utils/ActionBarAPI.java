@@ -1,5 +1,6 @@
 package me.santipingui58.splindux.utils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,10 +16,10 @@ public class ActionBarAPI extends JavaPlugin  {
     private static boolean useOldMethods = false;
 
 
-    public static void sendActionBar(Player player, String message) {
+    public static void sendActionBar(OfflinePlayer player, String message) {
     	  nmsver = Bukkit.getServer().getClass().getPackage().getName();
           nmsver = nmsver.substring(nmsver.lastIndexOf(".") + 1);
-          
+          if (player==null) return;
         if (!player.isOnline()) {
             return; // Player may have logged out
         }

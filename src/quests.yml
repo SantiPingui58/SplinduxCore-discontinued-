@@ -1,0 +1,22 @@
+quests:
+    la_bienvenida:
+        start-npc-id: 290
+        quest_name: 'La Bienvenida'
+        messages:  
+            290:       
+                StartMessage:
+                    - 'Welcome! This will be your first quest.'
+                    - 'And the objetive of it, is to see the map!'
+                    - 'Talk to me once you saw it.'   
+                NotCompleted:
+                    Stage1:
+                        - 'Have you found the map yet?'
+                FinishMessage:
+                    - 'Well done! As you could see there is a lot of places to go.'
+                    - 'You will find people who will need help too!'
+                    - 'Thank you for assistance, take this as a reward.'        
+npcs:
+     290:
+        quests:
+            - 'la_bienvenida'
+            

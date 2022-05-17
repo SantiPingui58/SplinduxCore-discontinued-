@@ -78,29 +78,46 @@ public class GuildChatCommand implements CommandExecutor {
 		  }
 		  
 		  for (Player player : withoutTranslate) {
-			  player.sendMessage("§6[Guild] §f" + p.getName() + "§8: §e" + message);
+			  player.sendMessage("§6[Guild] §f" + p.getName() + "§8: §a" + message);
 		  }
+
+
+
+			try {
+				TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.ENGLISH, message)
+				  .thenAccept(text -> { 
+					  for (Player pl : english) {
+					  pl.sendMessage("§6[Guild] §f" + p.getName() + "§8: §a" + text);
+					  }
+				  });
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.SPANISH, message)
+				  .thenAccept(text -> { 
+					  for (Player pl : spanish) {
+					  pl.sendMessage("§6[Guild] §f" + p.getName() + "§8: §a" + text);
+					  }
+				  });
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			
+			try {
+				TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.RUSSIAN, message)
+				  .thenAccept(text -> { 
+					  for (Player pl : russian) {
+					  pl.sendMessage("§6[Guild] §f" + p.getName() + "§8: §a" + text);
+					  }
+				  });
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		  
-		  String englishMsg = "";
-		  String spanishMsg = "";
-		  String russianMsg = "";
 		  
-		  try {
-			 englishMsg = english.size()>0 ?  TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.ENGLISH, message) : "";
-		} catch (IOException e) {
-		}
-		  try {
-			 spanishMsg = spanish.size()>0 ?  TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.SPANISH, message) : "";
-		} catch (IOException e) {
-		}
-		  try {
-			 russianMsg = russian.size()>0 ?  TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.RUSSIAN, message) : "";
-		} catch (IOException e) {
-		}
-		  
-		 for (Player pl : english) pl.sendMessage("§6[Guild] §f" + p.getName() + "§8: §e" + englishMsg);
-		 for (Player pl : spanish) pl.sendMessage("§6[Guild] §f" + p.getName() + "§8: §e" + spanishMsg);
-		 for (Player pl : russian) pl.sendMessage("§6[Guild] §f" + p.getName() + "§8: §e" + russianMsg);
 	}
 			}.runTaskAsynchronously(Main.get());
 		}

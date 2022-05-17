@@ -136,4 +136,20 @@ public class PlayerStats {
 			return (double) getFFAKills(type)/getFFAGames(type);
 		}
 	}
+
+	public int getGlobalFFAWins() {
+		int i =0;
+		i = i + getFFAWins(SpleefType.SPLEEF);
+		i = i + getFFAWins(SpleefType.SPLEGG);
+		i = i + getFFAWins(SpleefType.TNTRUN);
+		return i;
+	}
+	
+	public int getGlobalELO() {
+		int i =0;
+		i = i + getELO(SpleefType.SPLEEF);
+		i = i + getELO(SpleefType.SPLEGG);
+		i = i + getELO(SpleefType.TNTRUN);
+		return i/3;
+	}
 }

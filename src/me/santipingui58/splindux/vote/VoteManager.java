@@ -85,9 +85,9 @@ public ItemStack getItem(SpleefPlayer sp,Rewarded network) {
 
 		String prefix = "§bFollow us at ";
 		if (rewarded.equals(Rewarded.NAMEMC)) {
-			prefix = "§bLike us at";
+			prefix = "§bLike us at ";
 		} else if (rewarded.isServerList()) {
-			prefix = "§bVote us at";
+			prefix = "§bVote us at ";
 		} 
 		message.setHoverEvent( new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(prefix + rewarded.getColor() + rewarded.getName()+"!").create()));				
 		p.spigot().sendMessage(message);

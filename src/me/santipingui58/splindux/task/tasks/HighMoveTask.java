@@ -9,8 +9,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.Main;
@@ -29,18 +27,21 @@ import me.santipingui58.splindux.utils.Utils;
 public class HighMoveTask {
 	
 	
+	
 	public HighMoveTask() {
 		new BukkitRunnable() {
 			public void run() {
 				for (Player p : Bukkit.getOnlinePlayers()) {  
 		    		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 		    		if (sp==null) continue;
+		    		if (sp.getPlayer()==null) continue;
 		    		if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("parkour")) {
 		    			parkour(sp);
 		    		} else if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("arenas")) {
 		    			
 		    			if (sp.isInGame()) {
 		    				fellCheck(sp);
+		    				pauseCheck(sp);
 		    			} 
 		    			
 		    			if (sp.isInArena()) {
@@ -49,17 +50,30 @@ public class HighMoveTask {
 		    		}
 		    	}
 			}
-		}.runTaskTimerAsynchronously(Main.get(), 0L, 4L);
+		}.runTaskTimer(Main.get(), 0L, 2L);
+	}
+	
+	
+	public void pauseCheck(SpleefPlayer sp) {
+		if (sp.isInGame()) {
+			if (sp.getArena().getState().equals(GameState.PAUSE)) {
+				if (sp.getLocation()!=null && sp.getLocation().distanceSquared(sp.getPlayer().getLocation()) > 0.5) {
+					sp.teleport(sp.getLocation());
+				}
+			}
+		}
 	}
 	
 	
 	private void parkour(SpleefPlayer sp) {
+		new BukkitRunnable() {
+			public void run() {
 		ParkourArena pk_arena = sp.getParkourPlayer().getArena();   
 		if (pk_arena!=null) {
 			
 			
 		int dif = Math.abs(pk_arena.getCurrentStart().getBlockY()-sp.getPlayer().getLocation().getBlockY());
-		if (sp.getPlayer().isOnGround() && pk_arena.getCurrentFinish().distanceSquared(sp.getPlayer().getLocation()) <=1.25) {
+		if (sp.getPlayer().isOnGround() && sp.getLocation().getWorld().getName().equalsIgnoreCase("parkour") && pk_arena.getCurrentFinish().distanceSquared(sp.getPlayer().getLocation()) <=1.25) {
 			pk_arena.doJump();   				
 		} else if (pk_arena.getCurrentStart().getBlockY()>sp.getPlayer().getLocation().getBlockY() && dif>3) {
 			
@@ -68,28 +82,19 @@ public class HighMoveTask {
 			new BukkitRunnable() {
 				public void run() {
 			sp.getPlayer().teleport(Utils.getUtils().getCenter(pk_arena.getCurrentStart()));
-			sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP,10,127));	
-			sp.getPlayer().setWalkSpeed(0);
+			sp.fellParkour(true);
 			}
 			}.runTask(Main.get());
 		
-			new BukkitRunnable() {
-
-				@Override
-				public void run() {
-					sp.getPlayer().setWalkSpeed(0.2F);
-					
-				}
-				
-			}.runTaskLater(Main.get(), 10L);
+					sp.fellParkour(false);
 			
 			if (pk_arena.getFails()>=3 && pk_arena.getMode().equals(ParkourMode.MOST_JUMPS)) {
 				pk_arena.finish(FinishParkourReason.LOST);
 			}
 		}
 	}
-		
-		
+			}
+		}.runTaskAsynchronously(Main.get());
 		
 	}
 	
@@ -103,15 +108,11 @@ public class HighMoveTask {
 					if (arena.getSpleefType().equals(SpleefType.TNTRUN)) {
 						l = arena.getLobby();
 					} else {
-					 l = new Location(arena.getMainSpawn().getWorld(),arena.getMainSpawn().getBlockX(),arena.getMainSpawn().getBlockY()+15,arena.getMainSpawn().getBlockZ());
+					 l = new Location(arena.getMainSpawn().getWorld(),arena.getMainSpawn().getBlockX(),arena.getMainSpawn().getBlockY()+10,arena.getMainSpawn().getBlockZ());
 					}
 					
 					final Location l2 = l;
-					new BukkitRunnable() {
-						public void run() {
 					sp.getPlayer().teleport(l2);			
-					}
-					}.runTask(Main.get());
 				}
 			}
 		}
@@ -121,10 +122,11 @@ public class HighMoveTask {
 	//Check if the player fell, by checking if their Y value is lower than the arena Y value.
 		private void fellCheck(SpleefPlayer sp) {
 			Arena arena = sp.getArena();
+			
 			if (!arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {
 			
 			if (sp.getPlayer().getLocation().getBlockY()<arena.getArena1().getBlockY()) {	 
-				if (arena.getState().equals(GameState.GAME)) {
+				if (arena.getState().equals(GameState.GAME) || (arena.isAtMiniSpleef() && arena.getState().equals(GameState.STARTING))) {
 					
 					LinkedHashMap<DeathReason, SpleefPlayer> reason = new LinkedHashMap<DeathReason,SpleefPlayer>();
 					if (arena.getGameType().equals(GameType.FFA)) {

@@ -81,27 +81,41 @@ public class StaffChatCommand implements CommandExecutor {
 			  player.sendMessage(prefix + p.getName() + "§8: §e" + message);
 		  }
 		  
-		  String englishMsg = "";
-		  String spanishMsg = "";
-		  String russianMsg = "";
-		  
-		  try {
-			 englishMsg = english.size()>0 ?  TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.ENGLISH, message) : "";
-		} catch (IOException e) {
-		}
-		  try {
-			 spanishMsg = spanish.size()>0 ?  TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.SPANISH, message) : "";
-		} catch (IOException e) {
-		}
-		  try {
-			 russianMsg = russian.size()>0 ?  TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.RUSSIAN, message) : "";
-		} catch (IOException e) {
-		}
-		  
-		 for (Player pl : english) 	  pl.sendMessage(prefix + p.getName() + "§8: §e" + englishMsg);
-		 for (Player pl : spanish) pl.sendMessage(prefix + p.getName() + "§8: §e" + spanishMsg);
-		 for (Player pl : russian) pl.sendMessage(prefix + p.getName() + "§8: §e" + russianMsg);
-		  
+			try {
+				TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.ENGLISH, message)
+				  .thenAccept(text -> { 
+					  for (Player pl : english) {
+						  pl.sendMessage(prefix + p.getName() + "§8: §e" + text);
+					  }
+				  });
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.SPANISH, message)
+				  .thenAccept(text -> { 
+					  for (Player pl : spanish) {
+						  pl.sendMessage(prefix + p.getName() + "§8: §e" + text);
+					  }
+				  });
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			
+			try {
+				TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), Language.RUSSIAN, message)
+				  .thenAccept(text -> { 
+					  for (Player pl : russian) {
+						  pl.sendMessage(prefix + p.getName() + "§8: §e" + text);
+					  }
+				  });
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		 
+		 
 				}
 		
 	}.runTaskAsynchronously(Main.get());

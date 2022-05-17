@@ -33,7 +33,7 @@ public class NightVisionCommand implements CommandExecutor {
 				} else {
 					sp.getOptions().nightVision(true);		
 					p.sendMessage("§aNight vision is now enabled!");
-					if (sp.isInGame()) {
+					if (sp.isInArena()) {
 						p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,Integer.MAX_VALUE,1));
 					}
 				}

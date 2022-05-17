@@ -1,10 +1,10 @@
 package me.santipingui58.splindux.task;
-
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
-
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.spleef.Arena;
@@ -18,9 +18,11 @@ public class ArenaStartingCountdownTask {
 	private Arena arena;
 	private int time;
 	private int task;
-	public ArenaStartingCountdownTask(Arena arena) {
+	private List<ArmorStand> armorstands;
+	public ArenaStartingCountdownTask(Arena arena,List<ArmorStand> armorstands) {
 		this.arena = arena;
 		this.time = 3;
+		this.armorstands = armorstands;
 		arena.setState(GameState.STARTING);
 		task();
 
@@ -28,9 +30,12 @@ public class ArenaStartingCountdownTask {
 	
 	private void task() {
 		task = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.get(), new Runnable() {
-			
-			
 			public void run() {
+				if (time==3) {
+					if (arena.getDecayTask()!=null) arena.getDecayTask().orderLocations();
+				}
+				
+				
 				String title = "";
 				float d = 0.85F;
 				switch(time) {
@@ -56,10 +61,17 @@ public class ArenaStartingCountdownTask {
 		    			sp.getPlayer().setFlying(false);
 		    			}
 		    		}
+		    		
+		    		if (armorstands!=null) {
+		    			for (ArmorStand stand : armorstands) {
+		    				stand.remove();
+		    			}
+		    		}
+		    		
 		    		Bukkit.getScheduler().cancelTask(task);
 		    	}
 		    
 		    }
-		    }, 0, arena.getArenaStartingCountdownDelay());
+		    }, 2L, arena.getArenaStartingCountdownDelay());
 	}
 }

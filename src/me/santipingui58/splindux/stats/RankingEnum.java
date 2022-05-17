@@ -46,8 +46,13 @@ public enum RankingEnum {
 	TNTRUNFFA_KILLS_WEEKLY,
 	
 	TOTALONLINETIME,
-	PARKOUR,
-	RANKING;
+	COINS,
+	EXP,
+	GUILD_VALUE,
+	RANKING,
+	VOTES,
+	PARKOUR
+	;
 	
 	
 	public GameType getGameType() {

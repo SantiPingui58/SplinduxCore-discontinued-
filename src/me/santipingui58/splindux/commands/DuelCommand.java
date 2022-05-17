@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.gui.game.DuelMenu;
+import me.santipingui58.splindux.relationships.parties.Party;
+import me.santipingui58.splindux.relationships.parties.PartyManager;
 import me.santipingui58.splindux.utils.Utils;
 
 
@@ -33,9 +35,16 @@ public class DuelCommand implements CommandExecutor{
 		sender.sendMessage("§cQueues are currently closed.");
 		return false;
 	}
+	final Player p = (Player) sender;
+	
+	Party party = PartyManager.getManager().getParty(p);
+	if (party!=null && !party.isLeader(p)) {
+		sender.sendMessage("§cOnly the party leader can join a game.");
+		return false;
+	}
 	
 
-	final Player p = (Player) sender;
+	
 	 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 	 
 		if (sp.isInGame() || sp.getParkourPlayer().getArena()!=null) {
@@ -97,7 +106,7 @@ public class DuelCommand implements CommandExecutor{
 				  players.add(op.getName());
 					 SpleefPlayer dueled = SpleefPlayer.getSpleefPlayer(op);
 				  if (!sp.hasDueled(dueled)) {
-					  if (!dueled.isInGame() && !dueled.isinParkour()) {
+					  if (!dueled.isInGame() && !dueled.isinParkour() && PartyManager.getManager().getParty(sp.getPlayer())==null) {
 						  sp2.add(dueled);
 				  } else {
 						sender.sendMessage("§cThis player §b"+ dueled.getName() +" is already in game.");

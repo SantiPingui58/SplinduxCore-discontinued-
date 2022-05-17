@@ -3,6 +3,8 @@ package me.santipingui58.splindux.npc;
 import java.util.ArrayList;
 import java.util.List;
 
+
+import me.santipingui58.splindux.game.spleef.SpleefType;
 import net.citizensnpcs.api.CitizensAPI;
 
 
@@ -24,7 +26,7 @@ public class NPCManager {
 
 	 
 	 public SplinduxNPC getSplinduxNPCBy(int id) {
-		 for (SplinduxNPC npc : this.npcs) {
+		 for (SplinduxNPC npc : this.npcs) {		
 			 if (npc.getNPC().getId()==id) {
 				 return npc;
 			 }
@@ -35,8 +37,15 @@ public class NPCManager {
 	 
 	 public void loadNPCs() {
 		 for (NPCType type : NPCType.values()) {
-			 SplinduxNPC npc = new SplinduxNPC(CitizensAPI.getNPCRegistry().getById(type.getId()),type);
+			 SplinduxNPC npc = new SplinduxNPC(CitizensAPI.getNPCRegistry().getById(type.getId()),type,null);
 			 this.npcs.add(npc);
+		 }
+		 
+		 for (SpleefType type : SpleefType.values()) {
+			if (type.getId()!=-1) {
+			 SplinduxNPC npc = new SplinduxNPC(CitizensAPI.getNPCRegistry().getById(type.getId()),null,type);
+			 this.npcs.add(npc);
+			}
 		 }
 		  
 		 updateNPCs();
@@ -47,6 +56,7 @@ public class NPCManager {
 			 npc.deleteHologram();
 		 }
 	 }
+	 
 	 
 	 
 	 public void updateNPCs() {

@@ -34,8 +34,17 @@ public class RideCommand implements CommandExecutor {
 				if (Bukkit.getOnlinePlayers().contains(pa)) {
 					if (!pa.equals(p)) {
 						SpleefPlayer sp2 = SpleefPlayer.getSpleefPlayer(pa);
-						if (!sp2.isInGame() && sp2.getSpleefArenaSpectating()==null && sp2.getParkourArenaSpectating()==null) {						
+						if (!pa.getWorld().equals(p.getWorld())) {
+							p.sendMessage("§cYou cannot ride this player right now.");		
+							return false;
+						}
+						
+						if (!sp2.isInGame() && sp2.getSpleefArenaSpectating()==null && sp2.getParkourArenaSpectating()==null) {		
+							if (pa.getLocation().distanceSquared(p.getLocation()) <=100) {
 							pa.setPassenger(p);
+							} else {
+								p.sendMessage("§cYou need to be closer to this player to ride them.");	
+							}
 						} else {
 								p.sendMessage("§cYou cannot ride this player right now.");							
 						}

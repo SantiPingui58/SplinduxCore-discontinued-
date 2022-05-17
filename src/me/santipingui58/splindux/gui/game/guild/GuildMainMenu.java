@@ -32,7 +32,7 @@ public class GuildMainMenu extends MenuBuilder {
 		public void run() {
 			
 		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");		
-		s(13,new ItemBuilder(Material.GOLD_INGOT).addEnchantment(Enchantment.ARROW_DAMAGE, 1)
+		s(22,new ItemBuilder(Material.GOLD_INGOT).addEnchantment(Enchantment.ARROW_DAMAGE, 1)
 				.setTitle("§6§l"+guild.getName() + "Guild")
 				.addLore("§e"+guild.getAchronym())
 				.addLore("§9Foundation Date: §f" + format.format(guild.getFoundationDate()) + " (" + DataManager.getManager().getDateDifference(guild.getFoundationDate()) + ")")
@@ -42,8 +42,8 @@ public class GuildMainMenu extends MenuBuilder {
 				.addLore("§9Membership Fee: §6" + guild.getMemberFee() + " Coins")
 				.build());
 		
-		String duel = guild.isMod(sp.getUUID(),false) ?  "§7Request a §bGuild Duel §7to any Guild that is currently online" :  "§cThis Menu is only for Mods of the Guild";
-		s(22,new ItemBuilder(Material.DIAMOND_SWORD).setTitle("§b§lGuild Duel").addLore(duel).build());
+		//String duel = guild.isMod(sp.getUUID(),false) ?  "§7Request a §bGuild Duel §7to any Guild that is currently online" :  "§cThis Menu is only for Mods of the Guild";
+		//s(22,new ItemBuilder(Material.DIAMOND_SWORD).setTitle("§b§lGuild Duel").addLore(duel).build());
 		
 		if (guild.isAdmin(sp.getUUID(),false)) {
 		s(19,new ItemBuilder(Material.EMERALD).setTitle("§a§lGuild Bank").addLore("§7Check the amount, recent movements, and everything")

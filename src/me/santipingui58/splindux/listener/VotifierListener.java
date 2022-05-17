@@ -23,6 +23,7 @@ public class VotifierListener implements Listener {
 		@SuppressWarnings("deprecation")
 		OfflinePlayer p = Bukkit.getOfflinePlayer(e.getVote().getUsername());
 		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+		sp.setTotalVotes(sp.getTotalVotes()+1);
 		ServerListName sln = ServerListName.fromString(v.getServiceName());
 		TimeLimitType tlt = TimeLimitType.valueOf(sln.toString());
 		TimeLimitManager tlm = TimeLimitManager.getManager();

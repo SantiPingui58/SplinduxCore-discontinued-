@@ -1,16 +1,18 @@
 package me.santipingui58.splindux.listener;
 
-
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -21,7 +23,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -29,6 +33,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -39,25 +44,28 @@ import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
+import org.spigotmc.event.entity.EntityDismountEvent;
 
 import com.github.shynixn.petblocks.api.PetBlocksApi;
 import com.github.shynixn.petblocks.api.business.service.PetService;
 
-import github.scarsz.discordsrv.api.Subscribe;
-import github.scarsz.discordsrv.api.events.AccountLinkedEvent;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.death.BreakReason;
 import me.santipingui58.splindux.game.death.BrokenBlock;
+import me.santipingui58.splindux.game.ffa.FFAArena;
 import me.santipingui58.splindux.game.mutation.GameMutation;
 import me.santipingui58.splindux.game.mutation.MutationType;
 import me.santipingui58.splindux.game.spectate.SpectateManager;
@@ -66,19 +74,19 @@ import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 import me.santipingui58.splindux.gui.options.OptionsMenu;
+import me.santipingui58.splindux.gui.party.PartyMenu;
+import me.santipingui58.splindux.hologram.HologramManager;
 import me.santipingui58.splindux.gui.gadgets.GadgetsMenu;
-import me.santipingui58.splindux.gui.game.MutationTokenMenu;
 import me.santipingui58.splindux.gui.game.parkour.ParkourMenu;
-import me.santipingui58.splindux.gui.game.RankedMenu;
+import me.santipingui58.splindux.gui.game.MutationTokenMenu;
 import me.santipingui58.splindux.gui.game.UnrankedMenu;
 import me.santipingui58.splindux.gui.game.guild.GuildMainMenu;
-import me.santipingui58.splindux.hologram.HologramManager;
 import me.santipingui58.splindux.relationships.guilds.Guild;
 import me.santipingui58.splindux.relationships.guilds.GuildsManager;
+import me.santipingui58.splindux.relationships.parties.Party;
+import me.santipingui58.splindux.relationships.parties.PartyManager;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.utils.Utils;
-import me.santipingui58.splindux.vote.Rewarded;
-import me.santipingui58.splindux.vote.VoteManager;
 import net.apcat.simplesit.SimpleSitPlayer;
 import net.apcat.simplesit.events.PlayerSitEvent;
 import net.apcat.simplesit.events.PlayerStopSittingEvent;
@@ -86,8 +94,13 @@ import net.apcat.simplesit.events.PlayerStopSittingEvent;
 
 public class ServerListener implements Listener {
 
-	private List<SpleefPlayer> spleggDelay = new ArrayList<SpleefPlayer>();
 	
+	private Set<UUID> delay = new HashSet<UUID>();
+	
+	@EventHandler
+	public void onDecay(BlockFormEvent e) {
+		if (e.getBlock().getType().equals(Material.CONCRETE_POWDER) || e.getBlock().getType().equals(Material.CONCRETE)) e.setCancelled(true);
+	}
 	
 	@EventHandler
 	public void onSign(SignChangeEvent e) {		
@@ -103,7 +116,6 @@ public class ServerListener implements Listener {
 	@EventHandler
 	public void onFishing(PlayerFishEvent e) {
 			Utils.getUtils().setBiteTime(e.getHook(), 2);
-		
 	}
 
 	
@@ -120,64 +132,115 @@ public class ServerListener implements Listener {
 	
 	@EventHandler 
 	public void onDeath(EntityDamageByEntityEvent e) {
+	
 		if (e.getDamager().getType().equals(EntityType.SNOWBALL)) {
 			e.setDamage(0.2);
 		}
+		
+		
 		Entity entity = e.getEntity();
-		if (entity instanceof Player) {
+		if (entity instanceof Player && e.getDamager() instanceof Player) {
 			Player p = (Player) entity;
-			
+			Player damager = (Player) e.getDamager();
+			p.setHealth(20.0);
+			damager.setHealth(20.0);
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-			if (sp==null) return;			
-			if (sp.isInGame()) {
-				if (Main.pvp) {
-				return;
-				} 
-				
-				if (e.getDamager().getType().equals(EntityType.SNOWBALL)) {
-					for (GameMutation mutation : sp.getArena().getInGameMutations()) {
-						if (mutation.getType().equals(MutationType.KOHI_SPLEEF)) {
-							return;
-						}
+			SpleefPlayer sp2 = SpleefPlayer.getSpleefPlayer(damager);
+			
+			if (e.getDamager().getType().equals(EntityType.SNOWBALL)) {
+				FFAArena ffa = GameManager.getManager().getFFAArenaByArena(sp.getArena());
+				for (GameMutation mutation : ffa.getInGameMutations()) {
+					if (mutation.getType().equals(MutationType.KOHI_SPLEEF)) {
+						return;
 					}
 				}
-		}
+			}
+			
+			if (Main.pvp) {
+			if (sp==null || sp2 ==null) return;			
+			if (sp2.isSpectating() || sp.isSpectating()) e.setCancelled(true);
+			
+			if (sp.isInArena() && sp2.isInArena()) {
+				Arena arena = sp.getArena();
+				if (arena.getGameType().equals(GameType.DUEL)) {
+				if (arena.getDuelPlayers1().contains(sp) && arena.getDuelPlayers2().contains(sp2)) return;
+				if (arena.getDuelPlayers2().contains(sp) && arena.getDuelPlayers1().contains(sp2)) return;
+			} else {
+				return;
+			} 
+			}
+				
+			}
+			
+				
+		
 		} 
+		
 		e.setCancelled(true);
 	}
 	
+
+	@EventHandler
+	public void onRespawn(PlayerRespawnEvent e) {
+			e.setRespawnLocation(e.getPlayer().getWorld().getName().equalsIgnoreCase("event") ? new Location(e.getPlayer().getWorld(),0,100,0) : Main.lobby);
+	}
+	
+	
+	@EventHandler
+	public void onDeath(PlayerDeathEvent e) {
+		if (e.getEntity() instanceof Player) {
+			Player p = (Player) e.getEntity();
+			Set<ItemStack> toRemove = new HashSet<ItemStack>();
+			for (ItemStack i : p.getInventory().getContents()) {
+				for (ItemStack item : DataManager.getManager().gameitems()) if (item.isSimilar(i)) toRemove.add(i); 
+				for (ItemStack item : DataManager.getManager().queueitems()) if (item.isSimilar(i)) toRemove.add(i); 
+				for (ItemStack item : DataManager.getManager().lobbyitems()) if (item.isSimilar(i)) toRemove.add(i); 		
+			}
+			e.getDrops().removeAll(toRemove);
+		}
+	}
+	
+	
 	@EventHandler
 	public void onDamage(EntityDamageEvent e) {
-	
+		DamageCause cause = e.getCause();
+		if (cause.equals(DamageCause.FALL) || cause.equals(DamageCause.BLOCK_EXPLOSION) || cause.equals(DamageCause.ENTITY_EXPLOSION)) {
+			e.setCancelled(true);
+		}
+		
 		Entity entity = e.getEntity();
 		if (entity instanceof Player) {
 			Player p = (Player) entity;
+			p.setHealth(20.0);
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			if (sp==null) return;
-			
-			if (Main.pvp) {
-			if (sp.isInGame()) {
-				return;
-			}
-		}
-			
-			if (sp.isInGame()) {
+			if (sp.isInGame() && sp.getArena().getGameType().equals(GameType.FFA)) {
 			if (e.getCause().equals(DamageCause.PROJECTILE)) {
-				for (GameMutation mutation : sp.getArena().getInGameMutations()) {
+				FFAArena ffa = GameManager.getManager().getFFAArenaByArena(sp.getArena());
+				for (GameMutation mutation : ffa.getInGameMutations()) {
 					if (mutation.getType().equals(MutationType.KOHI_SPLEEF)) {
 						return;
 					}
 				}
 			}
 			}
+			
+			
+			if (Main.pvp) {
+				if (sp.isSpectating()) e.setCancelled(true);			
+				if (sp.isInArena()) return;
+				}
 		}		
 		e.setCancelled(true);
 	}
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent e) {
 		Player p = e.getPlayer();
-		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-		if (sp.isInGame() && sp.getArena().getGameType().equals(GameType.DUEL)) {
+		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);	
+		if (sp.isInGame() && sp.getArena().getGameType().equals(GameType.DUEL) 
+				&& (e.getItemDrop().getItemStack().getType().equals(Material.DIAMOND_SPADE)
+				|| e.getItemDrop().getItemStack().getType().equals(Material.IRON_SPADE))
+				) {
 			new BukkitRunnable() {
 				public void run() {
 			p.performCommand("reset");
@@ -241,30 +304,40 @@ public class ServerListener implements Listener {
 	    	DataManager dm = DataManager.getManager();
 	    	if (p.getItemInHand().isSimilar(dm.gameitems()[9])) {
 	    		if (sp.isInGame() && sp.getPlayer().getWorld().getName().equalsIgnoreCase("arenas")) {
-	    			
 	    			Arena arena = sp.getArena();
+	    			if (!p.getItemInHand().isSimilar(DataManager.getManager().gameitems()[9])) return;
 	    			if (arena.getDeadPlayers1().contains(sp) || arena.getDeadPlayers2().contains(sp)) return;
-	    		if (!spleggDelay.contains(sp)) {
-		    		Vector speed = p.getLocation().getDirection().multiply(1.4);
-		    		Vector shift = speed.getCrossProduct(new Vector(0, 1 ,0)).normalize().multiply(0.15);
-		    		Egg egg = p.getWorld().spawn(p.getEyeLocation().add(shift), Egg.class);
-		    		egg.setVelocity(speed);   		
-		    		egg.setShooter(p);
-		    		 sp.getPlayer().playSound(p.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5F, 2.0F);	    
-		    		for (SpleefPlayer spp : sp.getArena().getViewers()) {
-		    			if (spp.isSpectating()) {
-		    		 spp.getPlayer().playSound(p.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5F, 2.0F);	    			
-		    			}
-		    		}
-		    		spleggDelay.add(sp);
-		    		new BukkitRunnable() {
-		    			public void run() {
-		    				spleggDelay.remove(sp);
-		    			}
-		    		}.runTaskLater(Main.get(), 3L);
-		    		}
+	    		
+	    			
+	    			
+	    			if (!GameManager.getManager().getInteract().containsKey(sp)) {
+	    				GameManager.getManager().getInteract().put(sp, System.currentTimeMillis());
+	    			} 
+	    			
+	    			long time = System.currentTimeMillis()- GameManager.getManager().getInteract().get(sp);
+	    			if (time >=190) {
+						Vector speed = p.getLocation().getDirection().multiply(1.4);
+			    		Vector shift = speed.getCrossProduct(new Vector(0, 1 ,0)).normalize().multiply(0.15);
+			    		Egg egg = p.getWorld().spawn(p.getEyeLocation().add(shift), Egg.class);
+			    		egg.setVelocity(speed);   		
+			    		egg.setShooter(p);
+			    		 sp.getPlayer().playSound(p.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5F, 2.0F);	    
+			    		for (SpleefPlayer spp : sp.getArena().getViewers()) {
+			    			if (spp.isSpectating()) {
+			    		 spp.getPlayer().playSound(p.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5F, 2.0F);	    			
+			    			}
+			    		}	
+		    			
+			    		
+	    				GameManager.getManager().getInteract().put(sp, System.currentTimeMillis());
+	    			} 
+	    			
+	    			
+	    		
 	    	}
-	    	}   if (p.getItemInHand().equals(dm.queueitems()[1])) {
+	    		return;
+	    	}
+	    	if (p.getItemInHand().equals(dm.queueitems()[1])) {
 	    			sp.leaveQueue(sp.getArena(),true,true); 		
 	    			sp.getPlayer().getInventory().clear();
 	    			new BukkitRunnable() {
@@ -279,12 +352,23 @@ public class ServerListener implements Listener {
 	    	} else if (p.getItemInHand().equals(dm.lobbyitems()[0])) {
 	    		new GadgetsMenu(sp).o(p);
 	    		//GadgetsMenuAPI.goBackToMainMenu(p);
-	    	} else if (p.getItemInHand().equals(dm.queueitems()[0])) {
-	    		if (sp.getMutationTokens()>0 && sp.getArena().getEvent()==null) {
+	    	}  else if (p.getItemInHand().equals(dm.queueitems()[0])) {
+	    		FFAArena ffa = GameManager.getManager().getFFAArenaByArena(sp.getArena());
+	    		if (!ffa.isInEvent()) {
+	    			if (sp.getMutationTokens()>0) {
 	    		new MutationTokenMenu(sp).o(p);
-	    	} else {
-	    		p.sendMessage("§cYou dont have any §dMutation Token §cat the moment.");
-	    	} 
+	    			} else {
+	    				sp.sendMessage("§cYou don't have more Mutation Tokens");
+	    			}
+	    		} else {
+	    			sp.sendMessage("§cYou can't add Mutations when an FFA Event is started.");
+	    		}
+	    	}  else if (p.getItemInHand().equals(dm.lobbyitems()[0])) {
+	    		new GadgetsMenu(sp).o(p);
+	    		//GadgetsMenuAPI.goBackToMainMenu(p);
+	    	} else if (p.getItemInHand().equals(dm.lobbyitems()[6])) {
+	    		Party party = PartyManager.getManager().getParty(p);
+	    		new PartyMenu(sp, party==null ? null : party.getPartyMode()).o(p);
 	    		} else if (p.getItemInHand().equals(dm.lobbyitems()[2])) {
 	    			new OptionsMenu(sp).o(p);
 	    		} else if (p.getItemInHand().equals(dm.lobbyitems()[5])) {
@@ -295,19 +379,49 @@ public class ServerListener implements Listener {
 	    				sp.sendMessage("§cYou need to be in a Guild to use this. Use §b/guild create <Achronym> <Name>");
 	    			}
 	    		} else if (p.getItemInHand().equals(dm.spectateitems()[0])) {
-	    			SpectateManager sm = SpectateManager.getManager();
-    				sm.showOrHideSpectators(sp,sp.isHidingSpectators());
+	    			
+	    			if (delay.contains(p.getUniqueId())) {
+	    				p.sendMessage("§cPlease wait 5 seconds before using this again.");
+	    			} else {
+	    				
+	    				SpectateManager sm = SpectateManager.getManager();
+	    				sm.showOrHideSpectators(sp,sp.isHidingSpectators());
+	    				delay.add(p.getUniqueId());
+	    				new BukkitRunnable() {
+	    					public void run() {
+	    						delay.remove(p.getUniqueId());
+	    					}
+	    				}.runTaskLaterAsynchronously(Main.get(),5*20L);
+	    			}
+	    		
     			
-    		} else {
+    		} else if (p.getItemInHand().equals(dm.gameitems()[10])) {
+    			
+    			sp.getPlayer().performCommand("pause");			
+		} else if (p.getItemInHand().equals(dm.gameitems()[11])) {
+			
+			sp.getPlayer().performCommand("resume");
+	} else {
     			if (DataManager.getManager().areQueuesClosed() && ! p.hasPermission("splindux.staff")) {
     				p.sendMessage("§cQueues are currently closed.");
     				return;
     			}
-	    			if (p.getItemInHand().equals(dm.lobbyitems()[3])) {
-		    			new RankedMenu(sp).o(p);
-		    		} else if (p.getItemInHand().equals(dm.lobbyitems()[4])) {
+    			
+    			
+    			
+	    			 if (p.getItemInHand().equals(dm.lobbyitems()[4])) {
+	    				 Party party = PartyManager.getManager().getParty(p);
+	    					if (party!=null && !party.isLeader(p)) {
+	    						p.sendMessage("§cOnly the party leader can join a game.");
+	    						return;
+	    					}
 		    			new UnrankedMenu(sp).o(p);
 		    		} else if (p.getItemInHand().equals(dm.lobbyitems()[1])) {
+		    			Party party = PartyManager.getManager().getParty(p);
+						if (party!=null && !party.isLeader(p)) {
+							p.sendMessage("§cOnly the party leader can join a game.");
+							return;
+						}
 		    			new ParkourMenu(sp).o(p);
 		    		} 
 	    			
@@ -329,6 +443,10 @@ public class ServerListener implements Listener {
 		e.setCancelled(true);
 	}
 	
+	@EventHandler
+	public void onSnowMan(EntityBlockFormEvent e) {
+		e.setCancelled(true);
+	}
 	
 	
 	@EventHandler
@@ -395,15 +513,17 @@ public class ServerListener implements Listener {
 	 	      hitblock.setType(Material.AIR);
 	 	      Arena arena = sp.getArena();
 	 	      BrokenBlock kill = new BrokenBlock(sp,hitblock.getLocation(),BreakReason.SNOWBALL);
-	 			arena.getBrokenBlocks().add(kill);   
+	 	 	FFAArena ffa = GameManager.getManager().getFFAArenaByArena(arena);
+	 	 	if (ffa!=null) ffa.getBrokenBlocks().add(kill);   
 	    } else {
-	    	 if (hitblock.getType() == Material.SNOW_BLOCK)
+	    	 if (hitblock.getType() == Material.SNOW_BLOCK || hitblock.getType().equals(Material.CONCRETE_POWDER) || hitblock.getType().equals(Material.CONCRETE))
 	 	    {
 	 	     p.playSound(hitblock.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5F, 2.0F);
 	 	      hitblock.setType(Material.AIR);
 	 	      Arena arena = sp.getArena();
 	 	      BrokenBlock kill = new BrokenBlock(sp,hitblock.getLocation(),BreakReason.SNOWBALL);
-	 			arena.getBrokenBlocks().add(kill);   
+	 	     FFAArena ffa = GameManager.getManager().getFFAArenaByArena(arena);
+		 	 	if (ffa!=null) ffa.getBrokenBlocks().add(kill);   
 	 	    }
 	    }
  
@@ -469,11 +589,9 @@ public class ServerListener implements Listener {
 				    		
 				    		Collection<PotionEffect> potions = p.getActivePotionEffects();
 				    		boolean fly = p.getAllowFlight();
-				    		Bukkit.broadcastMessage(""+fly);
 				    		new BukkitRunnable() {
 				    			public void run() {
 				    				if (fly) {
-				    					Bukkit.broadcastMessage("d");
 				    					p.setAllowFlight(true);
 				    					p.setFlying(true);
 				    				}
@@ -484,10 +602,21 @@ public class ServerListener implements Listener {
 				    			
 				    			}
 				    		}.runTaskLater(Main.get(), 40L);
-				    	}  
+				    	}   
 		    }
 	
 		    }
+	
+	
+	@EventHandler
+	public void onPlayerCommandSend(TabCompleteEvent e)
+	{
+	    Set<String> toRemove = new HashSet<String>();
+	    for (String s : e.getCompletions()) 
+	    	if (s.contains(":")) toRemove.add(s);
+	    if (e.getCompletions()!=null)
+	    e.getCompletions().removeAll(toRemove);
+	}
 	
 	  @EventHandler
 	  public void onSit(PlayerSitEvent e) {
@@ -511,9 +640,33 @@ public class ServerListener implements Listener {
 				p.setAllowFlight(true);
 				p.setFlying(true);			
 		  }
-			
+			/*
+			if (sp.isInGame()) {
+				Arena arena = sp.getArena();
+				if (arena.getGameType().equals(GameType.FFA) && arena.getSpleefType().equals(SpleefType.SPLEEF)) return;
+			}
+			*/
 			p.eject();
 	  }
+	
+	@EventHandler
+    public void onVehicle(EntityDismountEvent  event) {
+       if (event.getEntityType().equals(EntityType.PLAYER)) {
+    	     if (event.getDismounted() instanceof ArmorStand) {
+    		   SpleefPlayer sp = SpleefPlayer.getSpleefPlayer((Player) event.getEntity());
+    		   if (sp.isInArena()) {
+   				Arena arena = sp.getArena();
+   				if (arena.getGameType().equals(GameType.FFA) && arena.getSpleefType().equals(SpleefType.SPLEEF)) {
+   					Bukkit.getScheduler().runTaskLater(Main.get(), () -> {
+   						if (!event.getDismounted().isDead()) {
+   							event.getDismounted().addPassenger(sp.getPlayer());
+   						}
+   					}, 1L);
+   				}
+   			}
+    	   }
+       }
+    }
 	
 	  
 	  @EventHandler
@@ -530,43 +683,43 @@ public class ServerListener implements Listener {
 	   
 	  @EventHandler
 	  public void onWorldChange(PlayerChangedWorldEvent e) {
-		  Player p = e.getPlayer();
-		  SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
-		  if (p.getWorld().getName().equalsIgnoreCase("world")) {
-			  sp.setScoreboard(ScoreboardType.LOBBY);
-				DataManager.getManager().getLobbyPlayers().add(p.getUniqueId());
-				DataManager.getManager().getPlayingPlayers().remove(p.getUniqueId());
-			  
-			  new BukkitRunnable() {
-				  public void run () {
-					  if (!p.hasPermission("splindux.fly")) {
-						  p.setFlying(false);
-						  p.setAllowFlight(false);
-					  }
+		  
+		  new BukkitRunnable() {
+			  public void run() {
+				  Player p = e.getPlayer();
+				  SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+				  if (p.getWorld().getName().equalsIgnoreCase("world")) {
+					  sp.setScoreboard(ScoreboardType.LOBBY);
+						DataManager.getManager().getLobbyPlayers().add(p.getUniqueId());
+						DataManager.getManager().getPlayingPlayers().remove(p.getUniqueId());
+					  
+					  new BukkitRunnable() {
+						  public void run () {
+							  if (!p.hasPermission("splindux.fly")) {
+								  p.setFlying(false);
+								  p.setAllowFlight(false);
+							  }
+						  }
+					  }.runTaskLater(Main.get(), 3L);
 				  }
-			  }.runTaskLater(Main.get(), 3L);
-		  }
-		  sp.updateScoreboard();		
-		  if (p.isOnline()) {
-			  HologramManager.getManager().sendHolograms(SpleefPlayer.getSpleefPlayer(e.getPlayer()),false);
-		
-			  
-				if (p.hasPermission("splindux.pet") && p.getWorld().getName().equalsIgnoreCase("world")) {
-					PetService petMetaService = PetBlocksApi.INSTANCE.resolve(PetService.class);
-					petMetaService.getOrSpawnPetFromPlayer(p);
-					}
-		  }
+				  
+				  sp.updateScoreboard();		
+				  if (p.isOnline()) {
+					  HologramManager.getManager().showHolograms(p.getUniqueId());
+					  
+						if (p.hasPermission("splindux.pet") && p.getWorld().getName().equalsIgnoreCase("world")) {
+							PetService petMetaService = PetBlocksApi.INSTANCE.resolve(PetService.class);
+							
+							Bukkit.getScheduler().runTask(Main.get(), () -> {
+								petMetaService.getOrSpawnPetFromPlayer(p);
+							});
+							
+							}
+				  }
+			  }
+		  }.runTaskAsynchronously(Main.get());	 
 	  }
-	  
-	   @Subscribe
-	  public void onDiscordLinkAccount(AccountLinkedEvent e) {
-		   Bukkit.broadcastMessage("a");
-		  SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(e.getPlayer());
-		  if (!sp.getVoteClaims().hasClaimed(sp,Rewarded.DISCORD)) {
-			  sp.getVoteClaims().claim(Rewarded.DISCORD, true);
-			  VoteManager.getManager().suscribe(sp, Rewarded.DISCORD);
-		  }
-	  }
+
 	  
 
 	   
@@ -580,8 +733,7 @@ public class ServerListener implements Listener {
 	       }
 	   
 	   
-	   
-	   
+
 	
 }
 

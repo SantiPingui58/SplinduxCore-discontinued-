@@ -41,7 +41,7 @@ public enum RelationshipRequestType {
 		case GUILD_DUEL:
 			return "guilddueldeny";
 		case BUY_PLAYER:
-			return "buyplayeraccept";
+			return "buyplayerdeny";
 		}
 		return null;
 	}
@@ -87,7 +87,7 @@ public enum RelationshipRequestType {
 		case JOIN_GUILD_AS_MEMBER:
 			 return GuildsManager.getManager().getPrefix()+"§aYou have sent a request to §b" + args[1] + "§ato join as a member!";
 		case RENEGOCIATE_GUILD:
-			 return GuildsManager.getManager().getPrefix()+"§aYou have sent a request to §b" + args[1] + "§ato renegociate!";
+			 return GuildsManager.getManager().getPrefix()+"§aYou have sent a request to §b" + args[0] + "§ato renegociate!";
 		case GUILD_DUEL:
 			return GuildsManager.getManager().getPrefix()+"§aYou have sent a Guild Duel request to §6§l" + args[0]+ "§a at " + args[2]+"§a!";
 		case BUY_PLAYER:
@@ -105,7 +105,7 @@ public enum RelationshipRequestType {
 		case JOIN_GUILD_AS_MEMBER:
 			return GuildsManager.getManager().getPrefix()+"§aThe player§b " +args[2] + "§a has sent you a request to join §6§l"+args[0]+  " Guild §aas a Member §7(Request will expire in 1 hour)";
 		case RENEGOCIATE_GUILD:
-			return GuildsManager.getManager().getPrefix()+"§aThe Leader §b " +args[2] + "§a has sent you a request to renegociate your salary. New salary:  §6§l"+args[0]+  " Coins per day§7(Request will expire in 1 hour)";
+			return GuildsManager.getManager().getPrefix()+"§aThe Leader §b " +args[2] + "§a has sent you a request to renegociate your salary. New salary:  §6§l"+args[1]+  " Coins per day§7(Request will expire in 1 hour)";
 		case GUILD_DUEL:
 			return GuildsManager.getManager().getPrefix()+"§6§l" + args[1] + " §ahas sent you a Guild Duel request at "+ args[2]+"§a! §7(This request expires in 1 minute.)";
 		case BUY_PLAYER:  return GuildsManager.getManager().getPrefix()+"§aThe player§b " +args[1] + "§a has sent you a request to join §6§l"+args[0]+  " Guild §aas a Player with a new salary of §6" +args[3] + " Coins§a! §7(Request will expire in 1 hour)";

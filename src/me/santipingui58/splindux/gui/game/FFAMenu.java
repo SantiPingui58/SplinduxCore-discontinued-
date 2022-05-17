@@ -59,11 +59,11 @@ public class FFAMenu extends MenuBuilder {
 		String s2 =	StatsManager.getManager().getAmountByType(ranking_spleef);
 		
 		
-		int playing_spleef = GameManager.getManager().getPlayingSize(SpleefType.SPLEEF, GameType.FFA, 1, -1);
+		int playing_spleef = GameManager.getManager().getPlayingSize(SpleefType.SPLEEF, GameType.FFA, 1);
 		
-		int playing_splegg = GameManager.getManager().getPlayingSize(SpleefType.SPLEGG, GameType.FFA, 1, -1);
+		int playing_splegg = GameManager.getManager().getPlayingSize(SpleefType.SPLEGG, GameType.FFA, 1);
 		
-		int playing_tntrun = GameManager.getManager().getPlayingSize(SpleefType.TNTRUN, GameType.FFA, 1, -1);
+		int playing_tntrun = GameManager.getManager().getPlayingSize(SpleefType.TNTRUN, GameType.FFA, 1);
 		
 		
 		s(11, new ItemBuilder(Material.TNT)

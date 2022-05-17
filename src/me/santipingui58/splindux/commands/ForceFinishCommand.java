@@ -4,7 +4,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import me.santipingui58.splindux.game.GameEndReason;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.spleef.GameType;
@@ -38,7 +37,9 @@ public class ForceFinishCommand implements CommandExecutor{
 						}
 						
 						if (arena.getGameType().equals(GameType.DUEL)) {
-							GameManager.getManager().endGameDuel(arena, null, GameEndReason.ENDGAME);
+							final Arena aa = arena;
+							GameManager.getManager().endGameDuel(aa, null, GameEndReason.ENDGAME);
+
 							for (SpleefPlayer viewers : arena.getViewers()) viewers.getPlayer().sendMessage("§cA Staff has finished the game.");
 						} else { 
 							p.sendMessage("§cYou can only execute this command in Duels");	

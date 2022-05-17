@@ -2,6 +2,8 @@ package me.santipingui58.splindux.relationships.guilds;
 
 import java.util.UUID;
 
+import me.santipingui58.splindux.stats.ranking.RankingManager;
+
 public class GuildPlayer {
 
 	private UUID uuid;
@@ -9,6 +11,7 @@ public class GuildPlayer {
 	private Guild guild;
 	private boolean admin;
 	private boolean mod;
+	private int value;
 	
 	public GuildPlayer(UUID uuid, int salary) {
 		this.uuid = uuid;
@@ -29,8 +32,7 @@ public class GuildPlayer {
 	}
 	
 	public int getSalary() {
-		int div = guild.isTransferable(this) ? 2 : 1;
-		return this.salary/div;
+		return this.salary;
 	}
 	
 	public void setSalary(int i) {		
@@ -38,7 +40,18 @@ public class GuildPlayer {
 	}
 	
 	public int getValue() {		
-		return this.salary*50;
+				
+		if (this.value !=0) return this.value;
+		
+		int ranking = RankingManager.getManager().getRanking().getPosition(this.uuid);
+		double playerValue = 0;
+		if (ranking!=-1) {
+			 playerValue = (1500/Math.sqrt(ranking));
+		} 
+		
+		double guildValue = Math.sqrt(this.guild.getValueWithoutPlayers());
+		this.value = (int) ((playerValue+guildValue)*50);
+		return this.value;
 	}
 
 	public void setGuild(Guild guild) {
@@ -46,5 +59,9 @@ public class GuildPlayer {
 		
 	}
 	
+	
+	public int getMinSalary() {
+		return (int) (getValue()/50*0.7);
+	}
 	
 }

@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.fawe.FAWESplinduxAPI;
 import me.santipingui58.splindux.DataManager;
-import me.santipingui58.splindux.game.spleef.Arena;
+import me.santipingui58.splindux.game.ffa.FFAArena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.translate.Main;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -31,7 +31,7 @@ public class GameMutation {
 	private UUID uuid;
 	private MutationType type;
 	private SpleefPlayer owner;
-	private Arena arena;
+	private FFAArena arena;
 	private MutationState state;
 	private List<SpleefPlayer> voted = new ArrayList<SpleefPlayer>();
 	private int votes;
@@ -69,7 +69,7 @@ public class GameMutation {
 		this.state = state;
 	
 	}
-	public Arena getArena() {
+	public FFAArena getArena() {
 		return this.arena;
 	}
 	
@@ -77,7 +77,7 @@ public class GameMutation {
 		return this.owner;
 	}
 	
-	public void setArena(Arena arena) {
+	public void setArena(FFAArena arena) {
 		this.arena = arena;
 		this.arena.getAllMutations().add(this);
 	}
@@ -92,37 +92,46 @@ public class GameMutation {
 	
 	
 	public void clearTNT() {
-		for (Location l : this.tnt) {
+		new BukkitRunnable() {
+			public void run() {
+		for (Location l : tnt) {
 			if (l.getBlock().getType().equals(Material.TNT)) {
 				l.getBlock().setType(Material.AIR);
 			}
 		}
+			}
+		}.runTask(Main.get());
 	}
+	
 	public void jumpSpleef() {
-		arena.crumbleArena(90);
+		new BukkitRunnable() {
+			public void run() {
+		arena.getArena().crumbleArena(90);
+			}
+		}.runTaskLaterAsynchronously(Main.get(), 10L);
 	}
 	
 	public void crumbleSpleef() {
-		this.arena.crumbleArena(70);
+	new BukkitRunnable() {
+		public void run() {
+			arena.getArena().crumbleArena(70);
+		}
+	}.runTaskLaterAsynchronously(Main.get(), 10L);
 	}
 	
 	public void miniSpleef() {
-		Location arena1 = this.arena.getArena1();
-		Location arena2 = this.arena.getArena2();
-		Location a = new Location(arena1.getWorld(), arena1.getX(), arena1.getY(), arena1.getZ());
-		Location b = new Location(arena2.getWorld(), arena2.getX(), arena2.getY(), arena2.getZ());
-		FAWESplinduxAPI.getAPI().placeBlocks(a, b, Material.AIR);
-		a = a.add(15,0,15);
-		b = b.add(-15,0,-15);
-		FAWESplinduxAPI.getAPI().placeBlocks(a, b, Material.SNOW_BLOCK);
+		
+	
 		new BukkitRunnable() {
-			public void run () {
-		for (SpleefPlayer sp : arena.getFFAPlayers()) {
-			sp.getPlayer().teleport(arena.getMainSpawn());
-			sp.getPlayer().getInventory().clear();
-		}
+			public void run() {
+				Location  a = new Location(arena.getArena().getArena1().getWorld(),arena.getArena().getArena1().getX()+arena.getArena().getRadious(),arena.getArena().getArena1().getY(),arena.getArena().getArena1().getZ()+arena.getArena().getRadious());
+				Location  b = new Location(arena.getArena().getArena1().getWorld(),arena.getArena().getArena1().getX()-arena.getArena().getRadious(),arena.getArena().getArena1().getY(),arena.getArena().getArena1().getZ()-arena.getArena().getRadious());
+		FAWESplinduxAPI.getAPI().placeBlocks(a, b, Material.AIR);
+		  a = new Location(arena.getArena().getArena1().getWorld(),arena.getArena().getArena1().getX()+(arena.getArena().getRadious()*0.25),arena.getArena().getArena1().getY(),arena.getArena().getArena1().getZ()+(arena.getArena().getRadious()*0.25));
+		  b = new Location(arena.getArena().getArena1().getWorld(),arena.getArena().getArena1().getX()-(arena.getArena().getRadious()*0.25),arena.getArena().getArena1().getY(),arena.getArena().getArena1().getZ()-(arena.getArena().getRadious()*0.25));
+		FAWESplinduxAPI.getAPI().placeBlocks(a, b, Material.SNOW_BLOCK);
 			}
-		}.runTaskLater(Main.get(), 2L);
+		}.runTask(Main.get());
 	}
 	
 	
@@ -137,7 +146,7 @@ public class GameMutation {
                 	i++;
                 	if (i>=40) {
                 		i = 0;
-                	for (SpleefPlayer sp : getArena().getFFAPlayers()) sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION,60,getType().getLevel()));
+                	for (SpleefPlayer sp : getArena().getPlayers()) sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION,60,getType().getLevel()));
                 	}
                 }
 
@@ -181,7 +190,7 @@ public class GameMutation {
 	
 	
 	
-	public void sendMutationRequest(Arena arena) {
+	public void sendMutationRequest(FFAArena arena) {
 		List<GameMutation> list = new ArrayList<GameMutation>();
 		list.addAll(arena.getVotingMutations());
 		list.addAll(arena.getQueuedMutations());
@@ -343,6 +352,10 @@ public class GameMutation {
 	 		ItemStack snowballs = new ItemStack(Material.SNOW_BALL);
 	 		snowballs.setAmount(288);
 	 		p.getInventory().addItem(snowballs);
+	 	} else if (this.type.equals(MutationType.MINI_SPLEEF)) {
+	 		for (ItemStack i :  DataManager.getManager().gameitems()) {
+	 		p.getInventory().removeItem(i);
+	 	}
 	 	}
 		
 	}

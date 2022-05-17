@@ -10,9 +10,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
@@ -42,7 +39,7 @@ public class StaffCommand implements CommandExecutor {
 					SpleefType type = SpleefType.valueOf(args[1].toUpperCase());
 					boolean tie = false;
 					try {
-					tie = Boolean.getBoolean(args[3]);
+					tie = Boolean.parseBoolean(args[3]);
 					} catch (Exception ex) {
 						sender.sendMessage("§cThe value of tie can only be true or false.");
 						return false;
@@ -114,13 +111,7 @@ public class StaffCommand implements CommandExecutor {
 				  sp2.remove(challenger);
 				  boolean t = tie;
 				  int ti = time;
-				  new BukkitRunnable() {
- 
-					  public void run() {
-						  GameManager.getManager().duelGame(challenger, sp2,null,type,size,false,null,t,false,ti);
-					  }
-				  }.runTaskAsynchronously(Main.get());
-				 	
+						  GameManager.getManager().duelGame(challenger, sp2,null,type,size,t,false,ti);
 				}
 			} 
 			

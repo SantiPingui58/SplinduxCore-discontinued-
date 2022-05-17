@@ -20,11 +20,16 @@ public class ActionBarTask {
 					if (arena.getPlayTo()==7) continue;
 					if (arena.getViewers()==null) continue;
 					for (SpleefPlayer sp : arena.getViewers()) {
-						if (sp.getOfflinePlayer().isOnline())
+						if (sp.getOfflinePlayer().isOnline()) {
+							new BukkitRunnable() {
+								public void run() {
 						ActionBarAPI.sendActionBar(sp.getPlayer(), "§6§lPlaying to: §a§l"+arena.getPlayTo());
+							}
+							}.runTask(Main.get());
+						}
 					}
 				}
 			}
-		}.runTaskTimer(Main.get(), 0L, 40L);
+		}.runTaskTimerAsynchronously(Main.get(), 0L, 40L);
 	}
 }

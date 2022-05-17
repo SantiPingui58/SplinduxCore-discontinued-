@@ -7,7 +7,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.translate.TranslateAPI;
 
@@ -21,7 +23,8 @@ public class MsgCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, final String[] args) {
 	if(!(sender instanceof Player)) {
 	} else {
-
+		new BukkitRunnable() {
+			public void run() {
 	if(cmd.getName().equalsIgnoreCase("msg")) {
 		final Player p = (Player) sender;
 		if (args.length == 0 || args.length == 1) {
@@ -41,14 +44,20 @@ public class MsgCommand implements CommandExecutor {
 			  SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 			  SpleefPlayer sreceptor = SpleefPlayer.getSpleefPlayer(receptor);
 			  p.sendMessage("§6[me -> " + sreceptor.getName() + "] §f" + message);
+			  
 			  if (!sreceptor.getOptions().getLanguage().equals(sp.getOptions().getLanguage()) && sreceptor.getOptions().hasTranslate()) {
 				  try {
-					message = TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), sreceptor.getOptions().getLanguage(), message);
+					TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), sreceptor.getOptions().getLanguage(), message).thenAccept(text -> {
+						  receptor.sendMessage("§6[" + sp.getName() + " -> me] §f" + text);
+					  });
 				} catch (IOException e) {
+					e.printStackTrace();
 				}
+			  } else {
+				  receptor.sendMessage("§6[" + sp.getName() + " -> me] §f" + message);
 			  }
 			  
-				receptor.sendMessage("§6[" + sp.getName() + " -> me] §f" + message);
+				
 				
 				respond.put(receptor, p);
 				respond.put(p, receptor);
@@ -77,13 +86,18 @@ public class MsgCommand implements CommandExecutor {
 			  p.sendMessage("§6[me -> " + sreceptor.getName() + "] §f" + message);	
 			  
 			  if (!sreceptor.getOptions().getLanguage().equals(sp.getOptions().getLanguage())&& sreceptor.getOptions().hasTranslate()) {
-				  try {
-					message = TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), sreceptor.getOptions().getLanguage(), message);
-				} catch (IOException e) {
-				}
+					try {
+						TranslateAPI.getAPI().translate(sp.getOptions().getLanguage(), sreceptor.getOptions().getLanguage(), message).thenAccept(text -> {
+							respond.get(p).sendMessage("§6[" + sp.getName() + " -> me] §f" + text);
+						});
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			  } else {
+				  respond.get(p).sendMessage("§6[" + sp.getName() + " -> me] §f" + message);
 			  }
 				  
-				respond.get(p).sendMessage("§6[" + sp.getName() + " -> me] §f" + message);
+				
 					
 			} else {
 					p.sendMessage("§cYou don't have anyone to reply.");		
@@ -95,6 +109,8 @@ public class MsgCommand implements CommandExecutor {
 			p.sendMessage("§aUse of command: /r <message>");	
 	}
 		}
+	}
+	}.runTaskAsynchronously(Main.get());
 	}
 	return false;
 	}

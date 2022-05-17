@@ -34,13 +34,15 @@ public class LowMoveTask {
 					SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 					if (sp==null) continue;
 				spectatorDistance(sp);
+				
 				setLocation(sp);
 				
 				if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("world")) {
 					lobbyDistance(sp);
 					
 				} else if (sp.getPlayer().getWorld().getName().equalsIgnoreCase("arenas")) {
-					if (sp.isInGame()) {
+					boolean f = false;
+					if (sp.isInGame() && f) {
 						deleteFloorTimer(sp);	
 				}
 				}
@@ -72,6 +74,7 @@ public class LowMoveTask {
 	}
 	
 	
+
 	public void deleteFloorTimer(SpleefPlayer sp) {
 		if (!sp.getPlayer().isOnGround()) return;
 		if (sp.isInGame() && sp.getArena().getState().equals(GameState.GAME) && sp.getArena().getSpleefType().equals(SpleefType.TNTRUN)) {
@@ -84,8 +87,7 @@ public class LowMoveTask {
 		            	 Block standingBlock = list.get(0);
 		            	 if (standingBlock==null) return;
 					      final Block blockBelow_1 = standingBlock.getLocation().subtract(0.0D, 1.0D, 0.0D).getBlock();
-					      final Block blockBelow_2 = standingBlock.getLocation().subtract(0.0D, 2.0D, 0.0D).getBlock();
-					      
+					      final Block blockBelow_2 = standingBlock.getLocation().subtract(0.0D, 2.0D, 0.0D).getBlock();					      
 					      Material m1 = blockBelow_1.getType();
 					      Material m2 = blockBelow_2.getType();
 					      Material m3 = standingBlock.getType();
@@ -196,7 +198,7 @@ public class LowMoveTask {
 		
 		Location spawn = Utils.getUtils().getLoc(Main.arenas.getConfig().getString("mainlobby"), true);
 		//Check if the player is in a 200 blocks radio or in positive Y value, otherwise teleport them to the spawn.
-		if (sp.getPlayer().getLocation().getY() < 0  || sp.getPlayer().getLocation().distanceSquared(spawn)>200*200) {		
+		if (sp.getPlayer().getLocation().getY() < -10  || sp.getPlayer().getLocation().distanceSquared(spawn)>750*750) {		
 			sp.teleport(spawn);
 		}
 		

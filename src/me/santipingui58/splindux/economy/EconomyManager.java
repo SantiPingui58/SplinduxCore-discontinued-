@@ -9,7 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
-import me.santipingui58.splindux.utils.WeightedRandomList;
+import me.santipingui58.splindux.sws.SWSManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class EconomyManager /*extends GEconomyProvider*/ {
@@ -35,9 +35,10 @@ public class EconomyManager /*extends GEconomyProvider*/ {
 	
 	  
 	  public void checkSplinboxes() {
+		  
 		  for (SpleefPlayer sp : DataManager.getManager().getPlayers()) {
 			  if (!sp.getOfflinePlayer().isOnline()) continue;
-			  if (sp.getSplinboxPoints()>=500) {
+			  if (sp.getSplinboxPoints()>=400) {
 				  sp.resetSplinboxPoints();
 
 				   int r = new Random().nextInt((100 - 1) + 1) + 1;
@@ -45,31 +46,26 @@ public class EconomyManager /*extends GEconomyProvider*/ {
 				   
 				  
 				  if (sp.getPlayer().hasPermission("splindux.extreme")) {
+					  if (r<40) {
+						  luck =true;
+					  }
+				  } else if (sp.getPlayer().hasPermission("splindux.epic")) {
 					  if (r<35) {
 						  luck =true;
 					  }
-				  } else if (sp.getPlayer().hasPermission("splinudux.epic")) {
+				  }else if (sp.getPlayer().hasPermission("splindux.vip")) {
 					  if (r<30) {
 						  luck =true;
 					  }
-				  }else if (sp.getPlayer().hasPermission("splinudux.vip")) {
-					  if (r<25) {
-						  luck =true;
-					  }
 				  }else {
-					  if (r<20) {
+					  if (r<25) {
 						  luck =true;
 					  } 
 				  }
 				  
+				  SWSManager.getManager().addPoints(sp,50, true,true);
 				  if(luck) {
-					  
-				  WeightedRandomList<String> itemDrops = new WeightedRandomList<>();
-				  itemDrops.addEntry("1",  25.0);
-				  itemDrops.addEntry("2",   25.0);
-				  itemDrops.addEntry("3", 20.0);
-				  itemDrops.addEntry("4",   15.0);
-				  itemDrops.addEntry("5",  15.0);			  
+					  		  
 				  new BukkitRunnable() {
 					  public void run() {
 						  Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ultracosmetics give key 1 " + sp.getOfflinePlayer().getName());
@@ -80,14 +76,9 @@ public class EconomyManager /*extends GEconomyProvider*/ {
 				  }
 			  }
 			  
-			  if (sp.getSplinboxPoints()%10000==0) {
-				  
-				  new BukkitRunnable() {
-					  public void run() {
-						  EconomyManager.getManager().addCoins(sp, 25, true,false);
-					  }
-					  
-				  }.runTaskLater(Main.get(), 60L*20);
+			  if (sp.getCoinsPoints()>=150) {
+				  sp.resetCoinsPoints();
+				  EconomyManager.getManager().addCoins(sp, 25, true,false);
 			  }
 			  
 			  
@@ -118,9 +109,9 @@ public class EconomyManager /*extends GEconomyProvider*/ {
 			
 			if (Bukkit.getOnlinePlayers().contains(sp.getOfflinePlayer())) {
 				if (found) {
-					sp.getPlayer().sendMessage("§eYou have found §6§l" + i + "&ecoins!");				
+					sp.sendMessage("§eYou have found §6§l" + i + "&ecoins!");				
 			} else {
-				sp.getPlayer().sendMessage("§aYou have won §6"+i+" coins");
+				sp.sendMessage("§aYou have won §6"+i+" coins");
 			}
 			}
 	  } 

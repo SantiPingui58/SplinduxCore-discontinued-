@@ -15,15 +15,21 @@ public class PlayerOptions {
 	private boolean onJoinMessage;
 	private ChatColor defaultColorChat;
 	private String rankedArena;
+	private boolean chat = true;
+	private int duelPermission;
+	private int duelNotification;
+	private int msgPermission;
 	
 	public PlayerOptions() {
 		this.translate = true;
 		this.onJoinMessage = true;
 		this.defaultColorChat = ChatColor.AQUA;
 		this.ads = true;
+		this.chat = true;
 	}
 	
-	public PlayerOptions(boolean night_vision, boolean translate, Language language, boolean ads, boolean onJoinMessage, ChatColor defaultColorChat,String rankedArena) {
+	public PlayerOptions(boolean night_vision, boolean translate, Language language, boolean ads, boolean onJoinMessage, ChatColor defaultColorChat,String rankedArena,int duelPermission,
+			int duelNotification, int msgPermission) {
 		this.night_vision = night_vision;
 		this.translate = translate;
 		this.language = language;
@@ -31,6 +37,42 @@ public class PlayerOptions {
 		this.onJoinMessage = onJoinMessage;
 		this.defaultColorChat = defaultColorChat;
 		this.rankedArena = rankedArena;
+		this.duelNotification = duelNotification;
+		this.msgPermission = msgPermission;
+		this.duelPermission = duelPermission;
+	}
+	
+	public int getDuelPermission() {
+		return this.duelPermission;
+	}
+	
+	public int getMsgPermission() {
+		return this.msgPermission;
+	}
+	
+	public int getDuelNotification() {
+		return this.duelNotification;
+	}
+	
+	public void setDuelPermission(int i) {
+	duelPermission = i;
+	}
+	
+	public void setMsgPermission(int i) {
+		this.msgPermission = i;
+	}
+	
+	public void setDuelNotification(int i) {
+		this.duelNotification = i;
+	}
+	
+
+	public boolean hasChat() {
+		return this.chat;
+	}
+	
+	public void chat(boolean b) {
+		this.chat = b;
 	}
 	
 	public String getRankedArena() {

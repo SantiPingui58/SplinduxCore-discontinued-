@@ -223,6 +223,7 @@ public class DuelMenu extends MenuBuilder {
 			new DuelMenu(sp,cache.get(sp),type).o(sp.getPlayer());
 			return;
 		}
+		if (stack.getItemMeta().getLore()==null) return;
 		
 		if (stack.getItemMeta().getLore().get(0).equalsIgnoreCase("§cNo available arenas for this map")) {
 			return;

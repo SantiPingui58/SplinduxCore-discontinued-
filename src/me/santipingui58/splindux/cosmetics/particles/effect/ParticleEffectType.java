@@ -71,21 +71,21 @@ public enum ParticleEffectType {
 	public int getPrize() {
 		switch(this) {
 		default: return 0;
-		case BATMAN: return 17500;
-		case BLOCKBREAK: return 17500;
-		case CELEBRATION : return 15000;
-		case FEET: return 10000;
-		case HALO: return 15000;
-		case INVOCATION: return 25000;
-		case MOVE: return 10000;
-		case DEFAULT: return 9000;
-		case POINT: return 9000;
-		case POPPER: return 9000;
-		case PULSE: return 9000;
-		case TELEPORT: return 17500;
-		case TRAIL: return 12000;
-		case VORTEX: return 10000;
-		case WINGS: return 25000;
+		case BATMAN: return 7500;
+		case BLOCKBREAK: return 7500;
+		case CELEBRATION : return 8000;
+		case FEET: return 5000;
+		case HALO: return 7500;
+		case INVOCATION: return 12500;
+		case MOVE: return 5000;
+		case DEFAULT: return 4500;
+		case POINT: return 4500;
+		case POPPER: return 4500;
+		case PULSE: return 4500;
+		case TELEPORT: return 10000;
+		case TRAIL: return 6000;
+		case VORTEX: return 5000;
+		case WINGS: return 12500;
 		}
 	}
 	

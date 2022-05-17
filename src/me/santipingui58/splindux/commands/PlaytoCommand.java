@@ -28,7 +28,6 @@ public class PlaytoCommand implements CommandExecutor {
 			if (sp.isInGame()) {
 				Arena arena = sp.getArena();
 				if (arena.getGameType().equals(GameType.DUEL)) {
-					if (!arena.isRanked()) {
 					if (arena.getPlayToRequest()==null) {
 					if (args.length==0) {
 						p.sendMessage("§aUse of command: /playto <number>");
@@ -55,9 +54,7 @@ public class PlaytoCommand implements CommandExecutor {
 					} else {
 						p.sendMessage("§cThere is a playto request at the moment, cancel it or deny it to make a new one.");	
 					}
-				}else {				
-					p.sendMessage("§cYou can not execute this command in a Ranked Duel.");	
-				} 	
+					
 			}	else {
 				p.sendMessage("§cYou need to be in a duel game to execute this command.");	
 				}

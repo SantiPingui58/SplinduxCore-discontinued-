@@ -1,18 +1,21 @@
 name: SplinduxCore
 main: me.santipingui58.splindux.Main
-version: 2.8.5
-softdepend: [ DiscordSRV,Votifier,SplinduxHikariAPI]
+version: 2.9.5
+softdepend: [ DiscordSRV,Votifier,Vault]
+depend: [SplinduxHikariAPI]
+loadbefore: [Citizens,UltraCosmetics]
 commands:
   setup:
     description: setup
+    permission: splindux.admin
   fly:  
     description: fly
+    permission: splindux.vip 
   ping:
     description: ping
-  leaderboard:
-    description: leaderboard
   rank:
     description: rank
+    permission: splindux.admin 
   msg:
     description: msg
     aliases: [tell,message,whisper,w]
@@ -23,10 +26,7 @@ commands:
     description: afk
   admin:
     description: admin
-  holo:
-    description: holo
-  parkour:
-    description: parkour
+    permission: splindux.admin 
   reset:
     description: reset
   duel:
@@ -45,18 +45,20 @@ commands:
     description: endgame
   splinduxregister:
     description: register
+    permission: splindux.admin 
   splinduxlogin:
     description: splinduxlogin
+    permission: splindux.admin 
   stats:
     description: stats
   matches:
     description: matches
   hologram:
     description: hologram
+    permission: splindux.admin 
   level:
     description: level
-  reino:
-    description: reino
+    permission: splindux.admin 
   playto:
     description: playto
   crumble:
@@ -71,28 +73,36 @@ commands:
   staffchat:
     description: staffchat
     aliases: [sc]
+    permission: splindux.staff 
   mutationtoken:
     description: mutationtoken
+    permission: splindux.admin 
   forcereset:
-    description: forcereset  
+    description: forcereset
+    permission: splindux.staff
   coins:
-    description: coins  
+    description: coins 
+    permission: splindux.admin
   head:
     description: head  
   ad:
     description: ad  
   staff:
     description: staff  
+    permission: splindux.staff
   tournament:
     description: tournament  
+    permission: splindux.staff
   tip:
     description: tip  
   ranking:
     description: ranking  
   forcefinish:
     description: forcefinish
+    permission: splindux.staff
   parkoursetup:
     description: parkoursetup   
+    permission: splindux.moderator
   bet:
     description: bet   
   nightvision:
@@ -104,6 +114,47 @@ commands:
     aliases: [gchat,gc]
   friends:
     description: nightvision
-    aliases: [fr,friend,f]
-  forceshrink:
+    aliases: [fr,friend,f,amigo,amigos]
+  forcedecay:
     description: f
+    permission: splindux.staff
+  forcegametime:
+    description: f
+    permission: splindux.staff
+  party:
+    description: f
+    aliases: [p]
+  partychat:
+    description: f
+    aliases: [pchat,pc]
+  title:
+    description: f
+  pause:
+    description: f
+  resume:
+    description: f
+  helmets:
+    description: f
+    aliases: [h,helmet]
+  chat:
+    description: f
+  forceplayto:
+    description: f
+    permission: splindux.staff
+  forceresume:
+    description: f
+    permission: splindux.staff
+  forcepause:
+    description: f
+    permission: splindux.staff
+  forcescore:
+    description: f
+    permission: splindux.staff
+  redo:
+    description: f
+  forceredo:
+    description: f
+    permission: splindux.staff
+  stream:
+    description: f
+    permission: splindux.stream

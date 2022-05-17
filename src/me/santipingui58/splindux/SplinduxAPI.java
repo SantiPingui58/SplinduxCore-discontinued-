@@ -2,6 +2,7 @@ package me.santipingui58.splindux;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -22,6 +23,10 @@ public class SplinduxAPI {
 	    }
 	
 	public SpleefPlayer getPlayer(Player p) {
+		return SpleefPlayer.getSpleefPlayer(p);
+	}
+	
+	public SpleefPlayer getPlayer(UUID p) {
 		return SpleefPlayer.getSpleefPlayer(p);
 	}
 	
@@ -66,9 +71,9 @@ public class SplinduxAPI {
 		String string = "";
 		for (Arena arena : arenas) {
 		String p1 = arena.getTeamName(1);
-		p1 = p1.replace("_", "\\\\_");
+		p1 = p1.replace("_", "\\_");
 		String p2 = arena.getTeamName(2);
-		p2 = p2.replace("_", "\\\\_");
+		p2 = p2.replace("_", "\\_");
 		int puntos1 = arena.getPoints1();
 		int puntos2 = arena.getPoints2();
 		int tiempo = arena.getTotalTime();

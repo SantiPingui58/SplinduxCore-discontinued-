@@ -34,9 +34,9 @@ public class VersusMenu extends MenuBuilder {
 		public void run() {
 			
 		
-		RankingEnum ranking_spleef =  RankingEnum.getRankingEnum(SpleefType.SPLEEF, GameType.DUEL, SpleefRankingPeriod.ALL_TIME, SpleefRankingType.WINS);
-		RankingEnum ranking_splegg =RankingEnum.getRankingEnum(SpleefType.SPLEGG, GameType.DUEL, SpleefRankingPeriod.ALL_TIME, SpleefRankingType.WINS);
-		RankingEnum ranking_tntrun = RankingEnum.getRankingEnum(SpleefType.TNTRUN, GameType.DUEL, SpleefRankingPeriod.ALL_TIME, SpleefRankingType.WINS);
+		RankingEnum ranking_spleef =  RankingEnum.getRankingEnum(SpleefType.SPLEEF, GameType.DUEL, SpleefRankingPeriod.ALL_TIME, SpleefRankingType.ELO);
+		RankingEnum ranking_splegg =RankingEnum.getRankingEnum(SpleefType.SPLEGG, GameType.DUEL, SpleefRankingPeriod.ALL_TIME, SpleefRankingType.ELO);
+		RankingEnum ranking_tntrun = RankingEnum.getRankingEnum(SpleefType.TNTRUN, GameType.DUEL, SpleefRankingPeriod.ALL_TIME, SpleefRankingType.ELO);
 		
 		HashMap<UUID,Integer> top10Spleef = StatsManager.getManager().getRanking(ranking_spleef);
 		HashMap<UUID,Integer> top10Splegg = StatsManager.getManager().getRanking(ranking_splegg);
@@ -51,9 +51,9 @@ public class VersusMenu extends MenuBuilder {
 		String s2 =	"Wins";
 		
 		
-		int playing_spleef = GameManager.getManager().getPlayingSize(SpleefType.SPLEEF, GameType.DUEL, 1, 0);
-		int playing_splegg = GameManager.getManager().getPlayingSize(SpleefType.SPLEGG, GameType.DUEL, 1, 0);	
-		int playing_tntrun = GameManager.getManager().getPlayingSize(SpleefType.TNTRUN, GameType.DUEL, 1, 0);
+		int playing_spleef = GameManager.getManager().getPlayingSize(SpleefType.SPLEEF, GameType.DUEL, 1);
+		int playing_splegg = GameManager.getManager().getPlayingSize(SpleefType.SPLEGG, GameType.DUEL, 1);	
+		int playing_tntrun = GameManager.getManager().getPlayingSize(SpleefType.TNTRUN, GameType.DUEL, 1);
 	
 		
 		
@@ -61,7 +61,7 @@ public class VersusMenu extends MenuBuilder {
 				.setTitle("§c§lTNTRun 1vs1")
 				.setAmount(playing_tntrun == 0 ? 1 : playing_tntrun)
 				.addLore("§7Playing: §a" + playing_tntrun)
-				.addLore("§7In Queue: §a" + GameManager.getManager().getQueueSize(SpleefType.TNTRUN, GameType.DUEL,1,0))
+				.addLore("§7In Queue: §a" + GameManager.getManager().getQueueSize(SpleefType.TNTRUN, GameType.DUEL,1))
 				.build());
 		
 
@@ -74,7 +74,7 @@ public class VersusMenu extends MenuBuilder {
 				.setTitle("§b§lSpleef 1vs1")
 				.setAmount(playing_spleef == 0 ? 1 : playing_spleef)
 				.addLore("§7Playing: §a" + playing_spleef)
-				.addLore("§7In Queue: §a" + GameManager.getManager().getQueueSize(SpleefType.SPLEEF, GameType.DUEL,1,0))
+				.addLore("§7In Queue: §a" + GameManager.getManager().getQueueSize(SpleefType.SPLEEF, GameType.DUEL,1))
 				.build());
 		
 		s(22, new ItemBuilder(Material.LADDER).setTitle("§aSpleef 1vs1 Ranking")
@@ -86,7 +86,7 @@ public class VersusMenu extends MenuBuilder {
 				.setTitle("§e§lSplegg 1vs1")
 				.setAmount(playing_splegg == 0 ? 1 : playing_splegg)
 				.addLore("§7Playing: §a" + playing_splegg)
-				.addLore("§7In Queue: §a" + GameManager.getManager().getQueueSize(SpleefType.SPLEGG, GameType.DUEL,1,0))
+				.addLore("§7In Queue: §a" + GameManager.getManager().getQueueSize(SpleefType.SPLEGG, GameType.DUEL,1))
 				.build());
 		
 		
@@ -112,25 +112,28 @@ public class VersusMenu extends MenuBuilder {
 		
 		Player p = sp.getPlayer();
 		if (slot==11) {
+			sp.leave(false, false);
 			new BukkitRunnable() {
 				public void run() {
 			GameManager.getManager().addDuelQueue(sp, 1, null, SpleefType.TNTRUN, false, null);
 			}
-			}.runTaskAsynchronously(Main.get());
+			}.runTaskLater(Main.get(),5L);
 			p.closeInventory();
 		} else if (slot==13) { 
+			sp.leave(false, false);
 			new BukkitRunnable() {
 				public void run() {
 			GameManager.getManager().addDuelQueue(sp, 1, null, SpleefType.SPLEEF, false, null);
 		}
-	}.runTaskAsynchronously(Main.get());
+			}.runTaskLater(Main.get(),5L);
 			p.closeInventory();
 		} else if (slot==15) {
+			sp.leave(false, false);
 			new BukkitRunnable() {
 				public void run() {
 			GameManager.getManager().addDuelQueue(sp, 1, null, SpleefType.SPLEGG, false, null);
 		}
-	}.runTaskAsynchronously(Main.get());
+			}.runTaskLater(Main.get(),5L);
 			p.closeInventory();
 		} 
 		}

@@ -271,7 +271,12 @@ public class FriendsManager {
 				} else if (friend.isSpectating()) {
 					Arena spectating = friend.getSpleefArenaSpectating();
 					where.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§fSpectating §b" + GameManager.getManager().getGamePrefix(spectating) + "§7 [Click to spectate]").create()));
-					where.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spectate " + spectating.getPlayers().get(0).getOfflinePlayer()));
+		
+						
+					for (SpleefPlayer sppp : spectating.getPlayers()) {
+						where.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/spectate " + sppp.getOfflinePlayer()));
+						break;
+					}
 			}else  {
 				where.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§fCurrently at the Lobby").create()));			
 			}

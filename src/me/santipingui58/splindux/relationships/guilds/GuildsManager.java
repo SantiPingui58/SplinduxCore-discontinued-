@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -22,6 +23,8 @@ import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.gui.game.guild.duel.GuildAcceptDuelMenu;
 import me.santipingui58.splindux.relationships.RelationshipRequest;
 import me.santipingui58.splindux.relationships.RelationshipRequestType;
+import me.santipingui58.splindux.stats.StatsManager;
+import me.santipingui58.splindux.stats.ranking.RankingManager;
 
 public class GuildsManager {
 
@@ -164,7 +167,8 @@ public class GuildsManager {
 
 	public void saveGuilds() {
 		FileConfiguration config = Main.guilds.getConfig();
-		config.set("guilds", null);
+		if (getGuilds().size()==0) return;
+		
 		for (Guild guild : getGuilds()) {
 			UUID u = guild.getUUID();
 			config.set("guilds."+u+".name", guild.getName());
@@ -268,7 +272,8 @@ public class GuildsManager {
 		String month2 = getMonth(now.getMonth());
 		guildLog(":x:The guild **"+ guild.getName().toUpperCase()+"** has been disbanded! All players are now free agents again. ("+month1+"/"+date.getYear()+" - "+month2+"/"+now.getYear()+" :x:");		
 		getGuilds().remove(guild); 
-		GuildsManager.getManager().saveGuilds();
+		Main.guilds.getConfig().set("guilds."+guild.getUUID().toString(), null);
+		Main.guilds.saveConfig();
 		for (GuildPlayer gp : guild.getPlayers()) {
 			OfflinePlayer pa = Bukkit.getOfflinePlayer(gp.getUUID());
 			SpleefPlayer temp = SpleefPlayer.getSpleefPlayer(pa);
@@ -296,6 +301,12 @@ public class GuildsManager {
 			
 			for (GuildPlayer gp : guild.getPlayers()) {
 				if (guild.getCoins()>=gp.getSalary()) {
+					
+					if (gp.getSalary()*1.2<gp.getMinSalary()) {
+						renegociate(guild.getLeader(),gp.getUUID(), gp.getMinSalary());
+					}
+					
+					
 				OfflinePlayer pa = Bukkit.getOfflinePlayer(gp.getUUID());
 				SpleefPlayer temp = SpleefPlayer.getSpleefPlayer(pa);
 				if (temp==null) {
@@ -531,9 +542,9 @@ public class GuildsManager {
 	
 	new BukkitRunnable() {
 		public void run() {
-	Arena a1 = GameManager.getManager().duelGame(SpleefPlayer.getSpleefPlayer(duel.getPlayers1().get(0)), players1, null, duel.getType(), 1, false, null, false,true,-1);
-	Arena a2 =GameManager.getManager().duelGame(SpleefPlayer.getSpleefPlayer(duel.getPlayers1().get(1)), players2, null, duel.getType(), 2, false, null, false,true,-1);
-	Arena a3 =GameManager.getManager().duelGame(SpleefPlayer.getSpleefPlayer(duel.getPlayers1().get(3)), players3, null, duel.getType(), 1, false, null, false,true,-1);
+	Arena a1 = GameManager.getManager().duelGame(SpleefPlayer.getSpleefPlayer(duel.getPlayers1().get(0)), players1, null, duel.getType(), 1, false,true,-1);
+	Arena a2 =GameManager.getManager().duelGame(SpleefPlayer.getSpleefPlayer(duel.getPlayers1().get(1)), players2, null, duel.getType(), 2, false,true,-1);
+	Arena a3 =GameManager.getManager().duelGame(SpleefPlayer.getSpleefPlayer(duel.getPlayers1().get(3)), players3, null, duel.getType(), 1, false,true,-1);
 	 
 	duel.getArenas().add(a1);
 	duel.getArenas().add(a2);
@@ -585,9 +596,32 @@ public class GuildsManager {
 		guildLog(":yellow_circle: The player **"+name+ "** from the guild **" +guild.getName().toUpperCase()+ "** has renegociated their contract with a new salary of **"+value+ " Coins** and a new value of **"+guild.getPlayer(player).getValue()+" Coins**! :yellow_circle:");
 	}
 
+	public HashMap<UUID, Integer> getPlayersValueRanking() {
+		
+		HashMap<UUID,Integer> hashmap = new HashMap<UUID,Integer>();
+		for (Guild guild : this.guilds) {
+			for (GuildPlayer gp : guild.getPlayers()) {
+				hashmap.put(gp.getUUID(), gp.getValue());
+			}
+		}
+		hashmap = StatsManager.getManager().sortByValue(hashmap);
+		return hashmap;
+	}
 
-
-
-
+	
+	public int getFutureMinValue(Guild guild,UUID player) {
+		int value = 0;
+			int ranking = RankingManager.getManager().getRanking().getPosition(player);
+			double playerValue = 0;
+			if (ranking!=-1) {
+				 playerValue = (1500/Math.sqrt(ranking));
+			} 
+			
+			double guildValue = Math.sqrt(guild.getValueWithoutPlayers());
+			value = (int) ((playerValue+guildValue)*50);
+			value = (int) (value/50*0.85);
+			return value;
+	}
+	
 	
 }

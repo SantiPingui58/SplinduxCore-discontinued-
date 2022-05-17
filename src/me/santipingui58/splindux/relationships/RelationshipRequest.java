@@ -68,7 +68,7 @@ public class RelationshipRequest {
 			GuildsManager.getManager().getJoinGuildMembersRequests().remove(this);
 			break;
 		case RENEGOCIATE_GUILD:
-			GuildsManager.getManager().renegociate(sender.get(0),receptor.get(0),Integer.valueOf(this.args[0]));
+			GuildsManager.getManager().renegociate(sender.get(0),receptor.get(0),Integer.valueOf(this.args[1]));
 			GuildsManager.getManager().getRenegociateRequests().remove(this);
 			break;
 		case BUY_PLAYER: 

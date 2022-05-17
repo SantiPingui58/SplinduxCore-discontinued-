@@ -1,6 +1,4 @@
 package me.santipingui58.splindux.commands;
-
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -40,7 +38,8 @@ public class SpectateCommand implements CommandExecutor {
 					if (sp2.isInGame()) {
 						if (sp2.getArena().getGameType().equals(GameType.DUEL)) {
 							 sp.leave(false,false); 
-						SpectateManager.getManager().spectateSpleef(sp, sp2.getArena());
+								SpectateManager.getManager().spectateSpleef(sp, sp2.getArena());			
+					
 						} else {
 							sender.sendMessage("§cThe player §b" + args[0] + "§c is not in a 1vs1 game.");
 						}

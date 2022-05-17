@@ -1,9 +1,6 @@
 package me.santipingui58.splindux.game.ranked;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefType;
 
@@ -16,41 +13,49 @@ public class RankedManager {
 	        return manager;
 	    }
 	
-	private List<RankedQueue> queues = new ArrayList<RankedQueue>();
+
+	  private  RankedQueue spleefQueue = new RankedQueue(SpleefType.SPLEEF);
+	  private RankedQueue spleggQueue = new RankedQueue(SpleefType.SPLEGG);
+	  private RankedQueue tntrunQueue = new RankedQueue(SpleefType.TNTRUN);
 	
-	
-	public List<RankedQueue> getQueues() {
-		return this.queues;
-	}
-	
-	
-	
-	public RankedQueue getRankedQueue(SpleefType spleef, int teamSize) {
-		for (RankedQueue q : this.queues) {
-			if (q.getSpleefType().equals(spleef) && q.getTeamSize()==teamSize) {
-				return q;
-			}
-		}
+	 
+	  public RankedQueue getSpleefQueue() {
+		  return this.spleefQueue;
+	  }
+	  
+	  public RankedQueue getSpleggQueue() {
+		  return this.spleggQueue;
+	  }
+	  
+	  public RankedQueue getTNTRunQueue() {
+		  return this.tntrunQueue;
+	  }
+	 
+	  public RankedQueue getRankedQueue(SpleefType  type) {
+		  switch(type) {
+		case BOWSPLEEF:
+			break;
+		case POTSPLEEF:
+			break;
+		case SPLEEF:
+			return spleefQueue;
+		case SPLEGG:
+			return spleggQueue;
+		case TNTRUN:
+			return tntrunQueue;
+		default:
+			break;
+		  }
 		return null;
-	}
+	  }
 	
-	public void loadRankedQueues() {
-		for (SpleefType spleef : SpleefType.values()) {
-				for (int i = 1;i<=3;i++) {
-					RankedQueue queue = new RankedQueue(spleef, i);
-					this.queues.add(queue);
-				}
-			
-		}
-	}
-	
-	
-	
-	public int calcualteELO(List<SpleefPlayer> winner, List<SpleefPlayer> loser, int difpuntos) {
+	public int calcualteELO(List<SpleefPlayer> winner, List<SpleefPlayer> loser, int difpuntos,SpleefType spleefType) {
 		int p1 = 0;
 		int p2 = 0;
-		for (SpleefPlayer sp : winner) p1 = p1 + sp.getPlayerStats().getELO(SpleefType.SPLEEF);
-		for (SpleefPlayer sp : loser) p2 = p2 + sp.getPlayerStats().getELO(SpleefType.SPLEEF);
+		
+		for (SpleefPlayer sp : winner) p1 = p1 + sp.getPlayerStats().getELO(spleefType);
+		for (SpleefPlayer sp : loser) p2 = p2 + sp.getPlayerStats().getELO(spleefType);
+		
 		
 		int a = winner.size();
 		int b = winner.size();
@@ -60,15 +65,7 @@ public class RankedManager {
 		p1 = p1/a;
 		p2 = p2/b;
 		
-		int newELO = elo(p1,p2);
-		
-		for (SpleefPlayer sp : winner) {
-			sp.getPlayerStats().setELO(SpleefType.SPLEEF,sp.getPlayerStats().getELO(SpleefType.SPLEEF)+newELO);
-		}
-		for (SpleefPlayer sp : winner) {
-			sp.getPlayerStats().setELO(SpleefType.SPLEEF,sp.getPlayerStats().getELO(SpleefType.SPLEEF)-newELO);
-		}
-		
+		int newELO = elo(p1,p2);	
 		return newELO;
 	}
 	
@@ -88,24 +85,5 @@ public class RankedManager {
 	}
 
 
-
-	public void updateQueues() {
-		for (RankedQueue queue : this.queues) {
-			queue.checkQueue();
-		}	
-	}
-	
-	public String getRankedMap(RankedQueue queue) {
-		
-		for (RankedTeam team : queue.getQueue()) {
-			for (SpleefPlayer sp : team.getPlayers()) {
-				if (sp.getOptions().getRankedArena()!=null) {
-					return GameManager.getManager().getArenaByName(sp.getOptions().getRankedArena()).getName();
-				}
-			}
-		}
-		
-		return null;
-	}
 	
 }

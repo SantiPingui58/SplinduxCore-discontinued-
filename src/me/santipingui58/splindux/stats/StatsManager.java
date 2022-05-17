@@ -24,8 +24,9 @@ import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.parkour.Level;
 import me.santipingui58.splindux.game.parkour.ParkourManager;
-import me.santipingui58.splindux.game.parkour.ParkourPlayer;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
+import me.santipingui58.splindux.relationships.guilds.GuildsManager;
+import me.santipingui58.splindux.stats.ranking.RankingManager;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -80,6 +81,11 @@ public class StatsManager {
 	private HashMap<UUID,Integer> totalparkourranking = new HashMap<UUID,Integer>();
 	private HashMap<UUID,Integer> totalonlinetime = new HashMap<UUID,Integer>();
 	
+	private HashMap<UUID,Integer> playersspleefexp = new HashMap<UUID,Integer>();
+	private HashMap<UUID,Integer> playerscoins = new HashMap<UUID,Integer>();
+	private HashMap<UUID,Integer> playersvalue = new HashMap<UUID,Integer>();
+	private HashMap<UUID,Integer> votes = new HashMap<UUID,Integer>();
+	
 	private static StatsManager manager;	
 	 public static StatsManager getManager() {
 	        if (manager == null)
@@ -114,6 +120,8 @@ public class StatsManager {
 		 return ranking(ranking,sp.getOfflinePlayer().getName());
 	}
 	
+	
+	
 		
 	public int getParkourRankingPosition(Level level, SpleefPlayer sp) {
 		ParkourRanking ranking = getParkourRanking(level);
@@ -121,7 +129,7 @@ public class StatsManager {
 	}
 	
 
-	private int ranking(HashMap<UUID,Integer> hashmap, String player) {
+	public int ranking(HashMap<UUID,Integer> hashmap, String player) {
 		Iterator<Entry<UUID, Integer>> it = hashmap.entrySet().iterator();
 		  int i = 1;
 		  while (it.hasNext()) {
@@ -155,7 +163,7 @@ public class StatsManager {
 		if (hashmap.isEmpty()) {
 			updateRankings();
 		}
-		    HashMap<UUID, Integer> h = getTop10(hashmap,page,RankingEnum.RANKING);
+		    HashMap<UUID, Integer> h = getTop10HashMap(hashmap,page,RankingEnum.RANKING);
 		    int i = (10*page)+1;
 		    for (Entry<UUID, Integer> entry : h.entrySet()) {
 		        UUID key = entry.getKey();
@@ -274,7 +282,7 @@ public class StatsManager {
 	
 	
 	
-	public LinkedHashMap<UUID,Integer> getTop10(LinkedHashMap<UUID,Integer> hashmap,int page, RankingEnum type) {
+	public LinkedHashMap<UUID,Integer> getTop10HashMap(LinkedHashMap<UUID,Integer> hashmap,int page, RankingEnum type) {
 		LinkedHashMap<UUID,Integer> h = new LinkedHashMap<UUID,Integer>();
 		  Iterator<Entry<UUID, Integer>> it = hashmap.entrySet().iterator();
 		  int inicio = (page*10)+1;
@@ -293,6 +301,30 @@ public class StatsManager {
 		    	break;
 		    }
 	}
+		    return h;
+	}
+	
+	public LinkedHashMap<UUID,Integer> getTop20HashMap(LinkedHashMap<UUID,Integer> hashmap,int page, RankingEnum type) {
+		LinkedHashMap<UUID,Integer> h = new LinkedHashMap<UUID,Integer>();
+		  Iterator<Entry<UUID, Integer>> it = hashmap.entrySet().iterator();
+		  int inicio = (page*10)+1;
+		  int fin = ((page+1)*10)+10;
+		
+			  int i = 1;
+				  while (it.hasNext()) {
+				        Map.Entry<UUID,Integer> pair = (Map.Entry<UUID,Integer>)it.next();
+				        UUID name = pair.getKey();
+				        int wins = pair.getValue();
+				        if (i<=fin) {
+				        	if (i>=inicio) {
+				        		h.put(name, wins);
+				        	}
+				        i++;
+				    }  else {
+				    	break;
+				    }
+			}
+		   
 		    return h;
 	}
 	
@@ -327,7 +359,7 @@ public class StatsManager {
 		spleefffawinsranking_weekly= HikariAPI.getManager().getRanking(RankingEnum.SPLEEFFFA_WINS_WEEKLY);
 		spleefffakillsranking_weekly= HikariAPI.getManager().getRanking(RankingEnum.SPLEEFFFA_KILLS_WEEKLY);
 		spleefffagamesranking_weekly= HikariAPI.getManager().getRanking(RankingEnum.SPLEEFFFA_GAMES_WEEKLY);
-		spleef1vs1ELOranking= HikariAPI.getManager().getRanking(RankingEnum.SPLEEF1VS1_ELO);
+		spleef1vs1ELOranking= HikariAPI.getManager().getRanking(RankingEnum.SPLEEF1VS1_ELO);	
 		spleef1vs1winsranking = HikariAPI.getManager().getRanking(RankingEnum.SPLEEF1VS1_WINS);
 		
 		spleggffawinsranking = HikariAPI.getManager().getRanking(RankingEnum.SPLEGGFFA_WINS);
@@ -358,25 +390,39 @@ public class StatsManager {
 		totalparkourranking = HikariAPI.getManager().getRanking(RankingEnum.PARKOUR);
 		
 	
+		playerscoins = HikariAPI.getManager().getRanking(PlayersRankingType.COINS);
+		playerscoins = sortByValue(playerscoins);
+		
+		playersspleefexp = HikariAPI.getManager().getRanking(PlayersRankingType.EXP);
+		playersvalue = GuildsManager.getManager().getPlayersValueRanking();
+		
+		votes = HikariAPI.getManager().getRanking(PlayersRankingType.VOTES);
+		votes = sortByValue(votes);
+		
 		for (ParkourRanking pr : this.parkourLevels) {
 			pr.setRanking(HikariAPI.getManager().getParkourRanking(pr.getLevel().getLevel()));
 		}
 		
-		
+		/*
 		for (SpleefPlayer sp : DataManager.getManager().getPlayers()) {
 			ParkourPlayer pp = sp.getParkourPlayer();
+
 		int points = 0;
 		
 		for (int i = 1; i <25; i++) {
+			try {
 			points = points + i*pp.getRecord(ParkourManager.getManager().getLevel(i));
+			} catch(Exception e) {
+				continue;
+				}
 		}
 		pp.getStats().setPoints(points/10);
 		}
+		*/
 		
 		
+		/*
 		//Sorts the rankings 
-		
-		
 		//Spleef
 		spleefffawinsranking = sortByValue(spleefffawinsranking);
 		spleefffakillsranking = sortByValue(spleefffakillsranking);
@@ -434,8 +480,28 @@ public class StatsManager {
 		
 		totalonlinetime = sortByValue(totalonlinetime);
 		totalparkourranking = sortByValue(totalparkourranking);
-		
+		*/
 	}
+	
+	public HashMap<UUID,Integer> getPlayerRanking(PlayersRankingType type) {
+		HashMap<UUID,Integer> hashmap = new HashMap<UUID,Integer>();
+		switch (type) {
+		case COINS:
+			hashmap = this.playerscoins; break;
+		case EXP:
+			hashmap = this.playersspleefexp; break;
+		case VALUE:
+			hashmap = this.playersvalue; break;
+		case VOTES:
+			hashmap = this.votes; break;
+		case RANKING:
+			hashmap = RankingManager.getManager().getRanking().getRanking(); break;
+		}
+		
+		return hashmap;
+	}
+	
+	
 	
 	
 	//Returns the Ranking HashMap based on their RankingEnum
@@ -446,6 +512,7 @@ public class StatsManager {
 		case PARKOUR:
 			hashmap = this.getTotalParkourRankingHashMap(); break;
 		case RANKING:
+			hashmap = RankingManager.getManager().getRanking().getRanking();
 			break;
 		case SPLEEF1VS1_ELO:
 			hashmap = this.spleef1vs1ELOranking;break;
@@ -520,9 +587,18 @@ public class StatsManager {
 		case SPLEGG1VS1_ELO:
 			hashmap = this.splegg1vs1ELOranking;break;	
 		case TNTRUN1VS1_ELO:
-			hashmap = this.tntrun1vs1ELOranking;break;			
+			hashmap = this.tntrun1vs1ELOranking;break;
+		case COINS:
+			hashmap = this.playerscoins;break;
+		case EXP:
+			hashmap = this.playersspleefexp;break;
+		case GUILD_VALUE:
+			hashmap = this.playersvalue;break;
+		case VOTES:
+			hashmap = this.votes;break;
 		default:
-			return hashmap;		
+			break;			
+	
 		} 
 		
 		if (hashmap.isEmpty()) 
@@ -550,10 +626,20 @@ public class StatsManager {
 	public String getAmountByType(RankingEnum type) {
 		if (type==null) {
 			return "Points";
-		} else if (type.equals(RankingEnum.PARKOUR)) {
-			return "Jumps";
-		} 
-		else {
+		}else {
+			switch (type) {
+			case PARKOUR: return "Jumps";
+			case COINS: return "Coins";
+			case EXP: return "Spleef EXP";
+			case RANKING: return "Points";
+			case GUILD_VALUE: return "Coins";
+			case TOTALONLINETIME: return "Hours";
+			case VOTES: return "Votes";
+			default: break;
+			
+			}
+		}
+		
 		SpleefRankingType srt = type.getSpleefRankingType();
 		
 		switch (srt) {
@@ -566,11 +652,25 @@ public class StatsManager {
 		case WINS:
 			return "Wins";
 		}
-		}
 		
 		return "Points";
 		
 	} 
+	
+	public String getAmountByType(PlayersRankingType playersRankingType) {
+		switch (playersRankingType) {
+		case COINS: return "Coins";
+		case EXP:
+			return "SpleefEXP";
+		case RANKING:
+			return "";
+		case VALUE:
+			return "k";
+		default:
+	return null;
+		}
+	}
+	
 	
 	public String getAmountByPeriod(SpleefRankingPeriod type) {
 		if (type.equals(SpleefRankingPeriod.ALL_TIME)) {
@@ -599,13 +699,11 @@ public class StatsManager {
 	
 	  public  HashMap<UUID, Integer> sortByValue(Map<UUID,Integer> hm) { 
 	        // Create a list from elements of HashMap 
-	        List<Map.Entry<UUID, Integer> > list = 
-	               new LinkedList<Map.Entry<UUID, Integer> >(hm.entrySet()); 
+	        List<Map.Entry<UUID, Integer> > list = new LinkedList<Map.Entry<UUID, Integer> >(hm.entrySet()); 
 	  
 	        // Sort the list 
 	        Collections.sort(list, new Comparator<Map.Entry<UUID, Integer> >() { 
-	            public int compare(Map.Entry<UUID, Integer> o2,  
-	                               Map.Entry<UUID, Integer> o1) 
+	            public int compare(Map.Entry<UUID, Integer> o2,  Map.Entry<UUID, Integer> o1) 
 	            { 
 	                return (o1.getValue()).compareTo(o2.getValue()); 
 	            } 
@@ -667,4 +765,7 @@ public class StatsManager {
 	  public HashMap<UUID,Integer> getTotalParkourRankingHashMap() {
 		  return this.totalparkourranking;
 	  }
+
+
+
 }

@@ -53,7 +53,7 @@ public class GuildCommand implements CommandExecutor {
 					if (args[0].equalsIgnoreCase("create") && args.length>=3) {				
 						if (gm.getGuild(sp)==null) {
 						//	int value = p.hasPermission("splindux.vip") ? 12500 : 25000;
-							int value = 0;
+							int value = 15000;
 							if (sp.getCoins()>=value) {
 								
 								StringBuilder builder = new StringBuilder();
@@ -117,15 +117,20 @@ public class GuildCommand implements CommandExecutor {
 												p.sendMessage(gm.getPrefix()+"§a"+ args[2]+ " §cisnt a valid number.");
 												return false;
 											}
-											
+							
 											if (guild.getCoins()>=salary*20) {
 												if (guild.getPlayers().size()<=5) {
+													int min = gm.getFutureMinValue(guild, player.getUniqueId());
+													if (min <= salary) {
 													String[] argss = {guild.getName(),sp.getOfflinePlayer().getName(),splayer.getOfflinePlayer().getName(), String.valueOf(salary)};
 													List<UUID> list1 = new ArrayList<UUID>();
 													List<UUID> list2= new ArrayList<UUID>();
 													list1.add(sp.getUUID());
 													list2.add(splayer.getUUID());
 													new RelationshipRequest(list1,list2,RelationshipRequestType.JOIN_GUILD_AS_PLAYER,argss);
+													} else {
+														p.sendMessage(gm.getPrefix()+"§cMin salary for this player is: §6" + min +" Coins");	
+													}
 												} else {
 													p.sendMessage(gm.getPrefix()+"§cYou can't have more than 7 players on your Guild");	
 												}
@@ -146,7 +151,25 @@ public class GuildCommand implements CommandExecutor {
 							} else {
 								sender.sendMessage(gm.getPrefix()+"§cYou need to be in a Guild to do that.");
 							}
-					} else if (args[0].equalsIgnoreCase("buy") && args.length==3)  {
+							
+							//guild minsalary player
+							//guild minsalary player guild
+					} else if (args[0].equalsIgnoreCase("minsalary") && args.length>=2) {
+							Guild guild =  args.length==2 ? gm.getGuild(sp) : gm.getGuildByAchronym(args[2]);
+							if (guild!=null) {
+								@SuppressWarnings("deprecation")
+								OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);		
+												int min = gm.getFutureMinValue(guild, player.getUniqueId());
+												p.sendMessage(gm.getPrefix()+"§aMin salary for §b" +player.getName() +" §ain the §6§l"+guild.getName() + "§aGuild would be:§6 " + min +" Coins");	
+								}  else {
+									
+									if (args.length==2) {
+										sender.sendMessage(gm.getPrefix()+"§c/guild minsalary <Player> <Guild>");
+									}else {
+										sender.sendMessage(gm.getPrefix()+"§cThe Guild §b" + args[2] +" §cdoes not exist (Use the achronym)");
+									}
+								}
+				} else if (args[0].equalsIgnoreCase("buy") && args.length==3)  {
 						if (gm.getGuild(sp)!=null) {
 							Guild guild = gm.getGuild(sp);
 							if (guild.isAdmin(sp.getUUID(), false)) {
@@ -178,12 +201,17 @@ public class GuildCommand implements CommandExecutor {
 										if (guild.getCoins()>=salary*20) {
 											if (guild.getCoins()>=gm.getGuild(splayer).getPlayer(splayer.getUUID()).getValue()*1.15) {
 											if (guild.getPlayers().size()<=5) {
+												int min = gm.getFutureMinValue(guild, player.getUniqueId());
+												if (min <= salary) {
 												String[] argss = {guild.getName(),sp.getOfflinePlayer().getName(),splayer.getOfflinePlayer().getName(), String.valueOf(salary)};
 												List<UUID> list1 = new ArrayList<UUID>();
 												List<UUID> list2= new ArrayList<UUID>();
 												list1.addAll(guild.getAdmins(false));
 												list2.add(splayer.getUUID());
 												new RelationshipRequest(list1,list2,RelationshipRequestType.BUY_PLAYER,argss);
+												} else {
+													p.sendMessage(gm.getPrefix()+"§cMin salary for this player is: §6" + min +" Coins");
+												}
 											} else {
 												p.sendMessage(gm.getPrefix()+"§cYou can't have more than 7 players on your Guild");	
 											}
@@ -215,9 +243,9 @@ public class GuildCommand implements CommandExecutor {
 								OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);							
 								if (player.hasPlayedBefore()) {
 									if (guild.getPlayersUUID().contains(player.getUniqueId())) {
-										int value = guild.getPlayer(player.getUniqueId()).getSalary()*50/2;	
-										if (guild.getCoins()>=value*1.5) {
-											value = (int) (value*0.5);
+										int value = guild.getPlayer(player.getUniqueId()).getValue();
+										if (guild.getCoins()>=value*1.15) {
+											value = (int) (value*0.25);
 											guild.firePlayer(player.getUniqueId(),value);
 											p.sendMessage(gm.getPrefix()+"§cYou have fired §b"+ player.getName()+ " §cfrom your guild");
 										}else {
@@ -304,8 +332,14 @@ public class GuildCommand implements CommandExecutor {
 										return false;
 									}
 									
-									if (guild.getCoins()>=salary*20) {
-										guild.renegociate(p,gp,salary);
+									if (guild.getCoins()>=salary*10) {
+											
+										int min = gm.getFutureMinValue(guild, player.getUniqueId());
+										if (min <= salary) {
+										guild.renegociate(gp,salary);
+										} else {
+											p.sendMessage(gm.getPrefix()+"§cMin salary for this player is: §6" + min +" Coins");
+										}
 									} else {
 										p.sendMessage(gm.getPrefix()+"§cYour guild can't afford that salary.");	
 									}

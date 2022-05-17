@@ -92,33 +92,33 @@ public enum ParticleTypeSubType {
 	public int getPrize() {
 		switch(this) {
 		default: return 0;
-		case BLOCK: return 1750;
-		case DUST: return 1750;
-		case DRAGON_BREATH: return 2500;
-		case CLOUD: return 2500;
-		case DRIPPING_LAVA: return 2500;
-		case DRIPPING_WATER: return 2500;
-		case FALLING_DUST: return 2500;
-		case SLIME: return 2500;
-		case SNOWBALL: return 2500;
-		case CRIT: return 3500;
-		case ENCHANTMENT: return 3500;
-		case END_ROD: return 3500;
-		case  DAMAGE_INDICATOR: return 5000;
-		case ENCHANTED_HIT: return 5000;
-		case LARGE_SMOKE: return 5000;
-		case SPIT: return 5000;
-		case SWEEP_ATTACK: return 5000;
-		case ANGRY_VILLAGER: return 7500;
-		case FIREWORK: return 7500;
-		case SMOKE: return 7500;
-		case HAPPY_VILLAGER: return 10000;
-		case PORTAL: return 10000;
-		case FLAME: return 12500;
-		case HEARTS: return 12500;
-		case NOTE: return 12500;
-		case TOTEM_OF_UNDYING: return 12500;
-		case LAVA: return 15000;
+		case BLOCK: return 1000;
+		case DUST: return 1000;
+		case DRAGON_BREATH: return 1500;
+		case CLOUD: return 1500;
+		case DRIPPING_LAVA: return 1500;
+		case DRIPPING_WATER: return 1500;
+		case FALLING_DUST: return 1500;
+		case SLIME: return 1500;
+		case SNOWBALL: return 1500;
+		case CRIT: return 2000;
+		case ENCHANTMENT: return 2000;
+		case END_ROD: return 2000;
+		case  DAMAGE_INDICATOR: return 2500;
+		case ENCHANTED_HIT: return 2500;
+		case LARGE_SMOKE: return 2500;
+		case SPIT: return 2500;
+		case SWEEP_ATTACK: return 2500;
+		case ANGRY_VILLAGER: return 3000;
+		case FIREWORK: return 3000;
+		case SMOKE: return 3000;
+		case HAPPY_VILLAGER: return 5000;
+		case PORTAL: return 5000;
+		case FLAME: return 5000;
+		case HEARTS: return 5000;
+		case NOTE: return 5000;
+		case TOTEM_OF_UNDYING: return 5000;
+		case LAVA: return 7500;
 	}
 	}
 	

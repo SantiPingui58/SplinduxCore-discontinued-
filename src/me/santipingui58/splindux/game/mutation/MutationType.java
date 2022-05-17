@@ -226,9 +226,9 @@ public enum MutationType {
 		case JUMP_II: return "§aJump II Mutation";
 		case JUMP_V: return "§aJump V Mutation";
 		case JUMP_X: return "§aJump X Mutation";
-		case SLOWNESS_I: return "§aJump I Mutation";
-		case SLOWNESS_II: return "§aJump I Mutation";
-		case SLOWNESS_V: return "§aJump I Mutation";
+		case SLOWNESS_I: return "§8Slowness I Mutation";
+		case SLOWNESS_II: return "§8Slowness II Mutation";
+		case SLOWNESS_V: return "§8Slowness V Mutation";
 		case SLOWNESS_X: return "§8Slowness X Mutation";
 		case BLINDNESS: return "§8Blindness Mutation";
 		case LEVITATION_I: return "§eLevitation I Mutation";

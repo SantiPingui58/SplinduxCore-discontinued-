@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.DataManager;
 import me.santipingui58.splindux.game.spleef.GameType;
+import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.utils.Utils;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -51,12 +52,6 @@ public class MatchesCommand implements CommandExecutor{
 			p.sendMessage("§5Splegg Duels:");
 			sendMatches(spleggArenas,p);
 			
-			for (Arena arena : DataManager.getManager().getArenas()) {
-				if (arena.getGameType().equals(GameType.DUEL)) {
-					
-					
-						}
-				}
 					 
 			}
 		return false;
@@ -84,8 +79,11 @@ public class MatchesCommand implements CommandExecutor{
 				} else {
 					 message = new TextComponent("§7UNRANKED " + "§a" + p1 + " §b" + puntos1 + "§7-§b" + puntos2 + "§a " + p2 + " §7[§e" + map + "§7]" + "§7(§6" + Utils.getUtils().time(tiempo)+ "§7)");
 				}
-				
-				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/spectate "+arena.getDuelPlayers1().get(0).getOfflinePlayer().getName()));
+				for (SpleefPlayer sppp : arena.getDuelPlayers1()) {
+					message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/spectate "+sppp.getOfflinePlayer().getName()));
+					break;
+				}
+		
 				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Espectar §a" +p1 + " §7-§a " + p2 ).create()));
 					player.spigot().sendMessage(message);
 			

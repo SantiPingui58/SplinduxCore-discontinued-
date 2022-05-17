@@ -2,9 +2,7 @@ package me.santipingui58.splindux.gui.game.guild;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -36,10 +34,9 @@ public class GuildPlayersMenu extends MenuBuilder {
 		new BukkitRunnable() {
 			public void run() {
 		
-				HashMap<Integer,ItemStack> cache = new HashMap<Integer,ItemStack>();
 		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");		
 		//s(45,new ItemBuilder(Material.ARROW).setTitle("§cGo back").build());
-		cache.put(45, new ItemBuilder(Material.ARROW).setTitle("§cGo back").build());
+		s(45, new ItemBuilder(Material.ARROW).setTitle("§cGo back").build());
 		if (guild==null) {
 			int slot = 0;
 			
@@ -59,7 +56,7 @@ public class GuildPlayersMenu extends MenuBuilder {
 				leaderMeta.setLore(lore);
 				leader.setItemMeta(leaderMeta);
 				//s(slot,leader);
-				cache.put(slot, leader);
+				s(slot, leader);
 				slot++;
 			}
 		} else {
@@ -76,7 +73,7 @@ public class GuildPlayersMenu extends MenuBuilder {
 					.addLore("§9Membership Fee: §6" + guild.getMemberFee() + " Coins")
 					.build());
 			*/
-			cache.put(4, new ItemBuilder(Material.GOLD_INGOT).addEnchantment(Enchantment.ARROW_DAMAGE, 1)
+			s(4, new ItemBuilder(Material.GOLD_INGOT).addEnchantment(Enchantment.ARROW_DAMAGE, 1)
 					
 					.setTitle("§6§l"+guild.getName() + "Guild")
 					.addLore("§e"+guild.getAchronym())
@@ -89,9 +86,9 @@ public class GuildPlayersMenu extends MenuBuilder {
 			
 			
 			//s(53,new ItemBuilder(Material.PAPER).setTitle("§e§lView all Guilds").build());
-			cache.put(53, new ItemBuilder(Material.PAPER).setTitle("§e§lView all Guilds").build());
+			s(53, new ItemBuilder(Material.PAPER).setTitle("§e§lView all Guilds").build());
 			//s(52,new ItemBuilder(Material.PAPER).setTitle("§e§lView all members").build());
-			cache.put(52, new ItemBuilder(Material.PAPER).setTitle("§e§lView all members").build());
+			s(52, new ItemBuilder(Material.PAPER).setTitle("§e§lView all members").build());
 			
 			ItemStack leader = new ItemStack(Material.SKULL_ITEM,1,(short) 3);
 			SkullMeta leaderMeta = (SkullMeta) leader.getItemMeta();
@@ -99,7 +96,7 @@ public class GuildPlayersMenu extends MenuBuilder {
 			leaderMeta.setOwningPlayer(Bukkit.getOfflinePlayer(guild.getLeader()));
 			leader.setItemMeta(leaderMeta);
 			//s(13,leader);
-			cache.put(13, leader);
+			s(13, leader);
 			
 			int playerSlot = 19;
 			for (GuildPlayer gp : guild.getPlayers()) {
@@ -109,6 +106,8 @@ public class GuildPlayersMenu extends MenuBuilder {
 				playerMeta.setDisplayName("§a§lPlayer §7- §b"+Bukkit.getOfflinePlayer(gp.getUUID()).getName());
 				playerMeta.setOwningPlayer(Bukkit.getOfflinePlayer(gp.getUUID()));
 				List<String> lore = new ArrayList<String>();
+				int min = GuildsManager.getManager().getFutureMinValue(guild, gp.getUUID());
+				lore.add("§aPlayer Min Salary: §6" + min);
 				lore.add("§aPlayer Daily Salary: §6" + gp.getSalary());
 				lore.add("§aPlayer Value: §6§l" + Utils.getUtils().getStringMoney(gp.getValue()) + " Coins" );
 				
@@ -116,7 +115,7 @@ public class GuildPlayersMenu extends MenuBuilder {
 				player.setItemMeta(playerMeta);
 				if(playerSlot==22) playerSlot++;
 			//s(playerSlot,player);	
-				cache.put(playerSlot, player);
+				s(playerSlot, player);
 				playerSlot++;
 			}
 			
@@ -129,7 +128,7 @@ public class GuildPlayersMenu extends MenuBuilder {
 				playerMeta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
 				player.setItemMeta(playerMeta);
 				//s(adminsSlot,player);	
-				cache.put(adminsSlot, player);
+				s(adminsSlot, player);
 				adminsSlot++;
 			}
 			
@@ -141,23 +140,15 @@ public class GuildPlayersMenu extends MenuBuilder {
 				playerMeta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
 				player.setItemMeta(playerMeta);
 				//s(modsSlot,player);		
-				cache.put(modsSlot, player);
+				s(modsSlot, player);
 				modsSlot++;
 			}
 			
 		}
-		new BukkitRunnable() {
-			public void run() {
-				for (Entry<Integer, ItemStack> entry : cache.entrySet()) {
-				    int key = entry.getKey();
-				    ItemStack value = entry.getValue();
-				   s(key,value);
-				}
-				buildInventory();
+		
+		buildInventory();	
 			}
-		}.runTask(Main.get());
-		}
-		}.runTaskAsynchronously(Main.get());
+			}.runTaskAsynchronously(Main.get());
 		
 		
 	}

@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
-import me.santipingui58.splindux.hologram.HologramType;
 import me.santipingui58.splindux.hologram.HologramManager;
+import me.santipingui58.splindux.hologram.HologramType;
 
 
 
@@ -26,27 +26,13 @@ public class HologramCommand implements CommandExecutor {
 			SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
 				if (p.isOp()) {
 					if (args.length==0) {
-					p.sendMessage("§aUse of command: /hologram create");
-					p.sendMessage("§aUse of command: /hologram delete");
-					p.sendMessage("§aUse of command: /hologram list");
-				} else if (args[0].equalsIgnoreCase("create")) {
-						if (args[1].equalsIgnoreCase("spleefranking")) {
-						HologramManager.getManager().createHologram(sp,HologramType.SPLEEF_FFA_RANKING); 
-						} else if (args[1].equalsIgnoreCase("onlinetime")) {
-							HologramManager.getManager().createHologram(sp,HologramType.ONLINETIME); 
-						}else if (args[1].equalsIgnoreCase("ranked")) {
-							HologramManager.getManager().createHologram(sp,HologramType.SPLEEF_RANKED); 
-						} else if (args[1].equalsIgnoreCase("votes")) {
-							HologramManager.getManager().createHologram(sp,HologramType.VOTES); 
-						}
-						
-						p.sendMessage("§aHologram created!");
-					
-				} else if (args[0].equalsIgnoreCase("delete")) {
-					HologramManager.getManager().deleteHologram(sp);
-					p.sendMessage("§cHologram deleted!");
-				} 
-					
+					p.sendMessage("§aUse of command: /hologram move <GAME_STATS/PLAYER_STATS>");
+				} else if (args[0].equalsIgnoreCase("move")) {
+						HologramType type = HologramType.valueOf(args[1].toUpperCase());
+						HologramManager hm = HologramManager.getManager();
+						hm.moveHologram(sp, hm.getHologram(type));
+						p.sendMessage("§aHologram moved!");	
+				} 	
 				}
 		}
 		}

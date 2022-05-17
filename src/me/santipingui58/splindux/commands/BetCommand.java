@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
@@ -32,7 +33,7 @@ public class BetCommand implements CommandExecutor {
 				if (sp.isInArena()) {
 					Arena arena = sp.getArena();
 					if (arena.getGameType().equals(GameType.FFA)) {					
-							if (!arena.hasBetAlready(sp)) {
+							if (!GameManager.getManager().getFFAArenaByArena(arena).hasBetAlready(sp)) {
 					int amount = 0;
 
 					try {

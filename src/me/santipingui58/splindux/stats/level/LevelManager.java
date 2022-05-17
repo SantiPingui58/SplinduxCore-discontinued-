@@ -29,12 +29,23 @@ public class LevelManager {
 					 rank = sr;
 				 }
 			 }
-		 }
-		
-		 
-		 return rank;
-		 
-		 
+		 }	 
+		 return rank;	 
+	 }
+	 
+	 
+	 public SpleefRank getRank(int level) {
+		 SpleefRank rank = null;
+		 for (SpleefRank sr : SpleefRank.values()) {
+			 if (rank==null) {
+				 rank = sr;
+			 } else {
+				 if (sr.getRequiredLevel()>rank.getRequiredLevel() && level>=sr.getRequiredLevel()) {
+					 rank = sr;
+				 }
+			 }
+		 }	 
+		 return rank;	 
 	 }
 	 
 	 //Check if the player has more EXP than requiered to level up

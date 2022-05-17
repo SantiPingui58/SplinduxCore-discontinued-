@@ -2,6 +2,9 @@ package me.santipingui58.splindux.game.parkour;
 
 
 
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.Main;
@@ -9,12 +12,12 @@ import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 public class ParkourPlayer  {
 
-	private SpleefPlayer sp;
+	private UUID uuid;
 	private int currentLevel;
 	private ParkourArena arena;
 	private PlayerStats stats;
-	public ParkourPlayer(SpleefPlayer sp,int currentLevel,PlayerStats stats) {
-	this.sp = sp;
+	public ParkourPlayer(UUID player,int currentLevel,PlayerStats stats) {
+	this.uuid = player;
 	if (currentLevel==0) currentLevel=1;
 	this.currentLevel = currentLevel;
 	this.stats = stats;
@@ -24,8 +27,8 @@ public class ParkourPlayer  {
 		return this.stats;
 	}
 	
-	public SpleefPlayer getPlayer() {
-		return this.sp;
+	public UUID getPlayer() {
+		return this.uuid;
 	}
 
 	public int getCurrentLevel() {
@@ -50,18 +53,20 @@ public class ParkourPlayer  {
 	}
 	
 	public void createArena(Level level,ParkourMode mode) {
-		this.arena = new ParkourArena(getPlayer().getPlayer(),ParkourManager.getManager().getNextID(),level,mode);	
+		this.arena = new ParkourArena(this,ParkourManager.getManager().getNextID(),level,mode);	
 	}
 	
 	public void leaveArena() {
 		new BukkitRunnable() {
 			public void run() {
-				if (getPlayer()!=null && getPlayer().getOfflinePlayer().isOnline()) {
-		getPlayer().getPlayer().teleport(Main.lobby);
-		getPlayer().giveLobbyItems();
+				if (getPlayer()!=null && Bukkit.getOfflinePlayer(getPlayer()).isOnline()) {
+					SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(getPlayer());
+		sp.getPlayer().teleport(Main.lobby);
+		sp.giveLobbyItems();
 		}
 			}
 	}.runTask(Main.get());
+	ParkourManager.getManager().getArenas().remove(arena);
 		this.arena = null;
 	}
 	public int getRecord(Level level) {

@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.hikari.HikariAPI;
 import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.game.GameManager;
 import me.santipingui58.splindux.game.mutation.GameMutation;
 import me.santipingui58.splindux.game.mutation.MutationState;
 import me.santipingui58.splindux.game.spleef.ArenaRequest;
@@ -25,6 +26,7 @@ import me.santipingui58.splindux.relationships.RelationshipRequest;
 import me.santipingui58.splindux.relationships.RelationshipRequestType;
 import me.santipingui58.splindux.relationships.friends.FriendsManager;
 import me.santipingui58.splindux.relationships.guilds.GuildsManager;
+import me.santipingui58.splindux.relationships.parties.PartyManager;
 import me.santipingui58.splindux.vote.VoteManager;
 import me.santipingui58.splindux.vote.timelimit.TimeLimit;
 import me.santipingui58.splindux.vote.timelimit.TimeLimitManager;
@@ -48,6 +50,7 @@ public class HoverCommand implements CommandExecutor {
 			
 		if(cmd.getName().equalsIgnoreCase("hover")){
 			Player p = (Player) sender;
+			if (args.length==0) return false;
 			 SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);			 
 			 switch(args[0]) {
 			 case "duelaccept": duelAccept(sp,args);
@@ -477,7 +480,7 @@ public class HoverCommand implements CommandExecutor {
 		Player p = sp.getPlayer();
 		if (sp.isInGame() || sp.isInQueue()) {
 			UUID uuid = UUID.fromString(args[1]);
-			GameMutation mutation = sp.getArena().getMutationBy(uuid);
+			GameMutation mutation = GameManager.getManager().getFFAArenaByArena(sp.getArena()).getMutationBy(uuid);
 			if (!mutation.getOwner().equals(sp)) {
 			if (mutation!=null && mutation.getState().equals(MutationState.VOTING)) {
 				mutation.voteMutation(sp);
@@ -682,7 +685,7 @@ public class HoverCommand implements CommandExecutor {
 			 SpleefPlayer challenger = SpleefPlayer.getSpleefPlayer(p2);
 			if (challenger.hasDueled(sp)) {
 				SpleefDuel duel = challenger.getDuelByDueledPlayer(sp);
-				if (!sp.isInGame() && !sp.isinParkour()) {
+				if (!sp.isInGame() && !sp.isinParkour() && PartyManager.getManager().getParty(sp.getPlayer())==null) {
 					if (!challenger.isInGame()) {
 						duel.acceptDuel(sp);
 						} else {

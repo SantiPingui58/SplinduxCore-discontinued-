@@ -2,11 +2,15 @@ package me.santipingui58.splindux.game.spectate;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.DataManager;
@@ -29,17 +33,21 @@ public class SpectateManager {
 	        return manager;
 	    }
 	 
-	 private void spectate(SpleefPlayer sp,Arena arena,List<SpleefPlayer> playing, List<SpleefPlayer> spectators,boolean giveSpectate) {
-
+	 private void spectate(SpleefPlayer sp,Arena arena,Set<SpleefPlayer> playing, Set<SpleefPlayer> spectators,boolean giveSpectate) {
+		 if (spectators==null) return;
 			new BukkitRunnable() {
 				public void run() {
 		if (giveSpectate) sp.giveSpectateItems();
 		
 			for (SpleefPlayer play : playing) {
-				play.getPlayer().hidePlayer(Main.get(), sp.getPlayer());		
-				sendKeepInTABPacket(play.getPlayer(),sp.getPlayer());
+				if (!play.isOnline()) continue;
+			 play.getPlayer().hidePlayer(Main.get(), sp.getPlayer());		
+			sendKeepInTABPacket(play.getPlayer(),sp.getPlayer());
 				}
-			for (SpleefPlayer spect : spectators) {
+			
+			Set<SpleefPlayer> newSpect = new HashSet<SpleefPlayer>();
+			newSpect.addAll(spectators);
+			for (SpleefPlayer spect : newSpect) {
 				
 				if (sp.isHidingSpectators()) {
 					sp.getPlayer().hidePlayer(Main.get(),spect.getPlayer());
@@ -64,10 +72,9 @@ public class SpectateManager {
 	 }
 	 
 	public void spectateParkour(SpleefPlayer sp, ParkourArena arena) {
-		sp.getPlayer().teleport(arena.getPlayer().getPlayer().getPlayer());
-		List<SpleefPlayer> list = new ArrayList<SpleefPlayer>();
-		list.add(arena.getPlayer().getPlayer());
-		
+		//sp.getPlayer().teleport(arena.getPlayer().getPlayer().getPlayer());
+		//List<SpleefPlayer> list = new ArrayList<SpleefPlayer>();
+		//list.add(arena.getPlayer().getPlayer());
 		//spectate(sp, list, arena.getSpectators());
 		 
 	}
@@ -85,8 +92,9 @@ public class SpectateManager {
 		DataManager.getManager().getLobbyPlayers().remove(sp.getUUID());
 		DataManager.getManager().getPlayingPlayers().add(sp.getUUID());
 		arena.getSpectators().add(sp);
+
 		
-		List<SpleefPlayer> list = new ArrayList<SpleefPlayer>();
+		Set<SpleefPlayer> list = new HashSet<SpleefPlayer>();
 		for (SpleefPlayer playing : arena.getPlayers()) {
 			if (!playing.isSpectating()) {
 				list.add(playing);
@@ -103,6 +111,9 @@ public class SpectateManager {
 		new BukkitRunnable() {
 			public void run() {
 				if (sp.isSpectating()) {
+					if (sp.getOptions().hasNightVision()) {
+						sp.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,Integer.MAX_VALUE,Integer.MAX_VALUE));
+						}
 		sp.getPlayer().setAllowFlight(true);
 		sp.getPlayer().setFlying(true);	
 				}
@@ -132,6 +143,8 @@ public class SpectateManager {
 	
 	
 	public void showOrHideSpectators(SpleefPlayer sp,boolean show) {
+		new BukkitRunnable() {
+			public void run() {
 		sp.hideSpectators(!show);
 		sp.sendMessage("§aHiding spectators: §b" + String.valueOf(!show).toUpperCase());
 		List<SpleefPlayer> spectators = new ArrayList<SpleefPlayer>();
@@ -150,6 +163,8 @@ public class SpectateManager {
 				}
 				sendKeepInTABPacket(sp.getPlayer(),spect.getPlayer());
 			}	
+		}
+		}.runTask(Main.get());
 	}
 	
 	public void leaveSpectate(SpleefPlayer sp, boolean allowFly) {

@@ -34,12 +34,14 @@ public class ScoreboardTask {
 						timer=0;
 						for (Player p : Bukkit.getOnlinePlayers()) {
 							SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(p);
+							if (sp==null) continue;
+							if (!sp.getOfflinePlayer().isOnline()) continue;
 								sp.updateScoreboard();				
 						} 
 					}
 				
 				
 			}
-		}.runTaskTimerAsynchronously(Main.get(), 0L, 10L);
+		}.runTaskTimer(Main.get(), 0L, 10L);
 	}
 }

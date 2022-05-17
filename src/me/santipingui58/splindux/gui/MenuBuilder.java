@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
@@ -65,7 +66,11 @@ public abstract class MenuBuilder implements Listener {
 		return _inv.getName();
 	}
 	public void o(Player p){
+		new BukkitRunnable() {
+			public void run() {
 		p.openInventory(_inv);
+		}
+		}.runTask(Main.get());
 	}
 
 	  @EventHandler

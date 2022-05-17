@@ -34,7 +34,7 @@ public class StatsCommand implements CommandExecutor {
 			
 		} else {
 		if(cmd.getName().equalsIgnoreCase("stats")){
-			Player p = (Player) sender;
+			CommandSender p = (Player) sender;
 		if (args.length==0) {
 			sender.sendMessage("§aUso of command: /stats <SPLEEF/TNTRUN/SPLEGG>");
 		} else {
@@ -45,7 +45,9 @@ public class StatsCommand implements CommandExecutor {
 				if (args.length==1) {
 					new BukkitRunnable() {
 						public void run() {
-						sendStats(p,args,p,sender,type);
+							if (sender instanceof Player) {
+						sendStats(p,args,(Player) p,sender,type);
+							}
 						}
 					}.runTaskAsynchronously(Main.get());
 				} else if (p.isOp()) {
@@ -86,7 +88,7 @@ public class StatsCommand implements CommandExecutor {
 		return false;
 	}
 
-	private void sendStats(Player p,String[] args,OfflinePlayer pa,CommandSender sender,SpleefType type) {
+	private void sendStats(CommandSender p,String[] args,OfflinePlayer pa,CommandSender sender,SpleefType type) {
 		SpleefPlayer sp2 = SpleefPlayer.getSpleefPlayer(pa);
 		if (sp2!=null) {
 			p.sendMessage(" ");
@@ -94,6 +96,7 @@ public class StatsCommand implements CommandExecutor {
 			p.sendMessage("§6-=-=-=-[§a§lStats§6]-=-=-=-");
 			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			p.sendMessage("§aCountry: §b" + sp2.getCountry());
+			p.sendMessage("§aRanking: §b" + sp2.getRankingPosition());
 			p.sendMessage("§aRegister date: §b" + format.format(sp2.getRegisterDate()));
 			p.sendMessage("§aTotal Online Time: §b" + Utils.getUtils().minutesToDate(sp2.getTotalOnlineTime()));
 			p.sendMessage("§aCurrent Online Time: §b" + Utils.getUtils().secondsToDate(sp2.getOnlineTime()));

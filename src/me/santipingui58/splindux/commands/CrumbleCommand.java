@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import me.santipingui58.splindux.game.spleef.GameType;
 import me.santipingui58.splindux.game.spleef.ArenaRequest;
 import me.santipingui58.splindux.game.spleef.RequestType;
+import me.santipingui58.splindux.game.GameState;
 import me.santipingui58.splindux.game.spleef.Arena;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
@@ -29,7 +30,6 @@ public class CrumbleCommand implements CommandExecutor {
 			if (sp.isInGame()) {
 				Arena arena = sp.getArena();
 				if (arena.getGameType().equals(GameType.DUEL)) {
-					if (!arena.isRanked()) {
 					if (arena.getCrumbleRequest()==null) {
 					if (!arena.getDeadPlayers1().contains(sp) && !arena.getDeadPlayers2().contains(sp)) {
 					if (args.length==0) {
@@ -41,7 +41,10 @@ public class CrumbleCommand implements CommandExecutor {
 						try {
 							crumble = Integer.parseInt(args[0]);
 							if (crumble>=10 && crumble<=90) {
-								
+								if (arena.getState().equals(GameState.PAUSE)) {
+									sp.sendMessage("§cYou cannot execute this command while the game is paused.");
+									return false;
+								}
 								ArenaRequest request = new ArenaRequest(sp, crumble,RequestType.CRUMBLE);
 								arena.setCrumbleRequest(request);
 								request.sendMessage();
@@ -62,9 +65,7 @@ public class CrumbleCommand implements CommandExecutor {
 				} else {
 					p.sendMessage("§cThere is a crumble request at the moment, cancel it or deny it to make a new one.");	
 				}
-				} else {
-					p.sendMessage("§cYou can not execute this command in a Ranked Duel.");	
-				}
+				
 				}else {
 					p.sendMessage("§cYou need to be in a 1v1 game to execute this command.");	
 				} 

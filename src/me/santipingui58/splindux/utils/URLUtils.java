@@ -3,7 +3,6 @@ package me.santipingui58.splindux.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.UUID;
@@ -35,8 +34,8 @@ public class URLUtils {
 					return "AR";
 				}
 				url = new URL("http://ip-api.com/json/" + ip+ "?fields=message,countryCode");
-			} catch (MalformedURLException e1) {
-				e1.printStackTrace();
+			} catch (Exception e) {
+				return null;
 			}
 	        URLConnection conn = null;
 			try {

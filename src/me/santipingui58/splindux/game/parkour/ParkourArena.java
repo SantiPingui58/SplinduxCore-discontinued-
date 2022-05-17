@@ -7,15 +7,13 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.fawe.FAWESplinduxAPI;
-import me.santipingui58.fawe.Main;
 import me.santipingui58.splindux.DataManager;
+import me.santipingui58.splindux.Main;
 import me.santipingui58.splindux.economy.EconomyManager;
 import me.santipingui58.splindux.game.spleef.SpleefPlayer;
-import me.santipingui58.splindux.replay.ReplayManager;
 import me.santipingui58.splindux.scoreboard.PinguiScoreboard;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
 import me.santipingui58.splindux.stats.StatsManager;
@@ -31,10 +29,11 @@ public class ParkourArena {
 	private List<UUID> jumpsSchematics;
 	private ParkourMode mode;
 	private String replayname;
-	
+	private ParkourPlayer pp;
 	private List<SpleefPlayer> spectators;
 	
-	public ParkourArena(Player player,int id,Level level,ParkourMode mode) {
+	public ParkourArena(ParkourPlayer pp,int id,Level level,ParkourMode mode) {
+		this.pp = pp;
 		this.level = level;
 		this.mode = mode;
 		this.jumpsSchematics = new ArrayList<UUID>();
@@ -42,12 +41,7 @@ public class ParkourArena {
 		ParkourManager.getManager().getArenas().add(this);
 		setup();
 		//Player[] players = {player};
-		this.replayname = ReplayManager.getManager().getParkourName(player.getName(), this);	
-		new BukkitRunnable() {
-			public void run() {
-		//ReplayAPI.getInstance().recordReplay(replayname, Bukkit.getConsoleSender(), players);
-			}
-		}.runTaskLater(Main.get(), 10L);
+		//this.replayname = ReplayManager.getManager().getParkourName(player.getName(), this);	
 		
 	}
 	
@@ -105,23 +99,13 @@ public class ParkourArena {
 		return this.level;
 	}
 	
-	public ParkourPlayer getPlayer() {
-		for (SpleefPlayer sp : DataManager.getManager().getPlayers()) {
-			ParkourPlayer pp = sp.getParkourPlayer();
-			if (pp.getArena()!=null) {
-			if (pp.getArena().equals(this)) {
-				return pp;
-			}
-		}
-		}
-		return null;
-	}
+
 	
 	
 	public void finish(FinishParkourReason reason) {
 		
-		ParkourPlayer pp = getPlayer();
-		SpleefPlayer sp = pp.getPlayer();
+		ParkourPlayer pp = this.pp;
+		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(pp.getPlayer());
 		
 		if (reason.equals(FinishParkourReason.WINNER)) {
 		if (!pp.hasBeatedLevel(getLevel())) {
@@ -154,8 +138,8 @@ public class ParkourArena {
 	
 	public void doJump() {
 		this.currentStart = this.currentFinish;
-		ParkourPlayer pp = getPlayer();
-		SpleefPlayer sp = pp.getPlayer();
+		ParkourPlayer pp = this.pp;
+		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(pp.getPlayer());
 		this.jumpsMade++;
 		
 		if (mode.equals(ParkourMode.BEAT_LEVEL)) {
@@ -168,7 +152,7 @@ public class ParkourArena {
 			sp.getPlayer().sendMessage("§aYou made a jump! §7(§6" + this.jumpsMade+"§7)");
 		}
 			
-		Jump jump = level.loadJump(this,getPlayer(),this.currentStart);		
+		Jump jump = level.loadJump(this,this.pp,this.currentStart);		
 		this.currentFinish = jump.getFinishAt(this.currentStart);	
 		
 	}
@@ -183,23 +167,25 @@ public class ParkourArena {
 		
 		Location corner1 = new Location(start.getWorld(),start.getBlockX()+500,start.getBlockY()+100,start.getBlockZ());
 		Location corner2 = new Location(start.getWorld(),start.getBlockX()-500,50,start.getBlockZ()+500);	
-		FAWESplinduxAPI.getAPI().placeBlocks(corner1, corner2, Material.AIR);
-		Jump jump = level.loadJump(this,getPlayer(),start);		
-		this.currentFinish = jump.getFinishAt(start);
+		
+		ParkourArena arena = this;
+				FAWESplinduxAPI.getAPI().placeBlocks(corner1, corner2, Material.AIR);
+				Jump jump = level.loadJump(arena,pp,start);		
+				currentFinish = jump.getFinishAt(start);
+		ParkourPlayer pp = this.pp;
+		SpleefPlayer sp = SpleefPlayer.getSpleefPlayer(pp.getPlayer());
 		new BukkitRunnable() {
-			public void run() {
-		ParkourPlayer pp = getPlayer();
-		SpleefPlayer sp = pp.getPlayer();
+			public void run() {	
 		sp.getPlayer().teleport(start);
 			}
-		}.runTaskLater(Main.get(), 1L);
+		}.runTaskLater(Main.get(), 4L);
 	}
 
 	public void remove() {
 		for (UUID uuid : this.jumpsSchematics) {
 			FAWESplinduxAPI.getAPI().undoSchematic(uuid);
 		}
-
+		ParkourManager.getManager().getArenas().remove(this);
 	}
 	
 }

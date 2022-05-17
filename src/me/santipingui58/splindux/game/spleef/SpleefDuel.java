@@ -78,7 +78,12 @@ public class SpleefDuel {
 		}
 		getAcceptedPlayers().add(sp);
 		if (getAcceptedPlayers().size()>=getDueledPlayers().size()) {
-		GameManager.getManager().duelGame(challenger, getDueledPlayers(), getArena(),getType(),getAllPlayers().size()/2,false,null,false,false,-1);
+			new BukkitRunnable() {
+				public void run() {
+					GameManager.getManager().duelGame(challenger, getDueledPlayers(), getArena(),getType(),getAllPlayers().size()/2,false,false,-1);
+				}
+			}.runTask(Main.get());
+		
 		} else {
 			List<SpleefPlayer> list = new ArrayList<SpleefPlayer>();		
 			List<SpleefPlayer> leftToAccept = new ArrayList<SpleefPlayer>();		

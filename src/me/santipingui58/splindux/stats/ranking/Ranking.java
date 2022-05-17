@@ -8,39 +8,37 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
 
-import me.santipingui58.splindux.game.spleef.SpleefPlayer;
 
 public class Ranking {
 
 	private LinkedHashMap<UUID, Integer> ranking;
 	
-	private HashMap<SpleefPlayer, Integer> positionCache;
+	private HashMap<UUID, Integer> positionCache;
 	
 	public Ranking(LinkedHashMap<UUID,Integer> ranking) {
 		this.ranking = ranking;
-		this.positionCache = new HashMap<SpleefPlayer,Integer>();
+		this.positionCache = new HashMap<UUID,Integer>();
 	}
 	
 	public Ranking() {
 		this.ranking = new LinkedHashMap<UUID,Integer>();
-		this.positionCache = new HashMap<SpleefPlayer,Integer>();
+		this.positionCache = new HashMap<UUID,Integer>();
 	}
 	
 	public LinkedHashMap<UUID,Integer> getRanking() {
 		return this.ranking;
 	}
 	
-	public int getPosition(SpleefPlayer sp) {
-		UUID uuid = sp.getUUID();
+	public int getPosition(UUID uuid) {
 		
 		if (ranking.containsKey(uuid)) {
-			if (positionCache.containsKey(sp)) {
-				return positionCache.get(sp);
+			if (positionCache.containsKey(uuid)) {
+				return positionCache.get(uuid);
 			} else {
 				Set<UUID> keys = this.ranking.keySet();
 				  List<UUID> listKeys = new ArrayList<UUID>(keys);				  
 				  int index = listKeys.indexOf(uuid);
-		positionCache.put(sp, index);
+		positionCache.put(uuid, index+1);
 		 return index+1;
 			}
 	} else {

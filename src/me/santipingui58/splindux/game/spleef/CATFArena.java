@@ -2,7 +2,6 @@ package me.santipingui58.splindux.game.spleef;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -18,7 +17,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import de.robingrether.idisguise.iDisguise;
 import me.santipingui58.splindux.scoreboard.ScoreboardType;
-import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -48,7 +46,7 @@ public class CATFArena extends Arena {
 	public void startGame(boolean sortQueue) {	
 
 		int i = 0;
-		if (sortQueue) Collections.shuffle(getQueue());
+	//	if (sortQueue) Collections.shuffle(getQueue());
 		int teamSize = getQueue().size()/2;		
 		for (SpleefPlayer sp : getQueue()) {
 			iDisguise.getInstance().getAPI().undisguise(sp.getPlayer());
@@ -91,7 +89,7 @@ public class CATFArena extends Arena {
 		
 		TextComponent message =null;
 		 message = new TextComponent("§aA game between §b" + getTeamName(1) + " §aand §b" + getTeamName(2) + " §ahas started! §7(Right click to spectate)");		
-		message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/spectate "+getDuelPlayers1().get(0).getOfflinePlayer().getName()));
+	//	message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/spectate "+getDuelPlayers1().get(0).getOfflinePlayer().getName()));
 		message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7Spectate §a" +getTeamName(1) + " §7-§a " + getTeamName(2)).create()));
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (!players.contains(p)) {

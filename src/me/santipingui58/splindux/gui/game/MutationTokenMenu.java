@@ -7,6 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.santipingui58.splindux.Main;
+import me.santipingui58.splindux.game.GameManager;
+import me.santipingui58.splindux.game.ffa.FFAArena;
 import me.santipingui58.splindux.game.mutation.GameMutation;
 import me.santipingui58.splindux.game.mutation.MutationType;
 import me.santipingui58.splindux.game.spleef.Arena;
@@ -53,10 +55,11 @@ public class MutationTokenMenu extends MenuBuilder {
 	public void onClick(SpleefPlayer sp, ItemStack stack, int slot) {
 		if (sp.isInArena()) {
 			Arena arena = sp.getArena();
+			FFAArena ffa = GameManager.getManager().getFFAArenaByArena(arena);
 			for (MutationType type : MutationType.values()) {
 				if (slot==type.getSlot()) {					
 					GameMutation mutation = new GameMutation(sp,type);
-					mutation.sendMutationRequest(arena);
+					mutation.sendMutationRequest(ffa);
 					sp.getPlayer().closeInventory();
 					break;
 				}
