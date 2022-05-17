@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/HolographicDisplays-2.3.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/iDisguise (1).jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/spigot-1.12.2.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/PlaceholderAPI-2.10.4.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/PermissionsEx-1.23.4.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/ProtocolLib (2).jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/SimpleSit.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/DailyRewards.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/Vault (1).jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/NickNamer_v3.18.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/petblocks-api-8.17.1.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/PlayerParticles_v7.10.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/DiscordSRV-Build-1.18.4.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/nuvotifier-2.7.1.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/Citizens-2.0.26-b1822.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/UltraCosmetics-2.5.9-RELEASE.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/TAB v2.5.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Santiago/Downloads/SkinsRestorer (7).jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/Quests-3.7.8.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Splindux 18-07/plugins/FAWESplinduxAPI.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/SplinduxTranslateAPI.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/SplinduxHikariAPI.jar"/>
+	<classpathentry kind="lib" path="H:/Servers/Filezilla/HolographicDisplays (1).jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
